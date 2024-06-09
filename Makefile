@@ -1,10 +1,11 @@
 OUTDIR = ./bin
-OBJECTS = kernel.o loader.o
+OBJECTS = $(OUTDIR)/kernel.o $(OUTDIR)/loader.o
 
 CC = i386-elf-g++
 AS = i386-elf-as
 LD = i386-elf-ld
-CCFLAGS = -m32 -Wall
+CC_FLAGS = -m32 -Wall -nostdlib -fno-builtin -fno-exceptions \
+		   -fno-leading-underscore -fno-rtti -fno-use-cxa-atexit
 AS_FLAGS = --32
 LD_FLAGS = -melf_i386
 
