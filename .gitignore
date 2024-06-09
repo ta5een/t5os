@@ -7,3 +7,6 @@
 *.ko
 *.obj
 *.elf
+
+# Build artifacts
+bin/*
