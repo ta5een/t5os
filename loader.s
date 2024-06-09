@@ -15,11 +15,13 @@
 .long CHECKSUM
 
 .section .text
-.extern kmain                   # `kmain` is defined in `kernel.cpp`
+.extern kmain                   # Entry point of kernel, in `kernel.cpp`
+.extern call_ctors              # Support for C++ constructors, in `kernel.cpp`
 
 .global loader                  # Entry point for the linker
 loader:
   mov $stack, %esp              # Set up the kernel stack
+  call call_ctors
   push %eax                     # Push `AX` register (multiboot info) to stack
   push %ebx                     # Push `BX` register (magic number) to stack
   call kmain                    # Hand-over to C++
