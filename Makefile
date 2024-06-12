@@ -1,3 +1,4 @@
+NAME = wyoos
 OUTDIR = ./out
 OBJECTS = $(OUTDIR)/kernel.o $(OUTDIR)/loader.o
 
@@ -19,7 +20,7 @@ LD_FLAGS = -melf_i386
 
 .PHONY: all clean
 
-all: $(OUTDIR)/wyoos.bin
+all: $(OUTDIR)/$(NAME).iso
 
 $(OUTDIR)/%.o: %.cpp
 	$(CC) $(CC_FLAGS) -o $@ -c $<
@@ -27,8 +28,24 @@ $(OUTDIR)/%.o: %.cpp
 $(OUTDIR)/%.o: %.s
 	$(AS) $(AS_FLAGS) -o $@ $<
 
-$(OUTDIR)/wyoos.bin: linker.ld $(OBJECTS)
+$(OUTDIR)/$(NAME).bin: linker.ld $(OBJECTS)
 	$(LD) $(LD_FLAGS) -T $< -o $@ $(OBJECTS)
+
+$(OUTDIR)/$(NAME).iso: $(OUTDIR)/$(NAME).bin
+	mkdir -p $(OUTDIR)/iso/boot/grub
+	cp $< $(OUTDIR)/iso/boot
+	echo 'set timeout=0' > $(OUTDIR)/iso/boot/grub/grub.cfg
+	echo 'set default=0' >> $(OUTDIR)/iso/boot/grub/grub.cfg
+	echo '' >> $(OUTDIR)/iso/boot/grub/grub.cfg
+	echo "menuentry \"$(NAME)\" {" >> $(OUTDIR)/iso/boot/grub/grub.cfg
+	echo "	multiboot /boot/$(NAME).bin" >> $(OUTDIR)/iso/boot/grub/grub.cfg
+	echo '	boot' >> $(OUTDIR)/iso/boot/grub/grub.cfg
+	echo '}' >> $(OUTDIR)/iso/boot/grub/grub.cfg
+	grub-mkrescue --output=$@ $(OUTDIR)/iso
+	rm -rf $(OUTDIR)/iso
+
+qemu: $(OUTDIR)/$(NAME).iso
+	qemu-system-i386 -cdrom $< -m 64
 
 clean:
 	rm -f $(OUTDIR)/*

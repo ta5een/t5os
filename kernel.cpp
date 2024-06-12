@@ -65,7 +65,7 @@ extern "C" void call_ctors()
  */
 extern "C" void kmain(Multiboot multiboot, U32 magic)
 {
-	vga_write_to_buffer("Hello, world!");
+	vga_write_to_buffer("Welcome to WYOOS");
 	while (true)
 	{
 		// Infinite loop
