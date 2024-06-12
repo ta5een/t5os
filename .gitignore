@@ -9,4 +9,4 @@
 *.elf
 
 # Build artifacts
-bin/*
+out/*
