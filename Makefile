@@ -1,35 +1,39 @@
+# NOTE: To allow for cross-compilation, please override the `CXX`, `AS` and `LD`
+# environment variables. For example, you may use `CXX=i386-elf-g++` on macOS.
+
 NAME = wyoos
+ARCH = i386
+
+SRCDIR = ./src
+LIBDIR = ./lib
 OUTDIR = ./out
-OBJECTS = $(OUTDIR)/kernel.o $(OUTDIR)/loader.o
 
-UNAME := $(shell uname)
-ifeq ($(UNAME),Linux)
-	CC = g++
-	AS = as
-	LD = ld
-else
-	CC = i386-elf-g++
-	AS = i386-elf-as
-	LD = i386-elf-ld
-endif
+CPP_SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
+ASM_SOURCES = $(shell find $(SRCDIR) -name '*.asm')
+OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OUTDIR)/%.o,$(CPP_SOURCES))
+OBJECTS += $(patsubst $(SRCDIR)/%.asm,$(OUTDIR)/%.asm.o,$(ASM_SOURCES))
 
-CC_FLAGS = -m32 -Wall -nostdlib -fno-builtin -fno-exceptions \
-		   -fno-leading-underscore -fno-rtti -fno-use-cxa-atexit
-AS_FLAGS = --32
-LD_FLAGS = -melf_i386
+CXXFLAGS = -m32 -Wall -Wextra -nostdlib -I $(LIBDIR) -fno-builtin \
+		   -fno-exceptions -fno-rtti -fno-use-cxa-atexit
+ASFLAGS = --32
+LDFLAGS = -melf_$(ARCH)
 
-.PHONY: all clean
+.PHONY: all binary iso clean
 
-all: $(OUTDIR)/$(NAME).iso
+all: iso
+binary: $(OUTDIR)/$(NAME).bin
+iso: $(OUTDIR)/$(NAME).iso
 
-$(OUTDIR)/%.o: %.cpp
-	$(CC) $(CC_FLAGS) -o $@ -c $<
+$(OUTDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-$(OUTDIR)/%.o: %.s
-	$(AS) $(AS_FLAGS) -o $@ $<
+$(OUTDIR)/%.asm.o: $(SRCDIR)/%.asm
+	@mkdir -p $(@D)
+	$(AS) $(ASFLAGS) -o $@ $<
 
-$(OUTDIR)/$(NAME).bin: linker.ld $(OBJECTS)
-	$(LD) $(LD_FLAGS) -T $< -o $@ $(OBJECTS)
+$(OUTDIR)/$(NAME).bin: $(SRCDIR)/arch/$(ARCH)/linker.ld $(OBJECTS)
+	$(LD) $(LDFLAGS) -T $< -o $@ $(OBJECTS)
 
 $(OUTDIR)/$(NAME).iso: $(OUTDIR)/$(NAME).bin
 	mkdir -p $(OUTDIR)/iso/boot/grub
@@ -45,7 +49,7 @@ $(OUTDIR)/$(NAME).iso: $(OUTDIR)/$(NAME).bin
 	rm -rf $(OUTDIR)/iso
 
 qemu: $(OUTDIR)/$(NAME).iso
-	qemu-system-i386 -cdrom $< -m 64
+	qemu-system-$(ARCH) -cdrom $< -m 64
 
 clean:
-	rm -f $(OUTDIR)/*
+	rm -rf $(OUTDIR)/*

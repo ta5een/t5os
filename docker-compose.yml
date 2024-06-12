@@ -4,6 +4,6 @@ services:
   wyoos:
     build: .
     entrypoint: make
-    command: all
+    command: iso
     volumes:
       - ./:/wyoos
