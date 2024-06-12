@@ -11,7 +11,8 @@ using s64 = signed long long;
 using multiboot_t = void *;
 using constructor_t = void (*)();
 
-enum vga_color {
+enum vga_color
+{
   VGA_COLOR_BLACK = 0x0,
   VGA_COLOR_BLUE = 0x1,
   VGA_COLOR_GREEN = 0x2,
@@ -39,8 +40,10 @@ extern "C" constructor_t end_ctors;
 /**
  * Output a white-on-black character to the VGA memory buffer.
  */
-void vga_write_to_buffer(const char *str) {
-  for (u8 i = 0; str[i] != '\0'; i++) {
+void vga_write_to_buffer(const char *str)
+{
+  for (u8 i = 0; str[i] != '\0'; i++)
+  {
     // Set the highest bits to the default foreground and background
     VGA_MEMORY[i] = (u16)str[i] | (u16)(VGA_SCREEN_COLOR) << 8;
   }
@@ -49,8 +52,10 @@ void vga_write_to_buffer(const char *str) {
 /**
  * Required run-time function for driving C++ constructors.
  */
-extern "C" void call_ctors() {
-  for (constructor_t *ctor = &start_ctors; ctor != &end_ctors; ctor++) {
+extern "C" void call_ctors()
+{
+  for (constructor_t *ctor = &start_ctors; ctor != &end_ctors; ctor++)
+  {
     (*ctor)();
   }
 }
@@ -58,9 +63,11 @@ extern "C" void call_ctors() {
 /**
  * Entry point of the kernel.
  */
-extern "C" void kmain(multiboot_t multiboot, u32 magic) {
+extern "C" void kmain(multiboot_t multiboot, u32 magic)
+{
   vga_write_to_buffer("Hello, world!");
-  while (true) {
+  while (true)
+  {
     // Infinite loop
   }
 }
