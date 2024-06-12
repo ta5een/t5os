@@ -1,0 +1,9 @@
+name: wyoos
+
+services:
+  wyoos:
+    build: .
+    entrypoint: make
+    command: all
+    volumes:
+      - ./:/wyoos

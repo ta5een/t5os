@@ -36,6 +36,9 @@ u8 const VGA_SCREEN_COLOR = VGA_COLOR_WHITE | (VGA_COLOR_BLACK << 4);
 extern "C" constructor_t start_ctors;
 extern "C" constructor_t end_ctors;
 
+/**
+ * Output a white-on-black character to the VGA memory buffer.
+ */
 void vga_write_to_buffer(const char *str) {
   for (u8 i = 0; str[i] != '\0'; i++) {
     // Set the highest bits to the default foreground and background
@@ -43,12 +46,18 @@ void vga_write_to_buffer(const char *str) {
   }
 }
 
+/**
+ * Required run-time function for driving C++ constructors.
+ */
 extern "C" void call_ctors() {
   for (constructor_t *ctor = &start_ctors; ctor != &end_ctors; ctor++) {
     (*ctor)();
   }
 }
 
+/**
+ * Entry point of the kernel.
+ */
 extern "C" void kmain(multiboot_t multiboot, u32 magic) {
   vga_write_to_buffer("Hello, world!");
   while (true) {
