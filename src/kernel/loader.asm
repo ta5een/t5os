@@ -2,7 +2,7 @@
  * This source file functions as a bridge between the GRUB bootloader and the
  * kernel. It sets up important header symbols so that the bootloader can
  * detect this custom kernel. Additionally, it sets up a 2MiB stack before
- * jumping to the `kmain` function in the kernel.
+ * jumping to the `_kmain` function in the kernel.
  */
 
 .set MAGIC, 0x1badb002
@@ -15,7 +15,7 @@
 .long CHECKSUM
 
 .section .text
-.extern kmain                   # Entry point of kernel, in `kernel.cpp`
+.extern _kmain                  # Entry point of kernel, in `kernel.cpp`
 .extern call_ctors              # Support for C++ constructors, in `kernel.cpp`
 
 .global loader                  # Entry point for the linker
@@ -24,7 +24,7 @@ loader:
   call call_ctors
   push %eax                     # Push `AX` register (multiboot info) to stack
   push %ebx                     # Push `BX` register (magic number) to stack
-  call kmain                    # Hand-over to C++
+  call _kmain                   # Hand-over to C++
 _loop:                          # Infinite loop in case we exit out of C++
   cli
   hlt

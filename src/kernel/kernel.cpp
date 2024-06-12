@@ -1,12 +1,4 @@
-using U8 = unsigned char;
-using U16 = unsigned short;
-using U32 = unsigned int;
-using U64 = unsigned long long;
-
-using S8 = signed char;
-using S16 = signed short;
-using S32 = signed int;
-using S64 = signed long long;
+#include <wyoos/datatypes.h>
 
 using Multiboot = void *;
 using Constructor = void (*)();
@@ -63,7 +55,7 @@ extern "C" void call_ctors()
 /**
  * Entry point of the kernel.
  */
-extern "C" void kmain(Multiboot multiboot, U32 magic)
+extern "C" void _kmain(Multiboot /* multiboot */, U32 /* magic */)
 {
 	vga_write_to_buffer("Welcome to WYOOS");
 	while (true)
