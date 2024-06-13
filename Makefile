@@ -2,7 +2,7 @@ NAME = wyoos
 ARCH = i386
 
 SRCDIR = ./src
-LIBDIR = ./lib
+LIBDIR = ./src
 OUTDIR = ./out
 
 CPP_SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
@@ -49,7 +49,7 @@ $(OUTDIR)/%.asm.o: $(SRCDIR)/%.asm
 	@mkdir -p $(@D)
 	$(AS) $(ASFLAGS) -o $@ $<
 
-$(OUTDIR)/$(NAME).bin: $(SRCDIR)/arch/$(ARCH)/linker.ld $(OBJECTS)
+$(OUTDIR)/$(NAME).bin: $(SRCDIR)/kernel/arch/$(ARCH)/linker.ld $(OBJECTS)
 	$(LD) $(LDFLAGS) -T $< -o $@ $(OBJECTS)
 
 $(OUTDIR)/$(NAME).iso: $(OUTDIR)/$(NAME).bin

@@ -1,4 +1,5 @@
-#include <wyoos/integers.hpp>
+#include <kernel/arch/integers.hpp>
+#include <kernel/arch/platform.hpp>
 
 using Multiboot = void *;
 using Constructor = void (*)();
@@ -57,7 +58,14 @@ extern "C" void call_ctors()
  */
 extern "C" void _kmain(Multiboot /* multiboot */, U32 /* magic */)
 {
-	vga_write_to_buffer("Welcome to WYOOS");
+	const char *welcome_msg;
+	if (KERNEL_ARCH_IS_I386())
+	{
+		welcome_msg = "Welcome to WYOOS (arch=i386)";
+	}
+
+	vga_write_to_buffer(welcome_msg);
+
 	while (true)
 	{
 		// Infinite loop
