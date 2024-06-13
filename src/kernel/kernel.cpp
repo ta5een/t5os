@@ -1,5 +1,5 @@
-#include <kernel/arch/integers.hpp>
 #include <kernel/arch/platform.hpp>
+#include <lib/integers.hpp>
 
 using Multiboot = void *;
 using Constructor = void (*)();

@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef KERNEL_ARCH_GLOBAL_IMPORT
-#define KERNEL_ARCH_GLOBAL_IMPORT 1
-#endif
-
 #ifdef __i386__
 #define KERNEL_ARCH_IS_I386() 1
 #else
