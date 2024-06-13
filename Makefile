@@ -1,6 +1,3 @@
-# NOTE: To allow for cross-compilation, please override the `CXX`, `AS` and `LD`
-# environment variables. For example, you may use `CXX=i386-elf-g++` on macOS.
-
 NAME = wyoos
 ARCH = i386
 
@@ -15,13 +12,33 @@ OBJECTS += $(patsubst $(SRCDIR)/%.asm,$(OUTDIR)/%.asm.o,$(ASM_SOURCES))
 
 CXXFLAGS = -m32 -Wall -Wextra -nostdlib -I $(LIBDIR) -fno-builtin \
 		   -fno-exceptions -fno-rtti -fno-use-cxa-atexit
-ASFLAGS = --32
-LDFLAGS = -melf_$(ARCH)
+ASFLAGS =
+LDFLAGS =
 
-.PHONY: all binary iso clean
+# To allow for cross-compilation of ELF binaries, building on Linux will use
+# the built-in toolchain with extra flags, whereas building on other OSes (e.g.
+# macOS) will default to architecture-specific GNU toolchains.
+#
+# Inspired by:
+#	https://github.com/joexbayer/RetrOS-32/blob/b31c06c39d728d77b2e86496d2bf19d3128dda72/Makefile#L35-L50
+UNAME := $(shell uname)
+ifeq ($(UNAME),Linux)
+	CXX = g++
+	AS = as
+	LD = ld
+	CXXFLAGS += -elf_$(ARCH)
+	ASFLAGS += --32
+	LDFLAGS += -melf_$(ARCH)
+else
+	CXX = $(ARCH)-elf-g++
+	AS = $(ARCH)-elf-as
+	LD = $(ARCH)-elf-ld
+endif
+
+.PHONY: all kernel iso clean
 
 all: iso
-binary: $(OUTDIR)/$(NAME).bin
+kernel: $(OUTDIR)/$(NAME).bin
 iso: $(OUTDIR)/$(NAME).iso
 
 $(OUTDIR)/%.o: $(SRCDIR)/%.cpp
