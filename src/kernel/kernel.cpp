@@ -1,4 +1,4 @@
-#include <wyoos/datatypes.hpp>
+#include <wyoos/integers.hpp>
 
 using Multiboot = void *;
 using Constructor = void (*)();
