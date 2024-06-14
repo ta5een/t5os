@@ -4,27 +4,27 @@
 #define USING_LIB_GLOBALLY 1
 #endif
 
-namespace lib::integers
+namespace lib
 {
-	using U8 = unsigned char;
-	using U16 = unsigned short;
-	using U32 = unsigned int;
-	using U64 = unsigned long long;
+	using u8 = unsigned char;
+	using u16 = unsigned short;
+	using u32 = unsigned int;
+	using u64 = unsigned long long;
 
-	using S8 = signed char;
-	using S16 = signed short;
-	using S32 = signed int;
-	using S64 = signed long long;
-} // namespace lib::integers
+	using s8 = signed char;
+	using s16 = signed short;
+	using s32 = signed int;
+	using s64 = signed long long;
+} // namespace lib
 
 #if USING_LIB_GLOBALLY
-using lib::integers::U16;
-using lib::integers::U32;
-using lib::integers::U64;
-using lib::integers::U8;
+using lib::u16;
+using lib::u32;
+using lib::u64;
+using lib::u8;
 
-using lib::integers::S16;
-using lib::integers::S32;
-using lib::integers::S64;
-using lib::integers::S8;
+using lib::s16;
+using lib::s32;
+using lib::s64;
+using lib::s8;
 #endif

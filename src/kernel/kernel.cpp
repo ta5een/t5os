@@ -4,7 +4,7 @@
 using Multiboot = void *;
 using Constructor = void (*)();
 
-enum class VgaColor : U8
+enum class VgaColor : u8
 {
 	Black = 0x0,
 	Blue = 0x1,
@@ -24,8 +24,8 @@ enum class VgaColor : U8
 	White = 0xF,
 };
 
-U16 *const VGA_MEMORY = (U16 *)0xB8000;
-const U8 VGA_SCREEN_COLOR = (U8)VgaColor::White | ((U8)VgaColor::Black << 4);
+u16 *const VGA_MEMORY = (u16 *)0xB8000;
+const u8 VGA_SCREEN_COLOR = (u8)VgaColor::White | ((u8)VgaColor::Black << 4);
 
 extern "C" Constructor start_ctors;
 extern "C" Constructor end_ctors;
@@ -35,10 +35,10 @@ extern "C" Constructor end_ctors;
  */
 void vga_write_to_buffer(const char *str)
 {
-	for (U8 i = 0; str[i] != '\0'; i++)
+	for (u8 i = 0; str[i] != '\0'; i++)
 	{
 		// Set the highest bits to the default foreground and background
-		VGA_MEMORY[i] = (U16)str[i] | (U16)(VGA_SCREEN_COLOR) << 8;
+		VGA_MEMORY[i] = (u16)str[i] | (u16)(VGA_SCREEN_COLOR) << 8;
 	}
 }
 
@@ -56,7 +56,7 @@ extern "C" void call_ctors()
 /**
  * Entry point of the kernel.
  */
-extern "C" void _kmain(Multiboot /* multiboot */, U32 /* magic */)
+extern "C" void _kmain(Multiboot /* multiboot */, u32 /* magic */)
 {
 	const char *welcome_msg;
 	if (KERNEL_ARCH_IS_I386())
