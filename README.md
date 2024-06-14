@@ -73,8 +73,8 @@ following tools for your platform:
     docker compose up
     ```
 
-    NOTE: You may also run `make kernel` to partially build natively and run
-    the above command to build the `.iso` in a Linux environment.
+    NOTE: You may also run `bear -- make kernel` to build the kernel natively
+    and run the above command to build the `.iso` in a Linux environment.
 
 1. Run the OS in `qemu`:
 
