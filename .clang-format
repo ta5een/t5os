@@ -1,5 +1,6 @@
 ---
 BasedOnStyle: Microsoft
+AccessModifierOffset: '-4'
 AlignAfterOpenBracket: BlockIndent
 AllowAllParametersOfDeclarationOnNextLine: 'false'
 AllowShortBlocksOnASingleLine: 'false'
@@ -22,7 +23,5 @@ PointerAlignment: Right
 ReflowComments: 'true'
 SortIncludes: 'true'
 SortUsingDeclarations: 'true'
-TabWidth: '4'
-UseTab: Always
 
 ...
