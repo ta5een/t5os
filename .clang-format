@@ -17,6 +17,7 @@ FixNamespaceComments: 'true'
 IncludeBlocks: Regroup
 IndentWidth: '4'
 NamespaceIndentation: All
+PackConstructorInitializers: Never
 PointerAlignment: Right
 ReflowComments: 'true'
 SortIncludes: 'true'
