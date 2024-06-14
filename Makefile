@@ -10,8 +10,8 @@ ASM_SOURCES = $(shell find $(SRCDIR) -name '*.asm')
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OUTDIR)/%.o,$(CPP_SOURCES))
 OBJECTS += $(patsubst $(SRCDIR)/%.asm,$(OUTDIR)/%.asm.o,$(ASM_SOURCES))
 
-CXXFLAGS = -m32 -Wall -Wextra -nostdlib -I $(LIBDIR) -fno-builtin \
-		   -fno-exceptions -fno-rtti -fno-use-cxa-atexit
+CXXFLAGS = -m32 -std=c++20 -nostdlib -Wall -Wextra -I $(LIBDIR) \
+		   -fno-builtin -fno-exceptions -fno-rtti -fno-use-cxa-atexit
 ASFLAGS =
 LDFLAGS =
 
