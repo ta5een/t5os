@@ -7,7 +7,7 @@ end_of_line = lf
 insert_final_newline = true
 
 # C/C++ source files
-[*.{c,cpp}]
+[*.{c,cpp,h,hpp}]
 indent_style = tab
 indent_size = 4
 
