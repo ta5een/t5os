@@ -16,6 +16,7 @@ ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 FixNamespaceComments: true
 IncludeBlocks: Regroup
+IndentPPDirectives: AfterHash
 IndentWidth: 4
 NamespaceIndentation: All
 PackConstructorInitializers: Never
