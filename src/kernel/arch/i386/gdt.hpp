@@ -26,7 +26,6 @@ namespace kernel
             u8 base_24_31_;
         };
 
-        [[nodiscard("Contains side effects")]]
         GlobalDescriptorTable();
         ~GlobalDescriptorTable();
 

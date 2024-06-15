@@ -3,7 +3,7 @@ BasedOnStyle: Microsoft
 AccessModifierOffset: -4
 AlignAfterOpenBracket: BlockIndent
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: false
+AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
@@ -21,7 +21,7 @@ NamespaceIndentation: All
 PackConstructorInitializers: Never
 PointerAlignment: Right
 ReflowComments: true
-SortIncludes: true
-SortUsingDeclarations: true
+SortIncludes: CaseInsensitive
+SortUsingDeclarations: Lexicographic
 
 ...

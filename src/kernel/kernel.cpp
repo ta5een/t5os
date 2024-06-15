@@ -66,8 +66,6 @@ extern "C" void _kmain(Multiboot /* multiboot */, u32 /* magic */)
 
     vga_write_to_buffer(welcome_msg);
 
-    while (true)
-    {
-        // Infinite loop
-    }
+    // Infinite loop
+    while (true) {}
 }
