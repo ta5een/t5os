@@ -6,9 +6,9 @@ LIBDIR = ./src
 OUTDIR = ./out
 
 CPP_SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
-ASM_SOURCES = $(shell find $(SRCDIR) -name '*.asm')
+ASM_SOURCES = $(shell find $(SRCDIR) -name '*.S')
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OUTDIR)/%.o,$(CPP_SOURCES))
-OBJECTS += $(patsubst $(SRCDIR)/%.asm,$(OUTDIR)/%.asm.o,$(ASM_SOURCES))
+OBJECTS += $(patsubst $(SRCDIR)/%.S,$(OUTDIR)/%.S.o,$(ASM_SOURCES))
 
 CXXFLAGS = -m32 -std=c++20 -nostdlib -Wall -Wextra -I $(LIBDIR) \
 		   -fno-builtin -fno-exceptions -fno-rtti -fno-use-cxa-atexit
@@ -45,7 +45,7 @@ $(OUTDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-$(OUTDIR)/%.asm.o: $(SRCDIR)/%.asm
+$(OUTDIR)/%.S.o: $(SRCDIR)/%.S
 	@mkdir -p $(@D)
 	$(AS) $(ASFLAGS) -o $@ $<
 
