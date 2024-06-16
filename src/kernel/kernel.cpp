@@ -4,67 +4,170 @@
 using Multiboot = void *;
 using Constructor = void (*)();
 
-enum class VgaColor : u8
+namespace vga
 {
-    Black = 0x0,
-    Blue = 0x1,
-    Green = 0x2,
-    Cyan = 0x3,
-    Red = 0x4,
-    Magenta = 0x5,
-    Brown = 0x6,
-    LightGrey = 0x7,
-    DarkGrey = 0x8,
-    LightBlue = 0x9,
-    LightGreen = 0xA,
-    LightCyan = 0xB,
-    LightRed = 0xC,
-    LightMegenta = 0xD,
-    LightBrown = 0xE,
-    White = 0xF,
-};
+    // TODO: Determine correct size for `usize` data type
+    using $usize = u32;
+    using ColorCode = u8;
+    using ScreenChar = u16;
 
-u16 *const VGA_MEMORY = (u16 *)0xB8000;
-const u8 VGA_SCREEN_COLOR = (u8)VgaColor::White | ((u8)VgaColor::Black << 4);
+    volatile ScreenChar *const VGA_MEMORY = (volatile ScreenChar *)0xB8000;
+    $usize const BUFFER_HEIGHT = 25;
+    $usize const BUFFER_WIDTH = 80;
+
+    enum class VgaColor : u8
+    {
+        Black = 0x0,
+        Blue = 0x1,
+        Green = 0x2,
+        Cyan = 0x3,
+        Red = 0x4,
+        Magenta = 0x5,
+        Brown = 0x6,
+        LightGray = 0x7,
+        DarkGray = 0x8,
+        LightBlue = 0x9,
+        LightGreen = 0xA,
+        LightCyan = 0xB,
+        LightRed = 0xC,
+        Pink = 0xD,
+        Yellow = 0xE,
+        White = 0xF,
+    };
+
+    VgaColor const DEFAULT_FG = VgaColor::Green;
+    VgaColor const DEFAULT_BG = VgaColor::Black;
+
+    struct VgaWriter
+    {
+    private:
+        $usize column_pos_;
+
+        auto index_for_row_and_col($usize row, $usize col) -> $usize
+        {
+            return (row * BUFFER_WIDTH) + col;
+        }
+
+    public:
+        VgaWriter()
+            : column_pos_(0)
+        {
+        }
+
+        auto create_screen_char(const char byte, VgaColor fg, VgaColor bg)
+            -> ScreenChar
+        {
+            ColorCode color_code = ((u8)fg) | ((u8)bg << 4);
+            return ((u16)byte | ((u16)color_code << 8));
+        }
+
+        auto new_line() -> void
+        {
+            for ($usize row = 1; row < BUFFER_HEIGHT; row++)
+            {
+                for ($usize col = 0; col < BUFFER_WIDTH; col++)
+                {
+                    $usize curr_index = this->index_for_row_and_col(row, col);
+                    $usize new_index =
+                        this->index_for_row_and_col(row - 1, col);
+                    ScreenChar character = VGA_MEMORY[curr_index];
+                    VGA_MEMORY[new_index] = character;
+                }
+            }
+
+            this->clear_row(BUFFER_HEIGHT - 1);
+            this->column_pos_ = 0;
+        };
+
+        auto clear_row($usize row) -> void
+        {
+            for ($usize col = 0; col < BUFFER_WIDTH; col++)
+            {
+                ScreenChar blank =
+                    this->create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
+                $usize index = this->index_for_row_and_col(row, col);
+                VGA_MEMORY[index] = blank;
+            }
+        }
+
+        auto write_byte(const u8 byte) -> void
+        {
+            if (byte == '\n')
+            {
+                this->new_line();
+            }
+            else
+            {
+                if (this->column_pos_ >= BUFFER_WIDTH)
+                {
+                    this->new_line();
+                }
+
+                $usize index = this->index_for_row_and_col(
+                    BUFFER_HEIGHT - 1, this->column_pos_
+                );
+                ScreenChar character =
+                    this->create_screen_char(byte, DEFAULT_FG, DEFAULT_BG);
+                VGA_MEMORY[index] = character;
+                this->column_pos_ += 1;
+            }
+        }
+
+        auto write_string(const char *str) -> void
+        {
+            for ($usize i = 0; str[i] != '\0'; i++)
+            {
+                u8 byte = str[i];
+                if (byte == '\n' || (byte >= 0x20 && byte <= 0x7E))
+                {
+                    this->write_byte(byte);
+                }
+                else
+                {
+                    this->write_byte(0xFE);
+                }
+            }
+        }
+    };
+} // namespace vga
+
+vga::VgaWriter writer;
 
 extern "C" Constructor start_ctors;
 extern "C" Constructor end_ctors;
-
-/**
- * Output a white-on-black character to the VGA memory buffer.
- */
-void vga_write_to_buffer(const char *str)
-{
-    for (u8 i = 0; str[i] != '\0'; i++)
-    {
-        // Set the highest bits to the default foreground and background
-        VGA_MEMORY[i] = (u16)str[i] | (u16)(VGA_SCREEN_COLOR) << 8;
-    }
-}
 
 /**
  * Required run-time function for driving C++ constructors.
  */
 extern "C" void call_ctors()
 {
+    writer.write_string("CALL_CTORS\n");
     for (Constructor *ctor = &start_ctors; ctor != &end_ctors; ctor++)
     {
+        writer.write_string("CALL_CTORS_LOOP\n");
         (*ctor)();
     }
 }
+
+// TODO: Not sure if this function can replace `call_ctors`
+// [[gnu::constructor]] void global_ctors()
+// {
+//     writer.write_string("GLOBAL_CTORS\n");
+// }
 
 /**
  * Entry point of the kernel.
  */
 extern "C" void _kmain(Multiboot /* multiboot */, u32 /* magic */)
 {
-    const char *welcome_msg;
+    const char *arch_msg;
     if (KERNEL_ARCH_IS_I386())
     {
-        welcome_msg = "Welcome to WYOOS (arch=i386)";
+        arch_msg = "Architecture: i386";
     }
 
-    vga_write_to_buffer(welcome_msg);
+    writer.write_string("Welcome to WYOOS\n");
+    writer.write_string(arch_msg);
 
     // Infinite loop
     while (true) {}
