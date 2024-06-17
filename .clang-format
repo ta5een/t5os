@@ -1,6 +1,6 @@
 ---
 BasedOnStyle: Microsoft
-AccessModifierOffset: -4
+AccessModifierOffset: -2
 AlignAfterOpenBracket: BlockIndent
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Always
@@ -18,7 +18,7 @@ FixNamespaceComments: true
 IncludeBlocks: Regroup
 IndentPPDirectives: AfterHash
 IndentWidth: 4
-NamespaceIndentation: All
+NamespaceIndentation: None
 PackConstructorInitializers: Never
 PointerAlignment: Right
 ReflowComments: true
