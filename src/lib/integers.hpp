@@ -20,7 +20,6 @@ namespace lib
 #define unsigned signed
     using ssize = __SIZE_TYPE__;
 #undef unsigned
-
 } // namespace lib
 
 #if USING_LIB_GLOBALLY

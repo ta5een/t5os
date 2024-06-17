@@ -7,10 +7,10 @@ namespace kernel
     const u8 G_BIT_MASK = 1 << 7;
 
     GlobalDescriptorTable::GlobalDescriptorTable()
-        : null_segment_selector_(0, 0, 0),
-          unused_segment_selector_(0, 0, 0),
-          code_segment_selector_(0, 64 * lib::MiB, 0x9A),
-          data_segment_selector_(0, 64 * lib::MiB, 0x92)
+        : _null_segment_selector(0, 0, 0),
+          _unused_segment_selector(0, 0, 0),
+          _code_segment_selector(0, 64 * lib::MiB, 0x9A),
+          _data_segment_selector(0, 64 * lib::MiB, 0x92)
     {
         // Define the start and size of the descriptor table
         u32 data[2];
@@ -27,12 +27,12 @@ namespace kernel
 
     auto GlobalDescriptorTable::code_segment_selector() const -> u16
     {
-        return (u8 *)&this->code_segment_selector_ - (u8 *)this;
+        return (u8 *)&_code_segment_selector - (u8 *)this;
     }
 
     auto GlobalDescriptorTable::data_segment_selector() const -> u16
     {
-        return (u8 *)&this->data_segment_selector_ - (u8 *)this;
+        return (u8 *)&_data_segment_selector - (u8 *)this;
     }
 
     GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(

@@ -5,6 +5,3 @@
 #else
 #    define KERNEL_ARCH_IS_I386() 0
 #endif
-
-#if KERNEL_ARCH_IS_I386()
-#endif

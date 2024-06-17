@@ -18,12 +18,12 @@ namespace kernel
             auto limit() const -> u32;
 
         private:
-            u16 limit_0_15_;
-            u16 base_0_15_;
-            u8 base_16_23_;
-            u8 access_byte_;
-            u8 flags_limit_16_19_;
-            u8 base_24_31_;
+            u16 _limit_0_15;
+            u16 _base_0_15;
+            u8 _base_16_23;
+            u8 _access_byte;
+            u8 _flags_limit_16_19;
+            u8 _base_24_31;
         };
 
         GlobalDescriptorTable();
@@ -33,9 +33,9 @@ namespace kernel
         auto data_segment_selector() const -> u16;
 
     private:
-        const SegmentDescriptor null_segment_selector_;
-        const SegmentDescriptor unused_segment_selector_;
-        const SegmentDescriptor code_segment_selector_;
-        const SegmentDescriptor data_segment_selector_;
+        const SegmentDescriptor _null_segment_selector;
+        const SegmentDescriptor _unused_segment_selector;
+        const SegmentDescriptor _code_segment_selector;
+        const SegmentDescriptor _data_segment_selector;
     };
 } // namespace kernel

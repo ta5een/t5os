@@ -7,13 +7,12 @@ using Constructor = void (*)();
 namespace vga
 {
     // TODO: Determine correct size for `usize` data type
-    using $usize = u32;
     using ColorCode = u8;
     using ScreenChar = u16;
 
+    constexpr usize BUFFER_HEIGHT = 25;
+    constexpr usize BUFFER_WIDTH = 80;
     volatile ScreenChar *const VGA_MEMORY = (volatile ScreenChar *)0xB8000;
-    $usize const BUFFER_HEIGHT = 25;
-    $usize const BUFFER_WIDTH = 80;
 
     enum class VgaColor : u8
     {
@@ -41,90 +40,87 @@ namespace vga
     struct VgaWriter
     {
     private:
-        $usize column_pos_;
+        usize _column_pos;
 
-        auto index_for_row_and_col($usize row, $usize col) -> $usize
+        auto row_col_buffer_index(usize row, usize col) -> usize
         {
             return (row * BUFFER_WIDTH) + col;
-        }
-
-    public:
-        VgaWriter()
-            : column_pos_(0)
-        {
         }
 
         auto create_screen_char(const char byte, VgaColor fg, VgaColor bg)
             -> ScreenChar
         {
-            ColorCode color_code = ((u8)fg) | ((u8)bg << 4);
+            auto color_code = ((u8)fg) | ((u8)bg << 4);
             return ((u16)byte | ((u16)color_code << 8));
+        }
+
+        auto clear_row(usize row) -> void
+        {
+            for (usize col = 0; col < BUFFER_WIDTH; col++)
+            {
+                auto blank = create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
+                auto index = row_col_buffer_index(row, col);
+                VGA_MEMORY[index] = blank;
+            }
+        }
+
+    public:
+        VgaWriter()
+            : _column_pos(0)
+        {
         }
 
         auto new_line() -> void
         {
-            for ($usize row = 1; row < BUFFER_HEIGHT; row++)
+            for (usize row = 1; row < BUFFER_HEIGHT; row++)
             {
-                for ($usize col = 0; col < BUFFER_WIDTH; col++)
+                for (usize col = 0; col < BUFFER_WIDTH; col++)
                 {
-                    $usize curr_index = this->index_for_row_and_col(row, col);
-                    $usize new_index =
-                        this->index_for_row_and_col(row - 1, col);
-                    ScreenChar character = VGA_MEMORY[curr_index];
+                    auto curr_index = row_col_buffer_index(row, col);
+                    auto new_index = row_col_buffer_index(row - 1, col);
+                    auto character = VGA_MEMORY[curr_index];
                     VGA_MEMORY[new_index] = character;
                 }
             }
 
-            this->clear_row(BUFFER_HEIGHT - 1);
-            this->column_pos_ = 0;
+            clear_row(BUFFER_HEIGHT - 1);
+            _column_pos = 0;
         };
-
-        auto clear_row($usize row) -> void
-        {
-            for ($usize col = 0; col < BUFFER_WIDTH; col++)
-            {
-                ScreenChar blank =
-                    this->create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
-                $usize index = this->index_for_row_and_col(row, col);
-                VGA_MEMORY[index] = blank;
-            }
-        }
 
         auto write_byte(const u8 byte) -> void
         {
             if (byte == '\n')
             {
-                this->new_line();
+                new_line();
             }
             else
             {
-                if (this->column_pos_ >= BUFFER_WIDTH)
+                if (_column_pos >= BUFFER_WIDTH)
                 {
-                    this->new_line();
+                    new_line();
                 }
 
-                $usize index = this->index_for_row_and_col(
-                    BUFFER_HEIGHT - 1, this->column_pos_
-                );
-                ScreenChar character =
-                    this->create_screen_char(byte, DEFAULT_FG, DEFAULT_BG);
+                auto index =
+                    row_col_buffer_index(BUFFER_HEIGHT - 1, _column_pos);
+                auto character =
+                    create_screen_char(byte, DEFAULT_FG, DEFAULT_BG);
                 VGA_MEMORY[index] = character;
-                this->column_pos_ += 1;
+                _column_pos += 1;
             }
         }
 
         auto write_string(const char *str) -> void
         {
-            for ($usize i = 0; str[i] != '\0'; i++)
+            for (usize i = 0; str[i] != '\0'; i++)
             {
                 u8 byte = str[i];
                 if (byte == '\n' || (byte >= 0x20 && byte <= 0x7E))
                 {
-                    this->write_byte(byte);
+                    write_byte(byte);
                 }
                 else
                 {
-                    this->write_byte(0xFE);
+                    write_byte(0xFE);
                 }
             }
         }
