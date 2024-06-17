@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+Thumbs.db
+._*
+
+# Project
+.cache
+.git
+.clang-format
+.editor-config
+.gitignore
+.ignore
+
+# Build artifacts
+out
+.cache
+compile_commands.json

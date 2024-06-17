@@ -1,4 +1,5 @@
 !.clang-format
+!.dockerignore
 !.editorconfig
 !.gitignore
 !.gitmodules
