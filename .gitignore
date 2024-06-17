@@ -1,5 +1,6 @@
 # macOS
 .DS_Store
+Thumbs.db
 ._*
 
 # Object files
@@ -9,6 +10,6 @@
 *.elf
 
 # Build artifacts
-out/*
-.cache/*
+out
+.cache
 compile_commands.json
