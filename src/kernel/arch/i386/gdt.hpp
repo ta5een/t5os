@@ -28,12 +28,12 @@ class GlobalDescriptorTable
         auto limit() const -> u32;
 
       private:
-        u16 _limit_0_15;
-        u16 _base_0_15;
-        u8 _base_16_23;
-        u8 _access_byte;
-        u8 _flags_limit_16_19;
-        u8 _base_24_31;
+        u16 m_limit_0_15;
+        u16 m_base_0_15;
+        u8 m_base_16_23;
+        u8 m_access_byte;
+        u8 m_flags_limit_16_19;
+        u8 m_base_24_31;
     };
 
     /**
@@ -51,7 +51,7 @@ class GlobalDescriptorTable
      */
     auto code_segment_selector() const -> u16
     {
-        return (u8 *)&_code_segment_selector - (u8 *)this;
+        return (u8 *)&m_code_segment_selector - (u8 *)this;
     }
 
     /**
@@ -59,14 +59,14 @@ class GlobalDescriptorTable
      */
     auto data_segment_selector() const -> u16
     {
-        return (u8 *)&_data_segment_selector - (u8 *)this;
+        return (u8 *)&m_data_segment_selector - (u8 *)this;
     }
 
   private:
-    const SegmentDescriptor _null_segment_selector;
-    const SegmentDescriptor _unused_segment_selector;
-    const SegmentDescriptor _code_segment_selector;
-    const SegmentDescriptor _data_segment_selector;
+    const SegmentDescriptor m_null_segment_selector;
+    const SegmentDescriptor m_unused_segment_selector;
+    const SegmentDescriptor m_code_segment_selector;
+    const SegmentDescriptor m_data_segment_selector;
 };
 
 } // namespace kernel

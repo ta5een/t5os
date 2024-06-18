@@ -8,10 +8,10 @@ const u8 DB_BIT_MASK = 1 << 6;
 const u8 G_BIT_MASK = 1 << 7;
 
 GlobalDescriptorTable::GlobalDescriptorTable()
-    : _null_segment_selector(0, 0, 0)
-    , _unused_segment_selector(0, 0, 0)
-    , _code_segment_selector(0, 64 * lib::MiB, 0x9A)
-    , _data_segment_selector(0, 64 * lib::MiB, 0x92)
+    : m_null_segment_selector(0, 0, 0)
+    , m_unused_segment_selector(0, 0, 0)
+    , m_code_segment_selector(0, 64 * lib::MiB, 0x9A)
+    , m_data_segment_selector(0, 64 * lib::MiB, 0x92)
 {
     // Define the size (limit) and start (base) of the descriptor table
     u32 data[2];
@@ -42,19 +42,20 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
     {
         // 32-bit address space
         //
-        // Now we have to squeeze the 32-bit limit entry into 2.5 registers
-        // (20 bits). This is done by discarding the 12 least significant
-        // bits, but this is only legal if they are all equal to 1. If the
-        // last bits aren't all 1, we have to set them to 1, but this would
-        // increase the limit, which may make the limit go beyong the
-        // physical limit or overlap with other segments. Thus, we have to
-        // compensate this by decreasing a higher bit (and might have up to
+        // Now, we have to squeeze the 32-bit limit entry into 2.5 registers (20
+        // bits). This is done by discarding the 12 least significant bits. This
+        // won't be a problem if the last bits are all equal to 1. Otherwise, we
+        // will look the other way and believe they are in fact equal to 1.
+        //
+        // Of course, this may increase the limit to go beyond the physical
+        // limit or overlap with other segments. To compensate for this, we will
+        // decrease the provided limit by a higher bit (and might have up to
         // (2**12)-1 wasted bytes behind the used memory).
         //
-        // This is standard practice, as explained in a StackOverflow
-        // comment [1].
+        // This is standard practice, as explained in the following
+        // StackOverflow comment:
         //
-        // [1] https://stackoverflow.com/a/55970477/10052039
+        // https://stackoverflow.com/a/55970477/10052039
         if ((limit & 0xFFF) != 0xFFF)
         {
             limit = (limit >> 12) - 1;
