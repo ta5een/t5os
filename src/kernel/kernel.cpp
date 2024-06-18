@@ -156,9 +156,13 @@ extern "C" void call_ctors()
 extern "C" void _kmain(Multiboot /* multiboot */, u32 /* magic */)
 {
     const char *arch_msg;
-    if (KERNEL_ARCH_IS_I386())
+    if (ARCH(I386))
     {
         arch_msg = "Architecture: i386";
+    }
+    else
+    {
+        arch_msg = "Architecture: unknown";
     }
 
     writer.write_string("Welcome to WYOOS\n");
