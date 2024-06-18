@@ -13,10 +13,10 @@ GlobalDescriptorTable::GlobalDescriptorTable()
       _code_segment_selector(0, 64 * lib::MiB, 0x9A),
       _data_segment_selector(0, 64 * lib::MiB, 0x92)
 {
-    // Define the start and size of the descriptor table
+    // Define the size (limit) and start (base) of the descriptor table
     u32 data[2];
-    data[0] = (u32)this;
-    data[1] = sizeof(GlobalDescriptorTable) << 16;
+    data[0] = sizeof(GlobalDescriptorTable) << 16;
+    data[1] = (u32)this;
     asm volatile("lgdt (%0)"             // Load the descriptor table
                  :                       // No output operands
                  : "p"(((u8 *)data) + 2) // Pointer to array as input operand
