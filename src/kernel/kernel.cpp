@@ -39,31 +39,6 @@ VgaColor const DEFAULT_BG = VgaColor::Black;
 
 struct VgaWriter
 {
-  private:
-    usize _column_pos;
-
-    auto row_col_buffer_index(usize row, usize col) -> usize
-    {
-        return (row * BUFFER_WIDTH) + col;
-    }
-
-    auto create_screen_char(const char byte, VgaColor fg, VgaColor bg)
-        -> ScreenChar
-    {
-        auto color_code = ((u8)fg) | ((u8)bg << 4);
-        return ((u16)byte | ((u16)color_code << 8));
-    }
-
-    auto clear_row(usize row) -> void
-    {
-        for (usize col = 0; col < BUFFER_WIDTH; col++)
-        {
-            auto blank = create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
-            auto index = row_col_buffer_index(row, col);
-            VGA_MEMORY[index] = blank;
-        }
-    }
-
   public:
     VgaWriter()
         : _column_pos(0)
@@ -120,6 +95,31 @@ struct VgaWriter
             {
                 write_byte(0xFE);
             }
+        }
+    }
+
+  private:
+    usize _column_pos;
+
+    auto row_col_buffer_index(usize row, usize col) -> usize
+    {
+        return (row * BUFFER_WIDTH) + col;
+    }
+
+    auto create_screen_char(const char byte, VgaColor fg, VgaColor bg)
+        -> ScreenChar
+    {
+        auto color_code = ((u8)fg) | ((u8)bg << 4);
+        return ((u16)byte | ((u16)color_code << 8));
+    }
+
+    auto clear_row(usize row) -> void
+    {
+        for (usize col = 0; col < BUFFER_WIDTH; col++)
+        {
+            auto blank = create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
+            auto index = row_col_buffer_index(row, col);
+            VGA_MEMORY[index] = blank;
         }
     }
 };
