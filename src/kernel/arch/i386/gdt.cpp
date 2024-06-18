@@ -25,16 +25,6 @@ GlobalDescriptorTable::GlobalDescriptorTable()
 
 GlobalDescriptorTable::~GlobalDescriptorTable() {}
 
-auto GlobalDescriptorTable::code_segment_selector() const -> u16
-{
-    return (u8 *)&_code_segment_selector - (u8 *)this;
-}
-
-auto GlobalDescriptorTable::data_segment_selector() const -> u16
-{
-    return (u8 *)&_data_segment_selector - (u8 *)this;
-}
-
 GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
     u32 base,
     u32 limit,
