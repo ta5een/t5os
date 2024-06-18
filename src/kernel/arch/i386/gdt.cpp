@@ -8,10 +8,10 @@ const u8 DB_BIT_MASK = 1 << 6;
 const u8 G_BIT_MASK = 1 << 7;
 
 GlobalDescriptorTable::GlobalDescriptorTable()
-    : _null_segment_selector(0, 0, 0),
-      _unused_segment_selector(0, 0, 0),
-      _code_segment_selector(0, 64 * lib::MiB, 0x9A),
-      _data_segment_selector(0, 64 * lib::MiB, 0x92)
+    : _null_segment_selector(0, 0, 0)
+    , _unused_segment_selector(0, 0, 0)
+    , _code_segment_selector(0, 64 * lib::MiB, 0x9A)
+    , _data_segment_selector(0, 64 * lib::MiB, 0x92)
 {
     // Define the size (limit) and start (base) of the descriptor table
     u32 data[2];

@@ -11,6 +11,7 @@ AllowShortLoopsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
+BreakConstructorInitializers: BeforeComma
 ColumnLimit: 80
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
