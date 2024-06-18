@@ -35,9 +35,8 @@ else
 	LD = $(ARCH)-elf-ld
 endif
 
-.PHONY: all kernel iso clean
+.PHONY: kernel iso qemu clean
 
-all: iso
 kernel: $(OUTDIR)/$(NAME).bin
 iso: $(OUTDIR)/$(NAME).iso
 
