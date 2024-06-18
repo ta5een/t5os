@@ -1,3 +1,5 @@
+#pragma once
+
 #include <lib/integers.hpp>
 
 namespace drivers
@@ -26,19 +28,21 @@ enum class VgaColor : u8
     White = 0xF,
 };
 
-struct VgaWriter
+class VgaWriter
 {
   public:
     VgaWriter();
+    void clear_screen();
     void new_line();
-    void write_byte(const u8 byte);
-    void write_string(const char *str);
+    void put_byte(const u8 byte);
+    void put_string(const char *str);
 
   private:
-    usize _column_pos;
-    usize row_col_buffer_index(usize row, usize col) const;
-    VgaScreenChar create_screen_char(const char byte, VgaColor fg, VgaColor bg);
-    void clear_row(usize row);
+    usize m_col_pos;
+    usize m_row_pos;
+
+    static VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg);
+    static void overwrite_row_with_blank_screen_chars(usize row);
 };
 
 } // namespace drivers

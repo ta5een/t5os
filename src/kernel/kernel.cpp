@@ -15,18 +15,19 @@ drivers::VgaWriter writer;
  */
 extern "C" void call_ctors()
 {
-    writer.write_string("CALL_CTORS\n");
+    writer.clear_screen();
+    writer.put_string("CALL_CTORS\n");
     for (CtorFunc *ctor = start_ctors; ctor != end_ctors; ctor++)
     {
-        writer.write_string("CALL_CTORS_LOOP\n");
+        writer.put_string("CALL_CTORS_LOOP\n");
         (*ctor)();
     }
 }
 
-// TODO: Not sure if this function can replace `call_ctors`
+// // TODO: Not sure if this function can replace `call_ctors`
 // [[gnu::constructor]] void global_ctors()
 // {
-//     writer.write_string("GLOBAL_CTORS\n");
+//     writer.put_string("GLOBAL_CTORS\n");
 // }
 
 /**
@@ -44,8 +45,9 @@ extern "C" void _kmain(Multiboot /* multiboot */, u32 /* magic */)
         arch_msg = "Architecture: unknown";
     }
 
-    writer.write_string("Welcome to WYOOS\n");
-    writer.write_string(arch_msg);
+    writer.put_string("Welcome to WYOOS\n");
+    writer.put_string(arch_msg);
+    writer.new_line();
 
     // Infinite loop
     while (true) {}

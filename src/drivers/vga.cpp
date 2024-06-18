@@ -1,38 +1,76 @@
 #include <drivers/vga.hpp>
+#include <lib/integers.hpp>
 
 namespace drivers
 {
 
-constexpr usize BUFFER_HEIGHT = 25;
-constexpr usize BUFFER_WIDTH = 80;
 volatile VgaScreenChar *const VGA_MEMORY = (volatile VgaScreenChar *)0xB8000;
 
-VgaColor const DEFAULT_FG = VgaColor::Green;
-VgaColor const DEFAULT_BG = VgaColor::Black;
+constexpr usize const BUFFER_WIDTH = 80;
+constexpr usize const BUFFER_HEIGHT = 25;
+constexpr VgaColor const DEFAULT_FG = VgaColor::Green;
+constexpr VgaColor const DEFAULT_BG = VgaColor::Black;
+
+class VgaMemoryBuffer
+{
+  public:
+    static usize index_at(usize col, usize row)
+    {
+        return (row * BUFFER_WIDTH) + col;
+    }
+
+    static VgaScreenChar read(usize col, usize row)
+    {
+        auto buffer_index = index_at(col, row);
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        return VGA_MEMORY[buffer_index];
+    }
+
+    static void write(VgaScreenChar screen_char, usize col, usize row)
+    {
+        auto buffer_index = index_at(col, row);
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        VGA_MEMORY[buffer_index] = screen_char;
+    }
+};
 
 VgaWriter::VgaWriter()
-    : _column_pos(0)
+    : m_col_pos(0)
+    , m_row_pos(0)
 {
+}
+
+void VgaWriter::clear_screen()
+{
+    m_col_pos = 0;
+    m_row_pos = 0;
+    for (usize row = 0; row < BUFFER_HEIGHT; row++)
+    {
+        overwrite_row_with_blank_screen_chars(row);
+    }
 }
 
 void VgaWriter::new_line()
 {
-    for (usize row = 1; row < BUFFER_HEIGHT; row++)
+    m_col_pos = 0;
+    if (m_row_pos < BUFFER_HEIGHT)
+    {
+        m_row_pos += 1;
+    }
+    else
     {
         for (usize col = 0; col < BUFFER_WIDTH; col++)
         {
-            auto curr_index = row_col_buffer_index(row, col);
-            auto new_index = row_col_buffer_index(row - 1, col);
-            auto character = VGA_MEMORY[curr_index];
-            VGA_MEMORY[new_index] = character;
+            for (usize row = 1; row < BUFFER_HEIGHT; row++)
+            {
+                auto character = VgaMemoryBuffer::read(col, row);
+                VgaMemoryBuffer::write(character, col, row - 1);
+            }
         }
     }
-
-    clear_row(BUFFER_HEIGHT - 1);
-    _column_pos = 0;
 }
 
-void VgaWriter::write_byte(const u8 byte)
+void VgaWriter::put_byte(const u8 byte)
 {
     if (byte == '\n')
     {
@@ -40,56 +78,47 @@ void VgaWriter::write_byte(const u8 byte)
     }
     else
     {
-        if (_column_pos >= BUFFER_WIDTH)
+        auto character = create_screen_char(byte, DEFAULT_FG, DEFAULT_BG);
+        VgaMemoryBuffer::write(character, m_col_pos, m_row_pos);
+        if (m_col_pos < BUFFER_WIDTH)
+        {
+            m_col_pos += 1;
+        }
+        else
         {
             new_line();
         }
-
-        auto index = row_col_buffer_index(BUFFER_HEIGHT - 1, _column_pos);
-        auto character = create_screen_char(byte, DEFAULT_FG, DEFAULT_BG);
-        VGA_MEMORY[index] = character;
-        _column_pos += 1;
     }
 }
 
-void VgaWriter::write_string(const char *str)
+void VgaWriter::put_string(const char *str)
 {
     for (usize i = 0; str[i] != '\0'; i++)
     {
         u8 byte = str[i];
         if (byte == '\n' || (byte >= 0x20 && byte <= 0x7E))
         {
-            write_byte(byte);
+            put_byte(byte);
         }
         else
         {
-            write_byte(0xFE);
+            put_byte(0xFE);
         }
     }
 }
 
-usize VgaWriter::row_col_buffer_index(usize row, usize col) const
+VgaScreenChar VgaWriter::create_screen_char(u8 byte, VgaColor fg, VgaColor bg)
 {
-    return (row * BUFFER_WIDTH) + col;
+    u8 color_code = ((u8)fg) | (u8)((u8)bg << 4U);
+    return ((u16)byte | (u16)((u16)color_code << 8U));
 }
 
-VgaScreenChar VgaWriter::create_screen_char(
-    const char byte,
-    VgaColor fg,
-    VgaColor bg
-)
-{
-    auto color_code = ((u8)fg) | ((u8)bg << 4);
-    return ((u16)byte | ((u16)color_code << 8));
-}
-
-void VgaWriter::clear_row(usize row)
+void VgaWriter::overwrite_row_with_blank_screen_chars(usize row)
 {
     for (usize col = 0; col < BUFFER_WIDTH; col++)
     {
         auto blank = create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
-        auto index = row_col_buffer_index(row, col);
-        VGA_MEMORY[index] = blank;
+        VgaMemoryBuffer::write(blank, col, row);
     }
 }
 
