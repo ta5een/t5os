@@ -35,7 +35,7 @@ extern "C" void call_ctors()
  */
 extern "C" void _kmain(Multiboot /* multiboot */, u32 /* magic */)
 {
-    const char *arch_msg;
+    const char *arch_msg = nullptr;
     if (ARCH(I386))
     {
         arch_msg = "Architecture: i386";

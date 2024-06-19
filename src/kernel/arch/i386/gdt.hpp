@@ -63,10 +63,10 @@ class GlobalDescriptorTable
     }
 
   private:
-    const SegmentDescriptor m_null_segment_selector;
-    const SegmentDescriptor m_unused_segment_selector;
-    const SegmentDescriptor m_code_segment_selector;
-    const SegmentDescriptor m_data_segment_selector;
+    SegmentDescriptor m_null_segment_selector;
+    SegmentDescriptor m_unused_segment_selector;
+    SegmentDescriptor m_code_segment_selector;
+    SegmentDescriptor m_data_segment_selector;
 };
 
 } // namespace kernel
