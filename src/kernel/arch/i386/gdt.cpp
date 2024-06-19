@@ -4,39 +4,67 @@
 namespace kernel
 {
 
-const u8 DB_BIT_MASK = 1 << 6;
-const u8 G_BIT_MASK = 1 << 7;
+const u8 DB_BIT_MASK = 1U << 6U;
+const u8 G_BIT_MASK = 1U << 7U;
+
+const u32 CODE_SEGMENT_LIMIT = 64 * lib::MiB;
+const u32 DATA_SEGMENT_LIMIT = 64 * lib::MiB;
+
+struct [[gnu::packed]] GlobalDescriptorTableRegister
+{
+  public:
+    u16 limit;
+    void *base;
+};
 
 GlobalDescriptorTable::GlobalDescriptorTable()
-    : m_null_segment_selector(0, 0, 0)
-    , m_unused_segment_selector(0, 0, 0)
-    , m_code_segment_selector(0, 64 * lib::MiB, 0x9A)
-    , m_data_segment_selector(0, 64 * lib::MiB, 0x92)
+    : m_null_segment_selector(SegmentDescriptor::Empty)
+    , m_unused_segment_selector(SegmentDescriptor::Empty)
+    , m_code_segment_selector(
+          SegmentDescriptor::WithOptions,
+          {.base = 0, .limit = CODE_SEGMENT_LIMIT, .access_byte = 0x9A}
+      )
+    , m_data_segment_selector(
+          SegmentDescriptor::WithOptions,
+          {.base = 0, .limit = DATA_SEGMENT_LIMIT, .access_byte = 0x92}
+      )
 {
-    // Define the size (limit) and start (base) of the descriptor table
-    u32 data[2];
-    data[0] = sizeof(GlobalDescriptorTable) << 16;
-    data[1] = (u32)this;
-    asm volatile("lgdt (%0)"             // Load the descriptor table
-                 :                       // No output operands
-                 : "p"(((u8 *)data) + 2) // Pointer to array as input operand
-    );
 }
 
-GlobalDescriptorTable::~GlobalDescriptorTable() {}
+auto GlobalDescriptorTable::load() -> void
+{
+    // Define the size (limit) and start (base) of the descriptor table
+    GlobalDescriptorTableRegister data = {
+        .limit = sizeof(GlobalDescriptorTable),
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+        .base = (void *)this,
+    };
+    // NOLINTNEXTLINE(hicpp-no-assembler)
+    asm volatile("lgdt (%0)" : : "p"(&data));
+}
 
 GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
-    u32 base,
-    u32 limit,
-    u8 access_byte
+    GlobalDescriptorTable::SegmentDescriptor::EmptyTag /*unused*/
 )
+    : m_limit_0_15(0)
+    , m_base_0_15(0)
+    , m_base_16_23(0)
+    , m_access_byte(0)
+    , m_flags_limit_16_19(0)
+    , m_base_24_31(0)
 {
-    u8 *target = (u8 *)this;
+}
 
-    if (limit <= (1 << 16))
+GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
+    GlobalDescriptorTable::SegmentDescriptor::WithOptionsTag /*unused*/,
+    Options options
+)
+    : SegmentDescriptor(Empty)
+{
+    if (options.limit <= (1 << 16))
     {
         // 16-bit address space
-        target[6] = DB_BIT_MASK;
+        m_flags_limit_16_19 = DB_BIT_MASK;
     }
     else
     {
@@ -56,55 +84,49 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
         // StackOverflow comment:
         //
         // https://stackoverflow.com/a/55970477/10052039
-        if ((limit & 0xFFF) != 0xFFF)
+        if ((options.limit & 0xFFF) != 0xFFF)
         {
-            limit = (limit >> 12) - 1;
+            options.limit = (options.limit >> 12) - 1;
         }
         else
         {
-            limit = limit >> 12;
+            options.limit = options.limit >> 12;
         }
 
         // Set the Granularity and the Default Operand Size flags
-        target[6] = G_BIT_MASK | DB_BIT_MASK;
+        m_flags_limit_16_19 = G_BIT_MASK | DB_BIT_MASK;
     }
 
     // Encode the limit
-    target[0] = limit & 0xFF;         // First two bytes
-    target[1] = (limit >> 8) & 0xFF;  // Next two bytes
-    target[6] |= (limit >> 16) & 0xF; // Last nibble (half-byte)
+    m_limit_0_15 = options.limit & 0xFFFF;              // First two bytes
+    m_flags_limit_16_19 |= (options.limit >> 16) & 0xF; // Last half-byte
 
     // Encode the base
-    target[2] = base & 0xFF;
-    target[3] = (base >> 8) & 0xFF;
-    target[4] = (base >> 16) & 0xFF;
-    target[7] = (base >> 24) & 0xFF;
+    m_base_0_15 = options.base & 0xFFFF;        // First two bytes
+    m_base_16_23 = (options.base >> 16) & 0xFF; // Next byte
+    m_base_24_31 = (options.base >> 24) & 0xFF; // Last byte
 
     // Encode the access byte
     // NOTE: This variable is named `flags` in the tutorial
-    target[5] = access_byte;
+    m_access_byte = options.access_byte;
 }
 
 auto GlobalDescriptorTable::SegmentDescriptor::base() const -> u32
 {
-    u8 *target = (u8 *)this;
-    u32 result = target[7];
-    result = (result << 8) + target[4];
-    result = (result << 8) + target[3];
-    result = (result << 8) + target[2];
+    u32 result = m_base_24_31;
+    result = (result << 8) + m_base_16_23;
+    result = (result << 16) + m_base_0_15;
     return result;
 }
 
 auto GlobalDescriptorTable::SegmentDescriptor::limit() const -> u32
 {
-    u8 *target = (u8 *)this;
-    u32 result = target[6] & 0xF;
-    result = (result << 8) + target[1];
-    result = (result << 8) + target[0];
+    u32 result = m_flags_limit_16_19 & 0xF;
+    result = (result << 16) + m_limit_0_15;
 
     // If the limit entry is a 32-bit entry (and thus the last 12 bits were
     // discarded), we "unshift" the entry and set all the last 12 bits to 1.
-    if ((target[6] & G_BIT_MASK) == G_BIT_MASK)
+    if ((m_flags_limit_16_19 & G_BIT_MASK) == G_BIT_MASK)
     {
         result = (result << 12) | 0xFFF;
     }
