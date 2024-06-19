@@ -1,5 +1,6 @@
 NAME = wyoos
 ARCH = i386
+DEBUG ?= 1
 
 SRCDIR = ./src
 LIBDIR = ./src
@@ -10,10 +11,17 @@ ASM_SOURCES = $(shell find $(SRCDIR) -name '*.S')
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OUTDIR)/%.o,$(CPP_SOURCES))
 OBJECTS += $(patsubst $(SRCDIR)/%.S,$(OUTDIR)/%.S.o,$(ASM_SOURCES))
 
-CXXFLAGS = -m32 -std=c++20 -nostdlib -Wall -Wextra -I $(LIBDIR) \
-		   -fno-builtin -fno-exceptions -fno-rtti -fno-use-cxa-atexit
+CXXFLAGS := -m32 -std=c++20 -nostdlib -Wall -Wextra -I $(LIBDIR) \
+			-fno-builtin -fno-exceptions -fno-rtti -fno-use-cxa-atexit
 ASFLAGS =
 LDFLAGS =
+QEMUFLAGS =
+
+ifeq ($(DEBUG),1)
+	# Prepend debug flag to make it more prominent
+	CXXFLAGS := -g $(CXXFLAGS)
+	QEMUFLAGS += -s -S
+endif
 
 # To allow for cross-compilation of ELF binaries, building on Linux will use
 # the built-in toolchain with extra flags, whereas building on other OSes (e.g.
@@ -65,7 +73,7 @@ $(OUTDIR)/$(NAME).iso: $(OUTDIR)/$(NAME).bin
 	rm -rf $(OUTDIR)/iso
 
 qemu: $(OUTDIR)/$(NAME).iso
-	qemu-system-$(ARCH) -cdrom $< -m 64
+	qemu-system-$(ARCH) $(QEMUFLAGS) -cdrom $< -m 64
 
 clean:
 	rm -rf $(OUTDIR)/*
