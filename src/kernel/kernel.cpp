@@ -1,5 +1,5 @@
 #include <drivers/vga.hpp>
-#include <kernel/arch/platform.hpp>
+#include <kernel/platform/platform.hpp>
 #include <lib/integers.hpp>
 
 using Multiboot = void *;

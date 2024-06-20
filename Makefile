@@ -5,6 +5,8 @@ DEBUG ?= 1
 SRCDIR = ./src
 LIBDIR = ./src
 OUTDIR = ./out
+# TODO: This is hard-coded for now
+ARCHDIR = $(SRCDIR)/kernel/platform/x86/i386
 
 CPP_SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
 ASM_SOURCES = $(shell find $(SRCDIR) -name '*.S')
@@ -70,7 +72,7 @@ $(OUTDIR)/%.S.o: $(SRCDIR)/%.S
 	@mkdir -p $(@D)
 	$(AS) $(ASFLAGS) -o $@ $<
 
-$(OUTDIR)/$(NAME).bin: $(SRCDIR)/kernel/arch/$(ARCH)/linker.ld $(OBJECTS)
+$(OUTDIR)/$(NAME).bin: $(ARCHDIR)/linker.ld $(OBJECTS)
 	$(LD) $(LDFLAGS) -T $< -o $@ $(OBJECTS)
 
 $(OUTDIR)/$(NAME).iso: $(OUTDIR)/$(NAME).bin
