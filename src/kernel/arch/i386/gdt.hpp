@@ -45,13 +45,13 @@ class GlobalDescriptorTable
         /**
          * The decoded linear address where this segment begins.
          */
-        [[nodiscard]] auto base() const -> u32;
+        u32 base() const;
 
         /**
          * The decoded limit of this segment, respecting the page granularity
          * such that it value ranges from 1 byte to 4 GiB.
          */
-        [[nodiscard]] auto limit() const -> u32;
+        u32 limit() const;
 
       private:
         SegmentDescriptor();
@@ -77,12 +77,12 @@ class GlobalDescriptorTable
     /**
      * Load the GlobalDescriptorTable by calling the LGDT instruction.
      */
-    auto load() -> void;
+    void load();
 
     /**
      * The raw value of the kernel code segment selector.
      */
-    auto code_segment_selector() const -> u16
+    u16 code_segment_selector() const
     {
         return (u8 *)&m_code_segment_selector - (u8 *)this;
     }
@@ -90,7 +90,7 @@ class GlobalDescriptorTable
     /**
      * The raw value of the kernel data segment selector.
      */
-    auto data_segment_selector() const -> u16
+    u16 data_segment_selector() const
     {
         return (u8 *)&m_data_segment_selector - (u8 *)this;
     }

@@ -31,7 +31,7 @@ GlobalDescriptorTable::GlobalDescriptorTable()
 {
 }
 
-auto GlobalDescriptorTable::load() -> void
+void GlobalDescriptorTable::load()
 {
     // Define the size (limit) and start (base) of the descriptor table
     GlobalDescriptorTableRegister data = {
@@ -111,7 +111,7 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
     m_access_byte = options.access_byte;
 }
 
-auto GlobalDescriptorTable::SegmentDescriptor::base() const -> u32
+u32 GlobalDescriptorTable::SegmentDescriptor::base() const
 {
     u32 result = m_base_24_31;
     result = (result << 8) + m_base_16_23;
@@ -119,7 +119,7 @@ auto GlobalDescriptorTable::SegmentDescriptor::base() const -> u32
     return result;
 }
 
-auto GlobalDescriptorTable::SegmentDescriptor::limit() const -> u32
+u32 GlobalDescriptorTable::SegmentDescriptor::limit() const
 {
     u32 result = m_flags_limit_16_19 & 0xF;
     result = (result << 16) + m_limit_0_15;
