@@ -15,7 +15,8 @@ build the project locally, you will need the following tools for your platform:
   - `make`
   - [`bear`][bear-gh] (optional)
   - GNU 32-Bit ELF toolchain
-    - macOS: [`i386-elf-toolchain`][i386-elf-toolchain] via Homebrew
+    - macOS: [`i686-elf-gcc`][i686-elf-gcc] and
+    [`i686-elf-binutils`][i686-elf-binutils] via Homebrew
     - Linux/WSL: `build-essential`
 - `.iso` creation and GRUB tools (optional)[^1]:
   - `xorriso`
@@ -132,5 +133,6 @@ This fix was sourced from [this issue comment on `bear`'s GitHub repository][bea
 [bear-gh-issue-comment]: https://github.com/rizsotto/Bear/issues/561#issuecomment-1921214908
 [bear-gh]: https://github.com/rizsotto/Bear
 [docker-bind-mounts]: https://docs.docker.com/storage/bind-mounts/
-[i386-elf-toolchain]: https://github.com/nativeos/homebrew-i386-elf-toolchain
+[i686-elf-binutils]: https://formulae.brew.sh/formula/i686-elf-binutils#default
+[i686-elf-gcc]: https://formulae.brew.sh/formula/i686-elf-gcc#default
 [wyoos-yt-playlist]: https://www.youtube.com/playlist?list=PLHh55M_Kq4OApWScZyPl5HhgsTJS9MZ6M

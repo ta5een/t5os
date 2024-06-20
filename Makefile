@@ -13,9 +13,9 @@ OBJECTS += $(patsubst $(SRCDIR)/%.S,$(OUTDIR)/%.S.o,$(ASM_SOURCES))
 
 CXXFLAGS := -m32 -std=c++20 -nostdlib -Wall -Wextra -I $(LIBDIR) \
 			-fno-builtin -fno-exceptions -fno-rtti -fno-use-cxa-atexit
-ASFLAGS =
-LDFLAGS =
-QEMUFLAGS =
+ASFLAGS :=
+LDFLAGS :=
+QEMUFLAGS :=
 
 ifeq ($(DEBUG),1)
 	# Prepend debug flag to make it more prominent
@@ -38,9 +38,23 @@ ifeq ($(UNAME),Linux)
 	ASFLAGS += --32
 	LDFLAGS += -melf_$(ARCH)
 else
-	CXX = $(ARCH)-elf-g++
-	AS = $(ARCH)-elf-as
-	LD = $(ARCH)-elf-ld
+	# Homebrew doesn't provide an i386 ELF toolchain as an official formula,
+	# though one is available from the tap `nativeos/i386-elf-toolchain`.
+	# Unfortunately, the binaries included in this toolchain conflicts with the
+	# deprecated names for the official x86_64 ELF toolchain, blocking me from
+	# having both installed simultaneously (see [1] for more information).
+	#
+	# Fortunately, Homebrew provides an i686 ELF toolchain as an official
+	# formulua. Since the i686 cross compiler supports compiling to i386, I'll
+	# use it as the designated toolchain on macOS.
+	#
+	# [1] https://github.com/nativeos/homebrew-i386-elf-toolchain/issues/21
+	ARCH_ALIAS = $(if $(findstring i386,$(ARCH)), i686, $(ARCH))
+	CXX = $(ARCH_ALIAS)-elf-g++
+	AS = $(ARCH_ALIAS)-elf-as
+	LD = $(ARCH_ALIAS)-elf-ld
+	ASFLAGS += --32 -march=$(ARCH)
+	LDFLAGS += -melf_$(ARCH)
 endif
 
 .PHONY: kernel iso qemu clean
