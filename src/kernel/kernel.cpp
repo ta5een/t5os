@@ -5,8 +5,8 @@
 using Multiboot = void *;
 using CtorFunc = void (*)();
 
-extern "C" CtorFunc start_ctors[];
-extern "C" CtorFunc end_ctors[];
+extern "C" CtorFunc start_ctors;
+extern "C" CtorFunc end_ctors;
 
 drivers::VgaWriter writer;
 
@@ -17,7 +17,8 @@ extern "C" void call_ctors()
 {
     writer.clear_screen();
     writer.put_string("CALL_CTORS\n");
-    for (CtorFunc *ctor = start_ctors; ctor != end_ctors; ctor++)
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    for (CtorFunc *ctor = &start_ctors; ctor != &end_ctors; ctor++)
     {
         writer.put_string("CALL_CTORS_LOOP\n");
         (*ctor)();
@@ -33,7 +34,7 @@ extern "C" void call_ctors()
 /**
  * Entry point of the kernel.
  */
-extern "C" void _kmain(Multiboot /* multiboot */, u32 /* magic */)
+extern "C" void _kmain(Multiboot /*multiboot*/, u32 /*magic*/)
 {
     const char *arch_msg = nullptr;
     if (ARCH(I386))
