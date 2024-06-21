@@ -11,7 +11,7 @@ constexpr usize const BUFFER_HEIGHT = 25;
 constexpr VgaColor const DEFAULT_FG = VgaColor::Green;
 constexpr VgaColor const DEFAULT_BG = VgaColor::Black;
 
-VgaWriter WRITER = VgaWriter();
+VgaWriter &WRITER = VgaWriter::get_instance();
 
 class VgaMemoryBuffer
 {
@@ -40,6 +40,13 @@ VgaWriter::VgaWriter()
     : m_col_pos(0)
     , m_row_pos(0)
 {
+    m_instance = this;
+}
+
+VgaWriter &VgaWriter::get_instance()
+{
+    // TODO: What to do if m_instance is null here?
+    return *m_instance;
 }
 
 void VgaWriter::clear_screen()
@@ -130,7 +137,7 @@ void VgaWriter::overwrite_row_with_blank_screen_chars(usize row)
     }
 }
 
-void VgaWriter::set_position(usize col, usize row)
+inline void VgaWriter::set_position(usize col, usize row)
 {
     m_col_pos = col;
     m_row_pos = row;
