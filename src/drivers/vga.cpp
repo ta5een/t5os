@@ -11,6 +11,8 @@ constexpr usize const BUFFER_HEIGHT = 25;
 constexpr VgaColor const DEFAULT_FG = VgaColor::Green;
 constexpr VgaColor const DEFAULT_BG = VgaColor::Black;
 
+VgaWriter WRITER = VgaWriter();
+
 class VgaMemoryBuffer
 {
   public:
@@ -42,23 +44,25 @@ VgaWriter::VgaWriter()
 
 void VgaWriter::clear_screen()
 {
-    m_col_pos = 0;
-    m_row_pos = 0;
     for (usize row = 0; row < BUFFER_HEIGHT; row++)
     {
         overwrite_row_with_blank_screen_chars(row);
     }
+
+    // Reset position
+    set_position(0, 0);
 }
 
 void VgaWriter::new_line()
 {
-    m_col_pos = 0;
     if (m_row_pos < BUFFER_HEIGHT)
     {
-        m_row_pos += 1;
+        // Increment y position
+        set_position(0, m_row_pos + 1);
     }
     else
     {
+        // Scroll up
         for (usize col = 0; col < BUFFER_WIDTH; col++)
         {
             for (usize row = 1; row < BUFFER_HEIGHT; row++)
@@ -67,6 +71,9 @@ void VgaWriter::new_line()
                 VgaMemoryBuffer::write(character, col, row - 1);
             }
         }
+
+        // Reset x position, cap y position to last line
+        set_position(0, BUFFER_HEIGHT - 1);
     }
 }
 
@@ -82,7 +89,8 @@ void VgaWriter::put_byte(const u8 byte)
         VgaMemoryBuffer::write(character, m_col_pos, m_row_pos);
         if (m_col_pos < BUFFER_WIDTH)
         {
-            m_col_pos += 1;
+            // Incremenet x position, keep y position
+            set_position(m_col_pos + 1, m_row_pos);
         }
         else
         {
@@ -120,6 +128,12 @@ void VgaWriter::overwrite_row_with_blank_screen_chars(usize row)
         auto blank = create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
         VgaMemoryBuffer::write(blank, col, row);
     }
+}
+
+void VgaWriter::set_position(usize col, usize row)
+{
+    m_col_pos = col;
+    m_row_pos = row;
 }
 
 } // namespace drivers

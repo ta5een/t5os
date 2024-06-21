@@ -43,6 +43,9 @@ class VgaWriter
 
     static VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg);
     static void overwrite_row_with_blank_screen_chars(usize row);
+    void set_position(usize col, usize row);
 };
+
+extern VgaWriter WRITER;
 
 } // namespace drivers
