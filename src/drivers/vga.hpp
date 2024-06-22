@@ -1,5 +1,6 @@
 #pragma once
 
+#include <lib/core.hpp>
 #include <lib/integers.hpp>
 
 namespace drivers
@@ -30,8 +31,12 @@ enum class VgaColor : u8
 
 class VgaWriter
 {
+    LIB_MAKE_NONCOPYABLE(VgaWriter)
+    LIB_MAKE_NONMOVABLE(VgaWriter)
+
   public:
-    static VgaWriter &get_instance();
+    VgaWriter() = default;
+    ~VgaWriter() = default;
 
     void clear_screen();
     void new_line();
@@ -39,18 +44,16 @@ class VgaWriter
     void put_string(const char *str);
 
   private:
-    VgaWriter();
-
-    inline static VgaWriter *m_instance;
-    usize m_col_pos;
-    usize m_row_pos;
+    usize m_col_pos = 0;
+    usize m_row_pos = 0;
 
     static VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg);
     static void overwrite_row_with_blank_screen_chars(usize row);
     inline void set_position(usize col, usize row);
 };
 
-// TODO: Wrap this in a mutex to ensure thread-safety.
-extern VgaWriter &WRITER;
+// TODO: Wrap this in a mutex to ensure thread-safety
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+extern VgaWriter WRITER;
 
 } // namespace drivers

@@ -1,9 +1,11 @@
 #include <drivers/vga.hpp>
+#include <kernel/kassert.hpp>
 #include <lib/integers.hpp>
 
 namespace drivers
 {
 
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 volatile VgaScreenChar *const VGA_MEMORY = (volatile VgaScreenChar *)0xB8000;
 
 constexpr usize const BUFFER_WIDTH = 80;
@@ -11,13 +13,20 @@ constexpr usize const BUFFER_HEIGHT = 25;
 constexpr VgaColor const DEFAULT_FG = VgaColor::Green;
 constexpr VgaColor const DEFAULT_BG = VgaColor::Black;
 
-VgaWriter &WRITER = VgaWriter::get_instance();
+// Initialize global variable with default constructor
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+VgaWriter WRITER;
 
 class VgaMemoryBuffer
 {
   public:
     static usize index_at(usize col, usize row)
     {
+        // WARN: Ensure the implementation of VgaWriter always provides correct
+        // column and row indices, otherwise when KASSERT attempts to print to
+        // VGA text mode with an invalid index, an infinite loop will occur.
+        KASSERT(col < BUFFER_WIDTH && "invalid column index");
+        KASSERT(row < BUFFER_HEIGHT && "invalid row index");
         return (row * BUFFER_WIDTH) + col;
     }
 
@@ -35,19 +44,6 @@ class VgaMemoryBuffer
         VGA_MEMORY[buffer_index] = screen_char;
     }
 };
-
-VgaWriter::VgaWriter()
-    : m_col_pos(0)
-    , m_row_pos(0)
-{
-    m_instance = this;
-}
-
-VgaWriter &VgaWriter::get_instance()
-{
-    // TODO: What to do if m_instance is null here?
-    return *m_instance;
-}
 
 void VgaWriter::clear_screen()
 {
