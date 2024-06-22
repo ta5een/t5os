@@ -46,8 +46,8 @@ class VgaWriter
     void put_integer_with_radix(const ssize integer, const u8 radix);
 
   private:
-    usize m_col_pos = 0;
-    usize m_row_pos = 0;
+    usize m_col_pos{0};
+    usize m_row_pos{0};
 
     static VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg);
     static void overwrite_row_with_blank_screen_chars(usize row);

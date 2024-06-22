@@ -134,9 +134,8 @@ void VgaWriter::put_integer_with_radix(const ssize integer, const u8 radix)
 
     // TODO: Once dynamic memory management is implemented, it might be
     // preferrable to allocate this new string in the heap.
-    char str[ITOA_MAX_STR_LEN] = {};
+    char str[ITOA_MAX_STR_LEN]{};
     usize idx = 0;
-    usize rev = idx;
     ssize value = integer;
 
     // Convert each digit to a character, from the least significant digit to
@@ -163,6 +162,7 @@ void VgaWriter::put_integer_with_radix(const ssize integer, const u8 radix)
     idx -= 1;
 
     // Flip string to the correct order
+    usize rev = 0;
     while (rev < idx)
     {
         char tmp = str[idx];

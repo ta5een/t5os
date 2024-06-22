@@ -26,9 +26,9 @@ class GlobalDescriptorTable
         struct Options
         {
           public:
-            u32 base;
-            u32 limit;
-            u8 access_byte;
+            u32 base{0};
+            u32 limit{0};
+            u8 access_byte{0};
         };
 
         /**
@@ -56,12 +56,12 @@ class GlobalDescriptorTable
       private:
         SegmentDescriptor();
 
-        u16 m_limit_0_15;
-        u16 m_base_0_15;
-        u8 m_base_16_23;
-        u8 m_access_byte;
-        u8 m_flags_limit_16_19;
-        u8 m_base_24_31;
+        u16 m_limit_0_15{0};
+        u16 m_base_0_15{0};
+        u8 m_base_16_23{0};
+        u8 m_access_byte{0};
+        u8 m_flags_limit_16_19{0};
+        u8 m_base_24_31{0};
     };
 
     /**

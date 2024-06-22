@@ -34,9 +34,8 @@ GlobalDescriptorTable::GlobalDescriptorTable()
 void GlobalDescriptorTable::load()
 {
     // Define the size (limit) and start (base) of the descriptor table
-    GlobalDescriptorTableRegister data = {
+    GlobalDescriptorTableRegister data{
         .limit = sizeof(GlobalDescriptorTable),
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
         .base = (void *)this,
     };
     // NOLINTNEXTLINE(hicpp-no-assembler)
@@ -46,12 +45,6 @@ void GlobalDescriptorTable::load()
 GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
     GlobalDescriptorTable::SegmentDescriptor::EmptyTag /*unused*/
 )
-    : m_limit_0_15(0)
-    , m_base_0_15(0)
-    , m_base_16_23(0)
-    , m_access_byte(0)
-    , m_flags_limit_16_19(0)
-    , m_base_24_31(0)
 {
 }
 
