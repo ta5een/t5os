@@ -51,7 +51,9 @@ class VgaWriter
 
     static VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg);
     static void overwrite_row_with_blank_screen_chars(usize row);
-    inline void set_position(usize col, usize row);
+    [[nodiscard]] static bool can_set_position(usize col, usize row);
+    [[nodiscard]] inline bool try_set_position(usize col, usize row);
+    inline void unsafely_set_position(usize col, usize row);
 };
 
 // TODO: Wrap this in a mutex to ensure thread-safety

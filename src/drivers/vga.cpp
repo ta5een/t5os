@@ -59,19 +59,17 @@ void VgaWriter::clear_screen()
     }
 
     // Reset position
-    set_position(0, 0);
+    unsafely_set_position(0, 0);
 }
 
 void VgaWriter::new_line()
 {
-    if (m_row_pos < BUFFER_HEIGHT)
+    // If we can't simply increment the y position because we're at the bottom
+    // of the screen, we'll scroll the buffer contents upwards and then set the
+    // y position to the last line
+    if (!try_set_position(0, m_row_pos + 1))
     {
-        // Increment y position
-        set_position(0, m_row_pos + 1);
-    }
-    else
-    {
-        // Scroll up
+        // Scroll buffer contents upwards
         for (usize col = 0; col < BUFFER_WIDTH; col++)
         {
             for (usize row = 1; row < BUFFER_HEIGHT; row++)
@@ -81,8 +79,8 @@ void VgaWriter::new_line()
             }
         }
 
-        // Reset x position, cap y position to last line
-        set_position(0, BUFFER_HEIGHT - 1);
+        // Reset x position, cap y position to the last line
+        unsafely_set_position(0, BUFFER_HEIGHT - 1);
     }
 }
 
@@ -96,12 +94,10 @@ void VgaWriter::put_byte(const u8 byte)
     {
         auto character = create_screen_char(byte, DEFAULT_FG, DEFAULT_BG);
         VgaMemoryBuffer::write(character, m_col_pos, m_row_pos);
-        if (m_col_pos < BUFFER_WIDTH)
-        {
-            // Incremenet x position, keep y position
-            set_position(m_col_pos + 1, m_row_pos);
-        }
-        else
+        // If we can't simply increment the x position because we're at the
+        // edge of the screen, we'll move to the next line (scrolling up if
+        // necessary)
+        if (!try_set_position(m_col_pos + 1, m_row_pos))
         {
             new_line();
         }
@@ -194,7 +190,25 @@ void VgaWriter::overwrite_row_with_blank_screen_chars(usize row)
     }
 }
 
-inline void VgaWriter::set_position(usize col, usize row)
+bool VgaWriter::can_set_position(usize col, usize row)
+{
+    return (col < BUFFER_WIDTH) && (row < BUFFER_HEIGHT);
+}
+
+inline bool VgaWriter::try_set_position(usize col, usize row)
+{
+    if (can_set_position(col, row))
+    {
+        unsafely_set_position(col, row);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+inline void VgaWriter::unsafely_set_position(usize col, usize row)
 {
     m_col_pos = col;
     m_row_pos = row;
