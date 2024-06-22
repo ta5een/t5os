@@ -129,8 +129,8 @@ void VgaWriter::put_integer(const ssize integer)
 // https://wiki.osdev.org/Printing_To_Screen#Printing_Integers
 void VgaWriter::put_integer_with_radix(const ssize integer, const u8 radix)
 {
-    KASSERT(radix > ITOA_RADIX_MIN && "provided radix is too small");
-    KASSERT(radix < ITOA_RADIX_MAX && "provided radix is too large");
+    KASSERT(radix >= ITOA_RADIX_MIN && "provided radix is too small");
+    KASSERT(radix <= ITOA_RADIX_MAX && "provided radix is too large");
 
     // TODO: Once dynamic memory management is implemented, it might be
     // preferrable to allocate this new string in the heap.
