@@ -59,7 +59,7 @@ else
 	LDFLAGS += -melf_$(ARCH)
 endif
 
-.PHONY: kernel iso qemu clean
+.PHONY: kernel iso qemu gdb clean
 
 kernel: $(OUTDIR)/$(NAME).bin
 iso: $(OUTDIR)/$(NAME).iso
@@ -90,6 +90,11 @@ $(OUTDIR)/$(NAME).iso: $(OUTDIR)/$(NAME).bin
 
 qemu: $(OUTDIR)/$(NAME).iso
 	qemu-system-$(ARCH) $(QEMUFLAGS) -cdrom $< -m 64
+
+# NOTE: Ensure QEMU is already running in debug mode in a separate process
+# TODO: Consider moving this into a shell script to better orchestrate this
+gdb: $(OUTDIR)/$(NAME).bin
+	gdb $<
 
 clean:
 	rm -rf $(OUTDIR)/*

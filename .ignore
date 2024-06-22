@@ -1,6 +1,7 @@
 !.clang-format
 !.dockerignore
 !.editorconfig
+!.gdbinit
 !.gitignore
 !.gitmodules
 !.ignore
