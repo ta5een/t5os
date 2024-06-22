@@ -9,7 +9,7 @@ namespace kernel
 void _assert_failure(
     const char *msg,
     const char *file,
-    usize /*line*/,
+    usize line,
     const char *function
 )
 {
@@ -19,10 +19,11 @@ void _assert_failure(
     drivers::WRITER.new_line();
     drivers::WRITER.put_string("-> at ");
     drivers::WRITER.put_string(file);
-    // TODO: Add support for outputting numbers
-    // drivers::WRITER.put_string(":");
-    // drivers::WRITER.put_string(line);
-    drivers::WRITER.put_string(" in ");
+    drivers::WRITER.put_string(":");
+    // TODO: Ideally, we shouldn't cast from usize to ssize
+    drivers::WRITER.put_integer((ssize)line);
+    drivers::WRITER.new_line();
+    drivers::WRITER.put_string("-> in ");
     drivers::WRITER.put_string(function);
     drivers::WRITER.new_line();
 

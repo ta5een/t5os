@@ -5,12 +5,7 @@
 namespace kernel
 {
 
-void _panic(
-    const char *msg,
-    const char *file,
-    usize /*line*/,
-    const char *function
-)
+void _panic(const char *msg, const char *file, usize line, const char *function)
 {
     drivers::WRITER.put_string("*** KERNEL PANIC ***\n");
     drivers::WRITER.put_string("-> ");
@@ -18,10 +13,11 @@ void _panic(
     drivers::WRITER.new_line();
     drivers::WRITER.put_string("-> at ");
     drivers::WRITER.put_string(file);
-    // TODO: Add support for outputting numbers
-    // drivers::WRITER.put_string(":");
-    // drivers::WRITER.put_string(line);
-    drivers::WRITER.put_string(" in ");
+    drivers::WRITER.put_string(":");
+    // TODO: Ideally, we shouldn't cast from usize to ssize
+    drivers::WRITER.put_integer((ssize)line);
+    drivers::WRITER.new_line();
+    drivers::WRITER.put_string("-> in ");
     drivers::WRITER.put_string(function);
     drivers::WRITER.new_line();
 
@@ -33,7 +29,7 @@ void _panic(
         asm volatile("cli; hlt");
     }
 #else
-#    error "`_panic` not support for this architecture"
+#    error "`_panic` is not supported for this architecture"
 #endif
 }
 
