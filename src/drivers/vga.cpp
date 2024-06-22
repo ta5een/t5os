@@ -13,6 +13,12 @@ constexpr usize const BUFFER_HEIGHT = 25;
 constexpr VgaColor const DEFAULT_FG = VgaColor::Green;
 constexpr VgaColor const DEFAULT_BG = VgaColor::Black;
 
+constexpr const u8 ITOA_MAX_STR_LEN = 255;
+constexpr const u8 ITOA_RADIX_MIN = 2;
+constexpr const u8 ITOA_RADIX_MAX = 36;
+constexpr const char *const ITOA_SEARCH_STR =
+    "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
+
 // Initialize global variable with default constructor
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 VgaWriter WRITER;
@@ -116,6 +122,61 @@ void VgaWriter::put_string(const char *str)
             put_byte(0xFE);
         }
     }
+}
+
+void VgaWriter::put_integer(const ssize integer)
+{
+    put_integer_with_radix(integer, 10);
+}
+
+// https://www.strudel.org.uk/itoa/
+// https://wiki.osdev.org/Printing_To_Screen#Printing_Integers
+void VgaWriter::put_integer_with_radix(const ssize integer, const u8 radix)
+{
+    KASSERT(radix > ITOA_RADIX_MIN && "provided radix is too small");
+    KASSERT(radix < ITOA_RADIX_MAX && "provided radix is too large");
+
+    // TODO: Once dynamic memory management is implemented, it might be
+    // preferrable to allocate this new string in the heap.
+    char str[ITOA_MAX_STR_LEN] = {};
+    usize idx = 0;
+    usize rev = idx;
+    ssize value = integer;
+
+    // Convert each digit to a character, from the least significant digit to
+    // the most significant (i.e. in reverse order).
+    do
+    {
+        // ITOA_SEARCH_STR is a palindrome, such that a negative digit will
+        // produce the same character as a positive digit. This trick makes
+        // abs() unnecessary.
+        str[idx] = ITOA_SEARCH_STR[(ITOA_RADIX_MAX - 1) + value % radix];
+        idx += 1;
+        value /= radix; // this will truncate (discard) the fractional part
+    } while (value != 0);
+
+    // Append '-' for negative numbers to the end of the reversed string
+    if (integer < 0)
+    {
+        str[idx] = '-';
+        idx += 1;
+    }
+
+    // Ensure the string is terminated
+    str[idx] = '\0';
+    idx -= 1;
+
+    // Flip string to the correct order
+    while (rev < idx)
+    {
+        char tmp = str[idx];
+        str[idx] = str[rev];
+        str[rev] = tmp;
+        rev += 1;
+        idx -= 1;
+    }
+
+    put_string(str);
 }
 
 VgaScreenChar VgaWriter::create_screen_char(u8 byte, VgaColor fg, VgaColor bg)

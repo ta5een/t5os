@@ -42,6 +42,8 @@ class VgaWriter
     void new_line();
     void put_byte(const u8 byte);
     void put_string(const char *str);
+    void put_integer(const ssize integer);
+    void put_integer_with_radix(const ssize integer, const u8 radix);
 
   private:
     usize m_col_pos = 0;
