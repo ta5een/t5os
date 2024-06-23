@@ -5,18 +5,19 @@
 namespace drivers
 {
 
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-volatile VgaScreenChar *const VGA_MEMORY = (volatile VgaScreenChar *)0xB8000;
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+const auto VGA_BUFFER = reinterpret_cast<volatile VgaScreenChar *>(0xB8000U);
 
-constexpr usize const BUFFER_WIDTH = 80;
-constexpr usize const BUFFER_HEIGHT = 25;
-constexpr VgaColor const DEFAULT_FG = VgaColor::Green;
-constexpr VgaColor const DEFAULT_BG = VgaColor::Black;
+const usize BUFFER_WIDTH = 80;
+const usize BUFFER_HEIGHT = 25;
+const VgaColor DEFAULT_FG = VgaColor::Green;
+const VgaColor DEFAULT_BG = VgaColor::Black;
 
-constexpr const u8 ITOA_MAX_STR_LEN = 255;
-constexpr const u8 ITOA_RADIX_MIN = 2;
-constexpr const u8 ITOA_RADIX_MAX = 36;
-constexpr const char *const ITOA_SEARCH_STR =
+const u8 ITOA_DEFAULT_RADIX = 10;
+const u8 ITOA_MAX_STR_LEN = 255;
+const u8 ITOA_RADIX_MIN = 2;
+const u8 ITOA_RADIX_MAX = 36;
+const char *const ITOA_SEARCH_STR =
     "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
 
 // Initialize global variable with default constructor
@@ -40,14 +41,14 @@ class VgaMemoryBuffer
     {
         auto buffer_index = index_at(col, row);
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        return VGA_MEMORY[buffer_index];
+        return VGA_BUFFER[buffer_index];
     }
 
     static void write(VgaScreenChar screen_char, usize col, usize row)
     {
         auto buffer_index = index_at(col, row);
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        VGA_MEMORY[buffer_index] = screen_char;
+        VGA_BUFFER[buffer_index] = screen_char;
     }
 };
 
@@ -122,7 +123,7 @@ void VgaWriter::put_string(const char *str)
 
 void VgaWriter::put_integer(const ssize integer)
 {
-    put_integer_with_radix(integer, 10);
+    put_integer_with_radix(integer, ITOA_DEFAULT_RADIX);
 }
 
 // https://www.strudel.org.uk/itoa/
