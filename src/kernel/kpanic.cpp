@@ -5,7 +5,12 @@
 namespace kernel
 {
 
-void _panic(const char *msg, const char *file, usize line, const char *function)
+void _on_panic(
+    const char *msg,
+    const char *file,
+    usize line,
+    const char *function
+)
 {
     drivers::WRITER.put_string("*** KERNEL PANIC ***\n");
     drivers::WRITER.put_string("-> ");
@@ -29,7 +34,7 @@ void _panic(const char *msg, const char *file, usize line, const char *function)
         asm volatile("cli; hlt");
     }
 #else
-#    error "`_panic` is not supported for this architecture"
+#    error "`_on_panic` is not supported for this architecture"
 #endif
 }
 

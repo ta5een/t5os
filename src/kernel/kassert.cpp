@@ -6,7 +6,7 @@
 namespace kernel
 {
 
-void _assert_failure(
+void _on_assert(
     const char *msg,
     const char *file,
     usize line,
@@ -17,7 +17,7 @@ void _assert_failure(
     // NOLINTNEXTLINE(hicpp-no-assembler)
     asm volatile("cli");
 #else
-#    error "`_assert_failure` is not supported for this architecture"
+#    error "`_on_assert` is not supported for this architecture"
 #endif
 
     drivers::WRITER.put_string("*** ASSERTION FAILURE ***\n");

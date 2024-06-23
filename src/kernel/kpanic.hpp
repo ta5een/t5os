@@ -5,7 +5,7 @@
 namespace kernel
 {
 
-[[noreturn]] void _panic(
+[[noreturn]] void _on_panic(
     const char *msg,
     const char *file,
     usize line,
@@ -18,5 +18,5 @@ namespace kernel
     /* NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while) */                     \
     do                                                                         \
     {                                                                          \
-        kernel::_panic(#msg, __FILE__, __LINE__, __PRETTY_FUNCTION__);         \
+        kernel::_on_panic(#msg, __FILE__, __LINE__, __PRETTY_FUNCTION__);      \
     } while (0)

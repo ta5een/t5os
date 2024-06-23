@@ -21,7 +21,7 @@ QEMUFLAGS :=
 
 ifeq ($(DEBUG),1)
 	# Prepend debug flag to make it more prominent
-	CXXFLAGS := -g $(CXXFLAGS)
+	CXXFLAGS := -g -DDEBUG_KERNEL $(CXXFLAGS)
 	QEMUFLAGS += -s -S
 endif
 

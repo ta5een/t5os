@@ -7,5 +7,5 @@ focus cmd
 
 # Break at useful functions
 break _kmain
-break kernel::_assert_failure(char const*, char const*, lib::usize, char const*)
-break kernel::_panic(char const*, char const*, lib::usize, char const*)
+break kernel::_on_assert
+break kernel::_on_panic
