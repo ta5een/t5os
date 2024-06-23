@@ -13,6 +13,13 @@ void _assert_failure(
     const char *function
 )
 {
+#if ARCH(I386)
+    // NOLINTNEXTLINE(hicpp-no-assembler)
+    asm volatile("cli");
+#else
+#    error "`_assert_failure` is not supported for this architecture"
+#endif
+
     drivers::WRITER.put_string("*** ASSERTION FAILURE ***\n");
     drivers::WRITER.put_string("-> ");
     drivers::WRITER.put_string(msg);
