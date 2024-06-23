@@ -6,7 +6,7 @@ namespace drivers
 {
 
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-const auto VGA_BUFFER = reinterpret_cast<volatile VgaScreenChar *>(0xB8000U);
+const auto VGA_BUFFER = reinterpret_cast<volatile VgaScreenChar *>(0xb8000);
 
 const usize BUFFER_WIDTH = 80;
 const usize BUFFER_HEIGHT = 25;
@@ -110,13 +110,13 @@ void VgaWriter::put_string(const char *str)
     for (usize i = 0; str[i] != '\0'; i++)
     {
         u8 byte = str[i];
-        if (byte == '\n' || (byte >= 0x20 && byte <= 0x7E))
+        if (byte == '\n' || (byte >= 0x20 && byte <= 0x7e))
         {
             put_byte(byte);
         }
         else
         {
-            put_byte(0xFE);
+            put_byte(0xfe);
         }
     }
 }

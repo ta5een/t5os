@@ -21,12 +21,12 @@ enum class VgaColor : u8
     LightGray = 0x7,
     DarkGray = 0x8,
     LightBlue = 0x9,
-    LightGreen = 0xA,
-    LightCyan = 0xB,
-    LightRed = 0xC,
-    Pink = 0xD,
-    Yellow = 0xE,
-    White = 0xF,
+    LightGreen = 0xa,
+    LightCyan = 0xb,
+    LightRed = 0xc,
+    Pink = 0xd,
+    Yellow = 0xe,
+    White = 0xf,
 };
 
 class VgaWriter

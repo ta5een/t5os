@@ -5,8 +5,10 @@
  * jumping to the `_kmain` function in the kernel.
  */
 
-.set MAGIC, 0x1badb002
-.set FLAGS, (1<<0 | 1<<1)       /* Magic number for GRUB bootloader */
+.set MAGIC, 0x1badb002          /* Magic number for GRUB bootloader */
+.set ALIGN, 1<<0                /* Align loaded modules on page boundaries */
+.set MEMINFO, 1<<1              /* Provide memory map */
+.set FLAGS, (ALIGN | MEMINFO)
 .set CHECKSUM, -(MAGIC + FLAGS)
 
 .section .multiboot

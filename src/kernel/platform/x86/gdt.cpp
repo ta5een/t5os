@@ -22,7 +22,7 @@ GlobalDescriptorTable::GlobalDescriptorTable()
     , m_unused_segment_selector(SegmentDescriptor::Empty)
     , m_code_segment_selector(
           SegmentDescriptor::WithOptions,
-          {.base = 0, .limit = CODE_SEGMENT_LIMIT, .access_byte = 0x9A}
+          {.base = 0, .limit = CODE_SEGMENT_LIMIT, .access_byte = 0x9a}
       )
     , m_data_segment_selector(
           SegmentDescriptor::WithOptions,
@@ -77,7 +77,7 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
         // StackOverflow comment:
         //
         // https://stackoverflow.com/a/55970477/10052039
-        if ((options.limit & 0xFFF) != 0xFFF)
+        if ((options.limit & 0xfff) != 0xfff)
         {
             options.limit = (options.limit >> 12) - 1;
         }
@@ -91,13 +91,13 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
     }
 
     // Encode the limit
-    m_limit_0_15 = options.limit & 0xFFFF;              // First two bytes
-    m_flags_limit_16_19 |= (options.limit >> 16) & 0xF; // Last half-byte
+    m_limit_0_15 = options.limit & 0xffff;              // First two bytes
+    m_flags_limit_16_19 |= (options.limit >> 16) & 0xf; // Last half-byte
 
     // Encode the base
-    m_base_0_15 = options.base & 0xFFFF;        // First two bytes
-    m_base_16_23 = (options.base >> 16) & 0xFF; // Next byte
-    m_base_24_31 = (options.base >> 24) & 0xFF; // Last byte
+    m_base_0_15 = options.base & 0xffff;        // First two bytes
+    m_base_16_23 = (options.base >> 16) & 0xff; // Next byte
+    m_base_24_31 = (options.base >> 24) & 0xff; // Last byte
 
     // Encode the access byte
     // NOTE: This variable is named `flags` in the tutorial
@@ -114,14 +114,14 @@ u32 GlobalDescriptorTable::SegmentDescriptor::base() const
 
 u32 GlobalDescriptorTable::SegmentDescriptor::limit() const
 {
-    u32 result = m_flags_limit_16_19 & 0xF;
+    u32 result = m_flags_limit_16_19 & 0xf;
     result = (result << 16) + m_limit_0_15;
 
     // If the limit entry is a 32-bit entry (and thus the last 12 bits were
     // discarded), we "unshift" the entry and set all the last 12 bits to 1.
     if ((m_flags_limit_16_19 & G_BIT_MASK) == G_BIT_MASK)
     {
-        result = (result << 12) | 0xFFF;
+        result = (result << 12) | 0xfff;
     }
 
     return result;
