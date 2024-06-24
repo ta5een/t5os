@@ -46,6 +46,8 @@ class VgaMemoryBuffer
 
     static void write(VgaScreenChar screen_char, usize col, usize row)
     {
+        // TODO: As optimisation, if both the new screen char and the current
+        // screen char at this position are the same, we can skip the write
         auto buffer_index = index_at(col, row);
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         VGA_BUFFER[buffer_index] = screen_char;
@@ -70,16 +72,19 @@ void VgaWriter::new_line() const
     // y position to the last line
     if (!try_set_position(0, m_row_pos + 1))
     {
-        // Scroll buffer contents upwards
-        for (usize col = 0; col < BUFFER_WIDTH; col++)
+        // Scroll buffer contents upwards, going into each row (starting at the
+        // second row) and moving each screen character to the row above
+        for (usize row = 1; row < BUFFER_HEIGHT; row++)
         {
-            for (usize row = 1; row < BUFFER_HEIGHT; row++)
+            for (usize col = 0; col < BUFFER_WIDTH; col++)
             {
                 auto character = VgaMemoryBuffer::read(col, row);
                 VgaMemoryBuffer::write(character, col, row - 1);
             }
         }
 
+        // Overwrite old contents of the last line with a fresh blank row
+        overwrite_row_with_blank_screen_chars(BUFFER_HEIGHT - 1);
         // Reset x position, cap y position to the last line
         unsafely_set_position(0, BUFFER_HEIGHT - 1);
     }
