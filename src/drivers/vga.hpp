@@ -54,6 +54,6 @@ class VgaWriter
 };
 
 // TODO: Wrap this in a mutex to ensure thread-safety
-static inline const VgaWriter WRITER;
+extern inline const VgaWriter WRITER{};
 
 } // namespace drivers
