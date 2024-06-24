@@ -24,6 +24,17 @@ const u8 ITOA_RADIX_MAX = 36;
 const char *const ITOA_SEARCH_STR =
     "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
 
+constexpr VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg)
+{
+    u8 color_code = ((u8)fg) | (u8)((u8)bg << 4U);
+    return ((u16)byte | (u16)((u16)color_code << 8U));
+}
+
+[[nodiscard]] constexpr bool can_set_position(usize col, usize row)
+{
+    return (col < BUFFER_WIDTH) && (row < BUFFER_HEIGHT);
+}
+
 class VgaMemoryBuffer
 {
   public:
@@ -56,13 +67,22 @@ class VgaMemoryBuffer
         }
         // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     }
+
+    static void clear_row(usize row)
+    {
+        for (usize col = 0; col < BUFFER_WIDTH; col++)
+        {
+            auto blank = create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
+            VgaMemoryBuffer::write(blank, col, row);
+        }
+    }
 };
 
 void VgaWriter::clear_screen() const
 {
     for (usize row = 0; row < BUFFER_HEIGHT; row++)
     {
-        overwrite_row_with_blank_screen_chars(row);
+        VgaMemoryBuffer::clear_row(row);
     }
 
     // Reset position
@@ -88,7 +108,7 @@ void VgaWriter::new_line() const
         }
 
         // Overwrite old contents of the last line with a fresh blank row
-        overwrite_row_with_blank_screen_chars(BUFFER_HEIGHT - 1);
+        VgaMemoryBuffer::clear_row(BUFFER_HEIGHT - 1);
         // Reset x position, cap y position to the last line
         unsafely_set_position(0, BUFFER_HEIGHT - 1);
     }
@@ -184,26 +204,6 @@ void VgaWriter::put_integer_with_radix(ssize integer, u8 radix) const
     }
 
     put_string(str);
-}
-
-VgaScreenChar VgaWriter::create_screen_char(u8 byte, VgaColor fg, VgaColor bg)
-{
-    u8 color_code = ((u8)fg) | (u8)((u8)bg << 4U);
-    return ((u16)byte | (u16)((u16)color_code << 8U));
-}
-
-void VgaWriter::overwrite_row_with_blank_screen_chars(usize row)
-{
-    for (usize col = 0; col < BUFFER_WIDTH; col++)
-    {
-        auto blank = create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
-        VgaMemoryBuffer::write(blank, col, row);
-    }
-}
-
-bool VgaWriter::can_set_position(usize col, usize row)
-{
-    return (col < BUFFER_WIDTH) && (row < BUFFER_HEIGHT);
 }
 
 inline bool VgaWriter::try_set_position(usize col, usize row) const

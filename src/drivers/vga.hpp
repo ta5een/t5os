@@ -49,10 +49,6 @@ class VgaWriter
     mutable usize m_col_pos{0};
     mutable usize m_row_pos{0};
 
-    static VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg);
-    static void overwrite_row_with_blank_screen_chars(usize row);
-    [[nodiscard]] static bool can_set_position(usize col, usize row);
-
     [[nodiscard]] inline bool try_set_position(usize col, usize row) const;
     inline void unsafely_set_position(usize col, usize row) const;
 };
