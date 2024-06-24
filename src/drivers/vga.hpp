@@ -40,10 +40,10 @@ class VgaWriter
 
     void clear_screen() const;
     void new_line() const;
-    void put_byte(const u8 byte) const;
+    void put_byte(u8 byte) const;
     void put_string(const char *str) const;
-    void put_integer(const ssize integer) const;
-    void put_integer_with_radix(const ssize integer, const u8 radix) const;
+    void put_integer(ssize integer) const;
+    void put_integer_with_radix(ssize integer, u8 radix) const;
 
   private:
     mutable usize m_col_pos{0};

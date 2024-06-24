@@ -85,7 +85,7 @@ void VgaWriter::new_line() const
     }
 }
 
-void VgaWriter::put_byte(const u8 byte) const
+void VgaWriter::put_byte(u8 byte) const
 {
     if (byte == '\n')
     {
@@ -122,15 +122,14 @@ void VgaWriter::put_string(const char *str) const
     }
 }
 
-void VgaWriter::put_integer(const ssize integer) const
+void VgaWriter::put_integer(ssize integer) const
 {
     put_integer_with_radix(integer, ITOA_DEFAULT_RADIX);
 }
 
 // https://www.strudel.org.uk/itoa/
 // https://wiki.osdev.org/Printing_To_Screen#Printing_Integers
-void VgaWriter::put_integer_with_radix(const ssize integer, const u8 radix)
-    const
+void VgaWriter::put_integer_with_radix(ssize integer, u8 radix) const
 {
     KASSERT(radix >= ITOA_RADIX_MIN && "provided radix is too small");
     KASSERT(radix <= ITOA_RADIX_MAX && "provided radix is too large");
