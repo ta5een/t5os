@@ -35,6 +35,9 @@ constexpr VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg)
     return (col < BUFFER_WIDTH) && (row < BUFFER_HEIGHT);
 }
 
+constexpr VgaScreenChar BLANK_SCREEN_CHAR =
+    create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
+
 class VgaMemoryBuffer
 {
   public:
@@ -72,8 +75,7 @@ class VgaMemoryBuffer
     {
         for (usize col = 0; col < BUFFER_WIDTH; col++)
         {
-            auto blank = create_screen_char('\0', DEFAULT_FG, DEFAULT_BG);
-            VgaMemoryBuffer::write(blank, col, row);
+            VgaMemoryBuffer::write(BLANK_SCREEN_CHAR, col, row);
         }
     }
 };
