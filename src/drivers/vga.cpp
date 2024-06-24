@@ -46,11 +46,15 @@ class VgaMemoryBuffer
 
     static void write(VgaScreenChar screen_char, usize col, usize row)
     {
-        // TODO: As optimisation, if both the new screen char and the current
-        // screen char at this position are the same, we can skip the write
+        // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         auto buffer_index = index_at(col, row);
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        VGA_BUFFER[buffer_index] = screen_char;
+        // If both the new screen char and the current screen char at this
+        // position are the same, we can skip the write
+        if (VGA_BUFFER[buffer_index] != screen_char)
+        {
+            VGA_BUFFER[buffer_index] = screen_char;
+        }
+        // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     }
 };
 
