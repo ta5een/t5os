@@ -10,7 +10,7 @@ const auto VGA_BUFFER = reinterpret_cast<volatile VgaScreenChar *>(0xb8000);
 
 const usize BUFFER_WIDTH = 80;
 const usize BUFFER_HEIGHT = 25;
-const VgaColor DEFAULT_FG = VgaColor::Green;
+const VgaColor DEFAULT_FG = VgaColor::LightGray;
 const VgaColor DEFAULT_BG = VgaColor::Black;
 
 const u8 ITOA_DEFAULT_RADIX = 10;
