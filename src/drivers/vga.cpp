@@ -13,6 +13,10 @@ const usize BUFFER_HEIGHT = 25;
 const VgaColor DEFAULT_FG = VgaColor::LightGray;
 const VgaColor DEFAULT_BG = VgaColor::Black;
 
+const u8 ASCII_CHAR_UNKNOWN = 0xfe; // U+25a0 BLACK SQUARE (from Code Page 437)
+const u8 ASCII_PRINTABLE_RANGE_MIN = 0x20; // U+0020 SPACE
+const u8 ASCII_PRINTABLE_RANGE_MAX = 0x7e; // U+007e TILDE
+
 const u8 ITOA_DEFAULT_RADIX = 10;
 const u8 ITOA_MAX_STR_LEN = 255;
 const u8 ITOA_RADIX_MIN = 2;
@@ -109,14 +113,15 @@ void VgaWriter::put_string(const char *str)
 {
     for (usize i = 0; str[i] != '\0'; i++)
     {
-        u8 byte = str[i];
-        if (byte == '\n' || (byte >= 0x20 && byte <= 0x7e))
+        auto byte = str[i];
+        if (byte == '\n' || (byte >= ASCII_PRINTABLE_RANGE_MIN &&
+                             byte <= ASCII_PRINTABLE_RANGE_MAX))
         {
             put_byte(byte);
         }
         else
         {
-            put_byte(0xfe);
+            put_byte(ASCII_CHAR_UNKNOWN);
         }
     }
 }
