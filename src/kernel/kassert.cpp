@@ -27,8 +27,7 @@ void _on_assert(
     drivers::WRITER.put_string("-> at ");
     drivers::WRITER.put_string(file);
     drivers::WRITER.put_string(":");
-    // TODO: Ideally, we shouldn't cast from usize to ssize
-    drivers::WRITER.put_integer((ssize)line);
+    drivers::WRITER.put_integer(drivers::VgaWriter::Unsigned, line);
     drivers::WRITER.new_line();
     drivers::WRITER.put_string("-> in ");
     drivers::WRITER.put_string(function);

@@ -21,7 +21,9 @@ const u8 ITOA_DEFAULT_RADIX = 10;
 const u8 ITOA_MAX_STR_LEN = 255;
 const u8 ITOA_RADIX_MIN = 2;
 const u8 ITOA_RADIX_MAX = 36;
-const char *const ITOA_SEARCH_STR =
+
+const char *const UITOA_SEARCH_STR = "0123456789abcdefghijklmnopqrstuvwxyz";
+const char *const SITOA_SEARCH_STR =
     "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
 
 constexpr VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg)
@@ -153,14 +155,63 @@ void VgaWriter::put_string(const char *str) const
     }
 }
 
-void VgaWriter::put_integer(ssize integer) const
+void VgaWriter::put_integer(VgaWriter::UnsignedTag tag, usize integer) const
 {
-    put_integer_with_radix(integer, ITOA_DEFAULT_RADIX);
+    put_integer_with_radix(tag, integer, ITOA_DEFAULT_RADIX);
+}
+
+void VgaWriter::put_integer(VgaWriter::SignedTag tag, ssize integer) const
+{
+    put_integer_with_radix(tag, integer, ITOA_DEFAULT_RADIX);
+}
+
+void VgaWriter::put_integer_with_radix(
+    VgaWriter::UnsignedTag /*tag*/,
+    usize integer,
+    u8 radix
+) const
+{
+    KASSERT(radix >= ITOA_RADIX_MIN && "provided radix is too small");
+    KASSERT(radix <= ITOA_RADIX_MAX && "provided radix is too large");
+
+    char str[ITOA_MAX_STR_LEN]{};
+    usize idx = 0;
+    usize value = integer;
+
+    // Convert each digit to a character, from the least significant digit to
+    // the most significant (i.e. in reverse order).
+    do
+    {
+        str[idx] = UITOA_SEARCH_STR[value % radix];
+        idx += 1;
+        value /= radix; // this will truncate (discard) the fractional part
+    } while (value != 0);
+
+    // Ensure the string is terminated
+    str[idx] = '\0';
+    idx -= 1;
+
+    // Flip string to the correct order
+    usize rev = 0;
+    while (rev < idx)
+    {
+        auto tmp = str[idx];
+        str[idx] = str[rev];
+        str[rev] = tmp;
+        rev += 1;
+        idx -= 1;
+    }
+
+    put_string(str);
 }
 
 // https://www.strudel.org.uk/itoa/
 // https://wiki.osdev.org/Printing_To_Screen#Printing_Integers
-void VgaWriter::put_integer_with_radix(ssize integer, u8 radix) const
+void VgaWriter::put_integer_with_radix(
+    VgaWriter::SignedTag /*tag*/,
+    ssize integer,
+    u8 radix
+) const
 {
     KASSERT(radix >= ITOA_RADIX_MIN && "provided radix is too small");
     KASSERT(radix <= ITOA_RADIX_MAX && "provided radix is too large");
@@ -175,10 +226,10 @@ void VgaWriter::put_integer_with_radix(ssize integer, u8 radix) const
     // the most significant (i.e. in reverse order).
     do
     {
-        // ITOA_SEARCH_STR is a palindrome, such that a negative digit will
+        // SITOA_SEARCH_STR is a palindrome, such that a negative digit will
         // produce the same character as a positive digit. This trick makes
         // abs() unnecessary.
-        str[idx] = ITOA_SEARCH_STR[(ITOA_RADIX_MAX - 1) + value % radix];
+        str[idx] = SITOA_SEARCH_STR[(ITOA_RADIX_MAX - 1) + value % radix];
         idx += 1;
         value /= radix; // this will truncate (discard) the fractional part
     } while (value != 0);
@@ -198,7 +249,7 @@ void VgaWriter::put_integer_with_radix(ssize integer, u8 radix) const
     usize rev = 0;
     while (rev < idx)
     {
-        char tmp = str[idx];
+        auto tmp = str[idx];
         str[idx] = str[rev];
         str[rev] = tmp;
         rev += 1;

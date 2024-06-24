@@ -38,12 +38,24 @@ class VgaWriter
     VgaWriter() = default;
     ~VgaWriter() = default;
 
+    enum SignedTag
+    {
+        Signed,
+    };
+
+    enum UnsignedTag
+    {
+        Unsigned
+    };
+
     void clear_screen() const;
     void new_line() const;
     void put_byte(u8 byte) const;
     void put_string(const char *str) const;
-    void put_integer(ssize integer) const;
-    void put_integer_with_radix(ssize integer, u8 radix) const;
+    void put_integer(UnsignedTag, usize integer) const;
+    void put_integer(SignedTag, ssize integer) const;
+    void put_integer_with_radix(UnsignedTag, usize integer, u8 radix) const;
+    void put_integer_with_radix(SignedTag, ssize integer, u8 radix) const;
 
   private:
     mutable usize m_col_pos{0};
