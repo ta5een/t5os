@@ -24,10 +24,6 @@ const u8 ITOA_RADIX_MAX = 36;
 const char *const ITOA_SEARCH_STR =
     "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
 
-// Initialize global variable with default constructor
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-VgaWriter WRITER;
-
 class VgaMemoryBuffer
 {
   public:
@@ -56,7 +52,7 @@ class VgaMemoryBuffer
     }
 };
 
-void VgaWriter::clear_screen()
+void VgaWriter::clear_screen() const
 {
     for (usize row = 0; row < BUFFER_HEIGHT; row++)
     {
@@ -67,7 +63,7 @@ void VgaWriter::clear_screen()
     unsafely_set_position(0, 0);
 }
 
-void VgaWriter::new_line()
+void VgaWriter::new_line() const
 {
     // If we can't simply increment the y position because we're at the bottom
     // of the screen, we'll scroll the buffer contents upwards and then set the
@@ -89,7 +85,7 @@ void VgaWriter::new_line()
     }
 }
 
-void VgaWriter::put_byte(const u8 byte)
+void VgaWriter::put_byte(const u8 byte) const
 {
     if (byte == '\n')
     {
@@ -109,7 +105,7 @@ void VgaWriter::put_byte(const u8 byte)
     }
 }
 
-void VgaWriter::put_string(const char *str)
+void VgaWriter::put_string(const char *str) const
 {
     for (usize i = 0; str[i] != '\0'; i++)
     {
@@ -126,7 +122,7 @@ void VgaWriter::put_string(const char *str)
     }
 }
 
-void VgaWriter::put_integer(const ssize integer)
+void VgaWriter::put_integer(const ssize integer) const
 {
     put_integer_with_radix(integer, ITOA_DEFAULT_RADIX);
 }
@@ -134,6 +130,7 @@ void VgaWriter::put_integer(const ssize integer)
 // https://www.strudel.org.uk/itoa/
 // https://wiki.osdev.org/Printing_To_Screen#Printing_Integers
 void VgaWriter::put_integer_with_radix(const ssize integer, const u8 radix)
+    const
 {
     KASSERT(radix >= ITOA_RADIX_MIN && "provided radix is too small");
     KASSERT(radix <= ITOA_RADIX_MAX && "provided radix is too large");
@@ -201,7 +198,7 @@ bool VgaWriter::can_set_position(usize col, usize row)
     return (col < BUFFER_WIDTH) && (row < BUFFER_HEIGHT);
 }
 
-inline bool VgaWriter::try_set_position(usize col, usize row)
+inline bool VgaWriter::try_set_position(usize col, usize row) const
 {
     if (can_set_position(col, row))
     {
@@ -214,7 +211,7 @@ inline bool VgaWriter::try_set_position(usize col, usize row)
     }
 }
 
-inline void VgaWriter::unsafely_set_position(usize col, usize row)
+inline void VgaWriter::unsafely_set_position(usize col, usize row) const
 {
     m_col_pos = col;
     m_row_pos = row;

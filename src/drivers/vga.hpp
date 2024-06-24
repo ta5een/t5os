@@ -38,26 +38,26 @@ class VgaWriter
     VgaWriter() = default;
     ~VgaWriter() = default;
 
-    void clear_screen();
-    void new_line();
-    void put_byte(const u8 byte);
-    void put_string(const char *str);
-    void put_integer(const ssize integer);
-    void put_integer_with_radix(const ssize integer, const u8 radix);
+    void clear_screen() const;
+    void new_line() const;
+    void put_byte(const u8 byte) const;
+    void put_string(const char *str) const;
+    void put_integer(const ssize integer) const;
+    void put_integer_with_radix(const ssize integer, const u8 radix) const;
 
   private:
-    usize m_col_pos{0};
-    usize m_row_pos{0};
+    mutable usize m_col_pos{0};
+    mutable usize m_row_pos{0};
 
     static VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg);
     static void overwrite_row_with_blank_screen_chars(usize row);
     [[nodiscard]] static bool can_set_position(usize col, usize row);
-    [[nodiscard]] inline bool try_set_position(usize col, usize row);
-    inline void unsafely_set_position(usize col, usize row);
+
+    [[nodiscard]] inline bool try_set_position(usize col, usize row) const;
+    inline void unsafely_set_position(usize col, usize row) const;
 };
 
 // TODO: Wrap this in a mutex to ensure thread-safety
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-extern VgaWriter WRITER;
+static inline const VgaWriter WRITER;
 
 } // namespace drivers
