@@ -1,5 +1,7 @@
 #include <drivers/vga.hpp>
 #include <kernel/platform/platform.hpp>
+#include <kernel/platform/x86/gdt.hpp>
+#include <kernel/platform/x86/interrupts.hpp>
 #include <lib/integers.hpp>
 
 using Multiboot = void *;
@@ -25,20 +27,27 @@ extern "C" void call_ctors()
  */
 extern "C" void _kmain(Multiboot /*multiboot*/, u32 /*magic*/)
 {
-    const char *arch_msg{nullptr};
+    const char *arch_string{};
     if (ARCH(I386))
     {
-        arch_msg = "Architecture: i386";
+        arch_string = "i386";
     }
     else
     {
-        arch_msg = "Architecture: unknown";
+        arch_string = "unknown";
     }
 
     drivers::WRITER.clear_screen();
-    drivers::WRITER.put_string("Welcome to WYOOS\n");
-    drivers::WRITER.put_string(arch_msg);
-    drivers::WRITER.new_line();
+    drivers::WRITER.put_string("t5os/1 (");
+    drivers::WRITER.put_string(arch_string);
+    drivers::WRITER.put_string(")\n");
+
+    kernel::GlobalDescriptorTable gdt{};
+    gdt.load();
+
+    kernel::InterruptManager interrupts{&gdt};
+    // TODO: Instantiate the hardware here
+    interrupts.activate();
 
     // Infinite loop
     while (true) {}
