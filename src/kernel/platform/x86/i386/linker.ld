@@ -1,33 +1,40 @@
-/* Comments retrieved from:
-   https://gitlab.com/sortie/meaty-skeleton/-/blob/084d1624bedaa9f9e395f055c6bd99299bd97f58/kernel/arch/i386/linker.ld */
+/* The bootloader will look at this image and start execution at the symbol
+   designated as the entry point. */
 ENTRY(loader)
-OUTPUT_FORMAT(elf32-i386)
-OUTPUT_ARCH(i386)
 
+/* Tell where the various sections of the object files will be put in the final
+   kernel image. */
 SECTIONS
 {
-  /* Begin putting sections at 1MiB, a conventional place for kernels to be
-     loaded at by the bootloader. */
-  . = 1M;
+  /* Begin putting sections at 2MiB.
 
-  /* First, put the multiboot header, as it is required to be put very early in
-     the image. Otherwise, the bootloader won't recognize the file format.
+     It used to be universally recommended to use 1MiB as a start offset, as it
+     was guaranteed to be available under BIOS systems. However, UEFI has made
+     things more complicated, and experimental data strongly suggests that 2M
+     is a safer place to load. [citation needed] */
+  . = 2M;
+
+  /* Executable code.
+
+     First, put the multiboot header, as it is required to be put very early in
+     the image or else the bootloader won't recognize the file format.
+
      Next, put the .text section, which provides the C++ code for _kmain and
      call_ctors. */
-  .text :
+  .text BLOCK(4K) : ALIGN(4K)
   {
     *(.multiboot)
     *(.text*)
   }
 
   /* Read-only data. */
-  .rodata :
+  .rodata BLOCK(4K) : ALIGN(4K)
   {
     *(.rodata)
   }
 
   /* Read-write data (initialized). */
-  .data :
+  .data BLOCK(4K) : ALIGN(4K)
   {
     start_ctors = .;
     KEEP(*( .init_array ))
@@ -38,8 +45,9 @@ SECTIONS
   }
 
   /* Read-write data (uninitialized) and stack. */
-  .bss :
+  .bss BLOCK(4K) : ALIGN(4K)
   {
+    *(COMMON)
     *(.bss)
   }
 
