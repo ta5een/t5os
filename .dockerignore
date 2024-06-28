@@ -13,5 +13,6 @@ Thumbs.db
 
 # Build artifacts
 out
+toolchain
 .cache
 compile_commands.json

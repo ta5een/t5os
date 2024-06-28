@@ -2,9 +2,9 @@ NAME = wyoos
 ARCH = i386
 DEBUG ?= 1
 
-SRCDIR = ./src
-LIBDIR = ./src
-OUTDIR = ./out
+SRCDIR = src
+LIBDIR = src
+OUTDIR = out
 # TODO: This is hard-coded for now
 ARCHDIR = $(SRCDIR)/kernel/platform/x86/i386
 

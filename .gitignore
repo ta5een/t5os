@@ -11,5 +11,9 @@ Thumbs.db
 
 # Build artifacts
 out
+build
+toolchain/build
+toolchain/local
+toolchain/tarballs
 .cache
 compile_commands.json
