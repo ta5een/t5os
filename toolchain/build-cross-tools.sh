@@ -29,7 +29,7 @@ STEP_BINUTILS="binutils"
 STEP_GCC="gcc"
 STEP_LIBGCC="libgcc"
 
-# Exported for the newly-built cross tools to use
+# Exported for the newly-built toolchain to use
 export PREFIX="$LOCAL_DIR_PREFIX/$ARCH"
 export TARGET="$ARCH-elf"
 export PATH="$PREFIX/bin:$PATH"
@@ -87,7 +87,7 @@ pushd "$TARBALLS_DIR" > /dev/null
   # Extract binutils into the same directory
   if [ ! -d "$BINUTILS_NAME" ]; then
     log $STEP_DEPENDENCIES echo "Extracting Binutils $BINUTILS_VERSION..."
-    tar -xjf "$BINUTILS_TARBALL"
+    tar -xJf "$BINUTILS_TARBALL"
   fi
 popd > /dev/null # "$TARBALLS_DIR"
 
