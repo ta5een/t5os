@@ -77,17 +77,46 @@ pushd "$TARBALLS_DIR" > /dev/null
     fi
   fi
 
-  # Download binutils if it isn't downloaded (or has been recently removed due
-  # to a checksum failure in the previous if-statement)
+  # Download binutils if it isn't available
   if [ ! -f "$BINUTILS_TARBALL" ]; then
     log $STEP_DEPENDENCIES echo "Downloading Binutils $BINUTILS_VERSION..."
     curl -LO "$BINUTILS_BASE_URL/$BINUTILS_TARBALL"
+  else
+    log $STEP_DEPENDENCIES echo "Binutils $BINUTILS_VERSION already downloaded, continuing..."
   fi
 
   # Extract binutils into the same directory
   if [ ! -d "$BINUTILS_NAME" ]; then
     log $STEP_DEPENDENCIES echo "Extracting Binutils $BINUTILS_VERSION..."
     tar -xJf "$BINUTILS_TARBALL"
+  fi
+
+  # Does the gcc tarball already exist?
+  if [ -f "$GCC_TARBALL" ]; then
+    log $STEP_DEPENDENCIES echo "GCC already downloaded, validating MD5 checksum..."
+    # Does the MD5 checksum match? If not, it may have been corrupted.
+    if ! md5sum -c <<< "$GCC_MD5SUM $GCC_TARBALL"; then
+      log $STEP_DEPENDENCIES echo "'$GCC_TARBALL' MD5 does not match. Removing..."
+      rm -f "$GCC_TARBALL"
+      # In case the extracted directory is present, remove it too
+      rm -f "$GCC_NAME"
+    else
+      log $STEP_DEPENDENCIES echo "Checksum passed, continuing..."
+    fi
+  fi
+
+  # Download gcc if it isn't available
+  if [ ! -f "$GCC_TARBALL" ]; then
+    log $STEP_DEPENDENCIES echo "Downloading GCC $GCC_VERSION..."
+    curl -LO "$GCC_BASE_URL/$GCC_TARBALL"
+  else
+    log $STEP_DEPENDENCIES echo "GCC $GCC_VERSION already downloaded, continuing..."
+  fi
+
+  # Extract gcc into the same directory
+  if [ ! -d "$GCC_NAME" ]; then
+    log $STEP_DEPENDENCIES echo "Extracting GCC $GCC_VERSION..."
+    tar -xJf "$GCC_TARBALL"
   fi
 popd > /dev/null # "$TARBALLS_DIR"
 
