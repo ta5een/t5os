@@ -1,3 +1,4 @@
+#include <drivers/keyboard.hpp>
 #include <drivers/vga.hpp>
 #include <kernel/platform/platform.hpp>
 #include <kernel/platform/x86/gdt.hpp>
@@ -30,7 +31,7 @@ extern "C" void _kmain(Multiboot /*multiboot*/, u32 /*magic*/)
     const char *arch_string{};
     if (ARCH(I386))
     {
-        arch_string = "i386";
+        arch_string = "x86";
     }
     else
     {
@@ -46,7 +47,7 @@ extern "C" void _kmain(Multiboot /*multiboot*/, u32 /*magic*/)
     gdt.load();
 
     kernel::InterruptManager interrupts{&gdt};
-    // TODO: Instantiate the hardware here
+    drivers::KeyboardDriver keyboard{&interrupts};
     interrupts.activate();
 
     // Infinite loop
