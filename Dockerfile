@@ -1,10 +1,17 @@
 FROM debian:12.5-slim
 
-RUN apt-get update                      && \
-    apt-get install -y bear             && \
-    apt-get install -y build-essential  && \
-    apt-get install -y grub-common      && \
-    apt-get install -y grub-pc-bin      && \
-    apt-get install -y xorriso
+RUN apt-get update && apt-get install -y \
+    bison \
+    build-essential \
+    flex \
+    grub-common \
+    grub-pc-bin \
+    libgmp3-dev \
+    libisl-dev \
+    libmpc-dev \
+    libmpfr-dev \
+    texinfo \
+    xorriso \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /wyoos
