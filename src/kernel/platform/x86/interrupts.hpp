@@ -7,9 +7,30 @@
 namespace kernel
 {
 
+class InterruptManager;
+
+class InterruptHandler
+{
+  public:
+    virtual u32 handle_interrupt(u32 esp);
+
+  protected:
+    InterruptHandler(u8 interrupt_number, InterruptManager *interrupt_manager);
+    ~InterruptHandler();
+
+  private:
+    u8 m_interrupt_number{0};
+    InterruptManager *m_interrupt_manager{nullptr};
+};
+
 class InterruptManager
 {
+    friend class InterruptHandler;
+
   protected:
+    static InterruptManager *active_interrupt_manager;
+    InterruptHandler *m_handlers[256]{};
+
     struct [[gnu::packed]] GateDescriptor
     {
         u16 handler_address_lo;
@@ -41,14 +62,17 @@ class InterruptManager
 
   public:
     InterruptManager(GlobalDescriptorTable *gdt);
-    ~InterruptManager();
+    ~InterruptManager() = default;
 
     static u32 handle_interrupt(u8 interrupt_number, u32 esp);
+    u32 do_handle_interrupt(u8 interrupt_number, u32 esp);
+
     static void ignore_interrupt_request();
     static void handle_interrupt_request0x00();
     static void handle_interrupt_request0x01();
 
     void activate();
+    void deactivate();
 };
 
 } // namespace kernel

@@ -5,6 +5,31 @@
 namespace kernel
 {
 
+InterruptManager *InterruptManager::active_interrupt_manager = nullptr;
+
+InterruptHandler::InterruptHandler(
+    u8 interrupt_number,
+    InterruptManager *interrupt_manager
+)
+    : m_interrupt_number(interrupt_number)
+    , m_interrupt_manager(interrupt_manager)
+{
+    interrupt_manager->m_handlers[interrupt_number] = this;
+}
+
+InterruptHandler::~InterruptHandler()
+{
+    if (m_interrupt_manager->m_handlers[m_interrupt_number] == this)
+    {
+        m_interrupt_manager->m_handlers[m_interrupt_number] = nullptr;
+    }
+}
+
+u32 InterruptHandler::handle_interrupt(u32 esp)
+{
+    return esp;
+}
+
 InterruptManager::GateDescriptor
     InterruptManager::interrupt_descriptor_table[256];
 
@@ -19,6 +44,7 @@ InterruptManager::InterruptManager(GlobalDescriptorTable *gdt)
 
     for (u16 i = 0; i < 256; i++)
     {
+        m_handlers[i] = nullptr;
         set_interrupt_descriptor_table_entry(
             i, code_segment, &ignore_interrupt_request, 0, IDT_INTERRUPT_GATE
         );
@@ -32,6 +58,7 @@ InterruptManager::InterruptManager(GlobalDescriptorTable *gdt)
         0x21, code_segment, &handle_interrupt_request0x01, 0, IDT_INTERRUPT_GATE
     );
 
+    // Each x86 system has two PICs, a "master" and "slave"
     pic_master_command.write(0x11);
     pic_slave_command.write(0x11);
 
@@ -53,11 +80,23 @@ InterruptManager::InterruptManager(GlobalDescriptorTable *gdt)
     asm volatile("lidt %0" ::"m"(idt));
 }
 
-InterruptManager::~InterruptManager() = default;
-
 void InterruptManager::activate()
 {
+    if (active_interrupt_manager != nullptr)
+    {
+        active_interrupt_manager->deactivate();
+    }
+    active_interrupt_manager = this;
     asm volatile("sti");
+}
+
+void InterruptManager::deactivate()
+{
+    if (active_interrupt_manager == this)
+    {
+        active_interrupt_manager = nullptr;
+        asm volatile("cli");
+    }
 }
 
 void InterruptManager::set_interrupt_descriptor_table_entry(
@@ -84,16 +123,50 @@ void InterruptManager::set_interrupt_descriptor_table_entry(
 
 u32 InterruptManager::handle_interrupt(u8 interrupt_number, u32 esp)
 {
-    drivers::WRITER.put_string("*** INTERRUPT ***\n");
-    drivers::WRITER.put_string("-> ");
-    drivers::WRITER.put_integer_with_radix(
-        drivers::VgaWriter::Unsigned, interrupt_number, 16
-    );
-    drivers::WRITER.put_string(" 0x");
-    drivers::WRITER.put_integer_with_radix(
-        drivers::VgaWriter::Unsigned, esp, 16
-    );
-    drivers::WRITER.new_line();
+    if (active_interrupt_manager != nullptr)
+    {
+        return active_interrupt_manager->do_handle_interrupt(
+            interrupt_number, esp
+        );
+    }
+    else
+    {
+        return esp;
+    }
+}
+
+u32 InterruptManager::do_handle_interrupt(u8 interrupt_number, u32 esp)
+{
+    if (m_handlers[interrupt_number] != nullptr)
+    {
+        esp = m_handlers[interrupt_number]->handle_interrupt(esp);
+    }
+    // Print log if it's NOT a timer interrupt
+    else if (interrupt_number != 0x20)
+    {
+        drivers::WRITER.new_line();
+        drivers::WRITER.put_string("*** UNHANDLED INTERRUPT ***\n");
+        drivers::WRITER.put_string("-> 0x");
+        drivers::WRITER.put_integer_with_radix(
+            drivers::VgaWriter::Unsigned, interrupt_number, 16
+        );
+        drivers::WRITER.put_string(" 0x");
+        drivers::WRITER.put_integer_with_radix(
+            drivers::VgaWriter::Unsigned, esp, 16
+        );
+        drivers::WRITER.new_line();
+    }
+
+    if (0x20 <= interrupt_number && interrupt_number <= 0x30)
+    {
+        pic_master_command.write(0x20);
+        // Write to the slave PIC if the interrupt came from another slave PIC
+        // (it has an interrupt number in the range 0x28..=0x30)
+        if (0x28 <= interrupt_number)
+        {
+            pic_slave_command.write(0x20);
+        }
+    }
 
     return esp;
 }
