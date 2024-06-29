@@ -11,9 +11,14 @@ TOOLCHAIN_DIR = toolchain
 # TODO: How to let `bear` know of this directory (for compile_commands.json)?
 TOOLCHAIN_BIN_DIR = $(TOOLCHAIN_DIR)/local/$(ARCH)/bin
 
-CXX = $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-g++
-AS = $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-as
-LD = $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-g++
+# CXX = $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-g++
+# AS = $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-as
+# LD = $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-g++
+# NOTE: For now, make sure to add `TOOLCHAIN_BIN_DIR` to your `$PATH` so that
+# `bear` can provide LSP support
+CXX = $(ARCH)-elf-g++
+AS = $(ARCH)-elf-as
+LD = $(ARCH)-elf-g++
 QEMU ?= qemu-system-i386
 
 CXXFLAGS := -std=c++20 -Wall -Wextra -I$(LIBDIR) -ffreestanding -fno-exceptions -fno-rtti -fno-use-cxa-atexit
