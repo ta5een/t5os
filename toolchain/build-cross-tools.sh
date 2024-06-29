@@ -40,6 +40,15 @@ function log {
   "$@" 2>&1 | sed $'s|^|\e[35m['"${step}"$']\e[0m |'
 }
 
+function ask_yes_no {
+  select yn in "Yes" "No"; do
+    case $yn in
+      Yes ) echo "Okay, build will continue..."; break;;
+      No ) echo "Cancelled"; exit 1;;
+    esac
+  done
+}
+
 # Check if toolchain has been built previously
 # TODO: Expose this as a "clean" or "rebuild" subcommand instead
 if [[ -d "$PREFIX" && -n $(ls -A "$PREFIX") ]]; then
@@ -48,17 +57,28 @@ if [[ -d "$PREFIX" && -n $(ls -A "$PREFIX") ]]; then
     "$ARCH" \
     >&2
   printf "\n  $PREFIX\n\n" >&2
-  echo "Do you want to remove it and rebuild again?" >&2
-  select yn in "Yes" "No"; do
-    case $yn in
-      Yes ) echo "Okay, build will continue..."; break;;
-      No ) echo "Cancelled"; exit 1;;
-    esac
-  done
+  echo "Do you want to remove it and rebuild again? Enter '1' or '2':" >&2
+  ask_yes_no
 
   rm -rf "$BUILD_DIR_PREFIX/$ARCH"
   rm -rf "$LOCAL_DIR_PREFIX/$ARCH"
 fi
+
+disk_space_available=$(df -h "$DIR" | tail -n1 | awk '{ print $3 }')
+echo "\
+This build step will download the source code for the GNU GCC $GCC_VERSION \
+compiler and the GNU Binutils $BINUTILS_VERSION binary tools. It will then \
+compile these tools, specified to target $ARCH-elf.
+
+This process will take a while to complete, depending on your machine's \
+specifications. Once complete, the resulting build artefacts will take up \
+around 3GB of disk space, give or take half a GB.
+
+You are on a(n) $OS_NAME system with $MAKE_JOBS processing unit(s) available \
+and $disk_space_available of disk space available.
+
+Are you sure you want to continue? Enter '1' or '2':" | fold -s -w 80
+ask_yes_no
 
 # Download binutils and gcc tarballs
 mkdir -p "$TARBALLS_DIR"
