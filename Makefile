@@ -7,8 +7,9 @@ LIBDIR = src
 OUTDIR = out
 # TODO: This is hard-coded for now
 ARCHDIR = $(SRCDIR)/kernel/platform/x86/i386
+TOOLCHAIN_DIR = toolchain
 # TODO: How to let `bear` know of this directory (for compile_commands.json)?
-TOOLCHAIN_BIN_DIR = toolchain/local/$(ARCH)/bin
+TOOLCHAIN_BIN_DIR = $(TOOLCHAIN_DIR)/local/$(ARCH)/bin
 
 CXX = $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-g++
 AS = $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-as
@@ -31,9 +32,10 @@ ASM_SOURCES = $(shell find $(SRCDIR) -name '*.S')
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OUTDIR)/%.o,$(CPP_SOURCES))
 OBJECTS += $(patsubst $(SRCDIR)/%.S,$(OUTDIR)/%.S.o,$(ASM_SOURCES))
 
-.PHONY: default help kernel iso qemu gdb clean
+.PHONY: default help toolchain kernel iso qemu gdb clean
 
 default: help
+toolchain: $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-*
 kernel: $(OUTDIR)/$(NAME).bin
 iso: $(OUTDIR)/$(NAME).iso
 
@@ -49,6 +51,14 @@ help:
 			$(info $(v) = "$($(v))")))
 	@echo ""
 
+$(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-*:
+	@bash $(TOOLCHAIN_DIR)/build-cross-tools.sh
+
+# FIXME: Adding `toolchain` as a prerequisite doesn't work as expected.
+#
+# When running `make` inside a running Docker container with a toolchain built
+# for the host system, `make` attempts to rebuild the project. This fails when
+# the host system uses a different binary format (e.g. Mach-O instead of ELF).
 $(OUTDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
