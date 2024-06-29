@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# The majority of this script was taken from the Serenity OS project:
+# https://github.com/SerenityOS/serenity/blob/311af9ad0590970e3e3c7384feed67c63aed08f4/Toolchain/BuildGNU.sh
+
 set -e
 set -o pipefail
 
