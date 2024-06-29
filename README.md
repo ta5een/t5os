@@ -11,14 +11,10 @@ Engelmann.
 This project supports native and cross-platform compilation with Docker. To
 build the project locally, you will need the following tools for your platform:
 
-- Project tools:
-  - `make`
+- Project compilation tools:
+  - [GNU GCC and Binutils dependencies][gnu-gcc-binutils-deps]
   - [`bear`][bear-gh] (optional)
-  - GNU 32-Bit ELF toolchain
-    - macOS: [`i686-elf-gcc`][i686-elf-gcc] and
-    [`i686-elf-binutils`][i686-elf-binutils] via Homebrew
-    - Linux/WSL: `build-essential`
-- `.iso` creation and GRUB tools (optional)[^1]:
+- GRUB tools (optional)[^1]:
   - `xorriso`
   - `grub-common`
   - `grub-pc-bin`
@@ -39,7 +35,28 @@ This is the recommended method if you would like to contribute to the project.
     git clone https://github.com/ta5een/wyoos.git
     ```
 
+1. Build the GCC Cross-Compiler toolchain
+
+    ```sh
+    make toolchain
+    ```
+
+    This build step will download the source code for the GNU GCC 14.1.0
+    compiler and the GNU Binutils 2.42 binary tools. It will then compile these
+    tools, with settings tweaked so that it can build programs for the `$ARCH`
+    target. By default, `$ARCH` is set to `i686` (i.e. x86 32-bit).
+
+    > **NOTE**: This process will take a while to complete, depending on your
+    > machine's specifications. Once complete, the resulting build artefacts
+    > will take up around 3GB of disk space, give or take half a GB. Make sure
+    > you have enough disk space (and patience) for this step :)
+
 1. Build the kernel with `bear` and `make`:
+
+    > **NOTE:** I am in the process of migrating from `bear` to `cmake`, mostly
+    > due to the fact that `cmake` supports cross-compilers with
+    > project-relative paths. This step is subject to change once the migration
+    > is complete.
 
     ```sh
     bear -- make kernel
@@ -133,6 +150,5 @@ This fix was sourced from [this issue comment on `bear`'s GitHub repository][bea
 [bear-gh-issue-comment]: https://github.com/rizsotto/Bear/issues/561#issuecomment-1921214908
 [bear-gh]: https://github.com/rizsotto/Bear
 [docker-bind-mounts]: https://docs.docker.com/storage/bind-mounts/
-[i686-elf-binutils]: https://formulae.brew.sh/formula/i686-elf-binutils#default
-[i686-elf-gcc]: https://formulae.brew.sh/formula/i686-elf-gcc#default
+[gnu-gcc-binutils-deps]: https://wiki.osdev.org/GCC_Cross-Compiler#Installing_Dependencies
 [wyoos-yt-playlist]: https://www.youtube.com/playlist?list=PLHh55M_Kq4OApWScZyPl5HhgsTJS9MZ6M
