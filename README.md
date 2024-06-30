@@ -29,13 +29,13 @@ build the project locally, you will need the following tools for your platform:
 
 This is the recommended method if you would like to contribute to the project.
 
-1. Clone the repository
+1. Clone the repository:
 
     ```sh
     git clone https://github.com/ta5een/t5os.git
     ```
 
-1. Build the GCC Cross-Compiler toolchain
+1. Build the GCC Cross-Compiler toolchain:
 
     ```sh
     make toolchain
@@ -44,7 +44,7 @@ This is the recommended method if you would like to contribute to the project.
     This build step will download the source code for the GNU GCC 14.1.0
     compiler and the GNU Binutils 2.42 binary tools. It will then compile these
     tools, with settings tweaked so that it can build programs for the `$ARCH`
-    target. By default, `$ARCH` is set to `i686` (i.e. x86 32-bit).
+    target. By default, `$ARCH` is set to `i686` (i.e., x86 32-bit).
 
     > **NOTE**: This process will take a while to complete, depending on your
     > machine's specifications. Once complete, the resulting build artefacts
@@ -76,8 +76,8 @@ This is the recommended method if you would like to contribute to the project.
     make iso
     ```
 
-    This build step requires `xorriso`, `grub-common` and `grub-pc-bin` to be
-    available in your system. Alternatively, follow the [Docker instructions
+    This build step requires `xorriso`, `grub-common`, and `grub-pc-bin` to be
+    available on your system. Alternatively, follow the [Docker instructions
     below](#docker) to build the `.iso` image without needing to install these
     tools locally.
 
@@ -90,9 +90,9 @@ This is the recommended method if you would like to contribute to the project.
 #### Docker
 
 > [!NOTE]
-> Since integrating a custom GCC cross-compiler to the project, I've found that
-> building with Docker fails if I previously compiled the toolchain on my host
-> system. This is an issue as if, for example, I compiled the toolchain on
+> Since integrating a custom GCC cross-compiler into the project, I've found
+> that building with Docker fails if I previously compiled the toolchain on my
+> host system. This is an issue if, for example, I compiled the toolchain on
 > macOS, as the resulting binaries would be in the Mach-O format. This would
 > cause Docker to fail as Debian doesn't (at least natively) support Mach-O
 > executables.
@@ -103,7 +103,7 @@ possible to partially [build the project natively](#linux-and-macos) and run
 the rest of the build process with Docker, thanks to the power of [bind
 mounts][docker-bind-mounts].
 
-1. Clone the repository
+1. Clone the repository:
 
     ```sh
     git clone https://github.com/ta5een/t5os.git
@@ -134,7 +134,7 @@ mounts][docker-bind-mounts].
 ## Usage
 
 - QEMU: Run `make qemu`
-- VMWare/VirtualBox/etc.: Build the `.iso` with `make iso` and boot the virtual
+- VMware/VirtualBox/etc.: Build the `.iso` with `make iso` and boot the virtual
   machine with this disk image (via USB or CD/DVD).
 
 ## License
@@ -145,7 +145,7 @@ which itself is licensed under GPL-3.0. As such, I am required to license this
 project under GPL-3.0 too. See [License](./LICENSE) for more details.
 
 Additionally, many parts of this project, from its implementation to its
-behaviour, has been derived from multiple open-source projects. Wherever
+behaviour, have been derived from multiple open-source projects. Wherever
 possible, I've added an attribution comment on top of the relevant
 file/function/line in the source code. For reference, here is a list of
 projects I've taken inspiration from (I highly recommend checking them out):
@@ -161,19 +161,20 @@ and/or abided by your license(s), please feel free to reach out to me :)
 
 ### `bear` generates empty `compile_commands.json`
 
-This main reason why this may happen is because you are using a cross-compiler.
+The main reason why this may happen is because you are using a cross-compiler.
 While `bear` works great with the platform's native toolchain, it does not
-recognize cross-compilers by default (e.g. `i386-elf-g++` on macOS).
+recognise cross-compilers by default (e.g., `i686-elf-g++` on macOS).
 
 To fix this, you'll need to create a link to the wrapper with the same name as
 the cross-compiler. On macOS, this can be done by running the following
 (substituting `<version>` with your installed `bear` version number):
 
 ```sh
-ln -s /usr/local/Cellar/bear/<version>/lib/bear/wrapper /usr/local/Cellar/bear/<version>/lib/bear/wrapper.d/i386-elf-g++
+ln -s /usr/local/Cellar/bear/<version>/lib/bear/wrapper /usr/local/Cellar/bear/<version>/lib/bear/wrapper.d/i686-elf-g++
 ```
 
-This fix was sourced from [this issue comment on `bear`'s GitHub repository][bear-gh-issue-comment].
+This fix was sourced from [this issue comment on `bear`'s GitHub
+repository][bear-gh-issue-comment].
 
 [bear-gh-issue-comment]: https://github.com/rizsotto/Bear/issues/561#issuecomment-1921214908
 [bear-gh]: https://github.com/rizsotto/Bear
