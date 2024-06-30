@@ -5,8 +5,6 @@ DEBUG ?= 1
 SRCDIR = src
 LIBDIR = src
 OUTDIR = build
-# TODO: This is hard-coded for now
-ARCHDIR = $(SRCDIR)/kernel/platform/x86/i386
 TOOLCHAIN_DIR = toolchain
 # TODO: How to let `bear` know of this directory (for compile_commands.json)?
 TOOLCHAIN_BIN_DIR = $(TOOLCHAIN_DIR)/local/$(ARCH)/bin
@@ -26,16 +24,22 @@ ASFLAGS :=
 LDFLAGS := -ffreestanding -lgcc -nostdlib
 QEMUFLAGS :=
 
+CPP_SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
+ASM_SOURCES = $(shell find $(SRCDIR) -name '*.S')
+OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OUTDIR)/%.o,$(CPP_SOURCES))
+OBJECTS += $(patsubst $(SRCDIR)/%.S,$(OUTDIR)/%.S.o,$(ASM_SOURCES))
+
+ifeq ($(ARCH),i686)
+	ARCHDIR = $(SRCDIR)/kernel/arch/x86/i686
+else
+$(error '$(ARCH)' is currently not supported)
+endif
+
 ifeq ($(DEBUG),1)
 	# Prepend debug flags to make it more prominent
 	CXXFLAGS := -g -DDEBUG_KERNEL $(CXXFLAGS)
 	QEMUFLAGS += -s -S -d int,cpu_reset
 endif
-
-CPP_SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
-ASM_SOURCES = $(shell find $(SRCDIR) -name '*.S')
-OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OUTDIR)/%.o,$(CPP_SOURCES))
-OBJECTS += $(patsubst $(SRCDIR)/%.S,$(OUTDIR)/%.S.o,$(ASM_SOURCES))
 
 .PHONY: default help toolchain kernel iso qemu gdb clean
 
