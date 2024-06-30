@@ -19,8 +19,9 @@
   .extern _kmain                  # Entry point of kernel
   .extern call_ctors              # Support for C++ constructors
 
-  .global loader                  # Entry point for the linker
-loader:
+  .global _start                  # Entry point for the linker
+  .type _start, @function
+_start:
   mov $stack, %esp                # Set up the kernel stack
   call call_ctors                 # Invoke C++ function
   push %eax                       # Push Multiboot info to the stack
