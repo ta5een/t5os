@@ -89,6 +89,14 @@ This is the recommended method if you would like to contribute to the project.
 
 #### Docker
 
+> [!NOTE]
+> Since integrating a custom GCC cross-compiler to the project, I've found that
+> building with Docker fails if I previously compiled the toolchain on my host
+> system. This is an issue as if, for example, I compiled the toolchain on
+> macOS, as the resulting binaries would be in the Mach-O format. This would
+> cause Docker to fail as Debian doesn't (at least natively) support Mach-O
+> executables.
+
 This is the recommended method if you would like to play around with the
 project and don't want to install all the required dependencies. It is also
 possible to partially [build the project natively](#linux-and-macos) and run
