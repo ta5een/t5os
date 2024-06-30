@@ -1,26 +1,30 @@
 /* The bootloader will look at this image and start execution at the symbol
-   designated as the entry point. */
+ * designated as the entry point. 
+ */
 ENTRY(_start)
 
 /* Tell where the various sections of the object files will be put in the final
-   kernel image. */
+ * kernel image.
+ */
 SECTIONS
 {
   /* Begin putting sections at 2MiB.
-
-     It used to be universally recommended to use 1MiB as a start offset, as it
-     was guaranteed to be available under BIOS systems. However, UEFI has made
-     things more complicated, and experimental data strongly suggests that 2M
-     is a safer place to load. [citation needed] */
+   *
+   * It used to be universally recommended to use 1MiB as a start offset, as it
+   * was guaranteed to be available under BIOS systems. However, UEFI has made
+   * things more complicated, and experimental data strongly suggests that 2M
+   * is a safer place to load. [citation needed]
+   */
   . = 2M;
 
   /* Executable code.
-
-     First, put the multiboot header, as it is required to be put very early in
-     the image or else the bootloader won't recognize the file format.
-
-     Next, put the .text section, which provides the C++ code for _kmain and
-     call_ctors. */
+   *
+   * First, put the multiboot header, as it is required to be put very early in
+   * the image or else the bootloader won't recognize the file format.
+   *
+   * Next, put the .text section, which provides the C++ code for _kmain and
+   * call_ctors.
+   */
   .text BLOCK(4K) : ALIGN(4K)
   {
     *(.multiboot)
