@@ -4,7 +4,7 @@ set -e
 
 print_usage() {
   printf "Usage: %s [-rh]\n" "$(basename "$0")"
-  echo "Build Docker image 'wyoos', using the Dockerfile in project root"
+  echo "Build Docker image 't5os', using the Dockerfile in project root"
   echo ""
   echo "Options:"
   echo "  -r: Rebuild the image from scratch, as opposed to from cache"
@@ -25,9 +25,9 @@ hash docker 2>/dev/null || {
   exit 1
 }
 
-# Build the Dockerfile (in project root) with the tag "wyoos"
+# Build the Dockerfile (in project root) with the tag "t5os"
 if [ "$rebuild" = true ]; then
-  docker build --no-cache -t wyoos .
+  docker build --no-cache -t t5os .
 else
-  docker build -t wyoos .
+  docker build -t t5os .
 fi

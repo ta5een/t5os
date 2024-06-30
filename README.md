@@ -1,7 +1,7 @@
-# `wyoos`
+# `t5os`
 
-`wyoos` is my implementation of a small operating system following the [Write
-your own Operating System][wyoos-yt-playlist] YouTube playlist by Viktor
+`t5os` is my implementation of a small operating system, mostly following the
+[Write your own Operating System][wyoos-yt-playlist] YouTube playlist by Viktor
 Engelmann.
 
 ## Getting Started
@@ -32,7 +32,7 @@ This is the recommended method if you would like to contribute to the project.
 1. Clone the repository
 
     ```sh
-    git clone https://github.com/ta5een/wyoos.git
+    git clone https://github.com/ta5een/t5os.git
     ```
 
 1. Build the GCC Cross-Compiler toolchain
@@ -98,7 +98,7 @@ mounts][docker-bind-mounts].
 1. Clone the repository
 
     ```sh
-    git clone https://github.com/ta5een/wyoos.git
+    git clone https://github.com/ta5een/t5os.git
     ```
 
 1. Build the Docker image:
@@ -115,7 +115,7 @@ mounts][docker-bind-mounts].
 
     This will bind the current working directory as a volume in the Docker
     image and build the `.iso` image in a Linux environment. Once completed,
-    `./out/wyoos.iso` will be available in your local filesystem.
+    `./out/t5os.iso` will be available in your local filesystem.
 
 1. Run the OS in `qemu`:
 

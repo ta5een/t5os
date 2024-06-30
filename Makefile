@@ -1,4 +1,4 @@
-NAME = wyoos
+NAME = t5os
 ARCH = i686
 DEBUG ?= 1
 
