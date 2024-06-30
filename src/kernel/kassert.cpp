@@ -13,7 +13,7 @@ void _on_assert(
     const char *function
 )
 {
-#if ARCH(I386)
+#if ARCH(X86_32)
     // NOLINTNEXTLINE(hicpp-no-assembler)
     asm volatile("cli");
 #else

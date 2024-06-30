@@ -26,7 +26,7 @@ void _on_panic(
     drivers::WRITER.new_line();
 
 // TODO: Call arch-specific 'halt' instruction
-#if ARCH(I386)
+#if ARCH(X86_32)
     while (true)
     {
         // NOLINTNEXTLINE(hicpp-no-assembler)

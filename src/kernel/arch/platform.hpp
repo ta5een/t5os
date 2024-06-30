@@ -1,9 +1,9 @@
 #pragma once
 
-#ifdef __i386__
-#    define T5OS_ARCH_IS_I386() 1
+#if defined(__i386__) && !defined(__x86_64__)
+#    define T5OS_ARCH_IS_X86_32() 1
 #else
-#    define T5OS_ARCH_IS_I386() 0
+#    define T5OS_ARCH_IS_X86_32() 0
 #endif
 
 #ifdef __x86_64__

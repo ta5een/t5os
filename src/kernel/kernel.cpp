@@ -29,7 +29,7 @@ extern "C" void call_ctors()
 extern "C" void _kmain(Multiboot /*multiboot*/, u32 /*magic*/)
 {
     const char *arch_string{};
-    if (ARCH(I386))
+    if (ARCH(X86_32))
     {
         arch_string = "x86";
     }
