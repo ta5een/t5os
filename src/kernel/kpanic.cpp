@@ -1,6 +1,6 @@
 #include <drivers/vga.hpp>
+#include <kernel/arch/platform.hpp>
 #include <kernel/kpanic.hpp>
-#include <kernel/platform/platform.hpp>
 
 namespace kernel
 {

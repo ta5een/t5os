@@ -1,4 +1,4 @@
-#include <kernel/platform/x86/port.hpp>
+#include <kernel/arch/x86/port.hpp>
 
 // NOLINTBEGIN(hicpp-no-assembler)
 namespace kernel

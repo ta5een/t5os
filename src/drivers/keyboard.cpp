@@ -1,6 +1,6 @@
 #include <drivers/keyboard.hpp>
 #include <drivers/vga.hpp>
-#include <kernel/platform/x86/interrupts.hpp>
+#include <kernel/arch/x86/interrupts.hpp>
 
 namespace drivers
 {

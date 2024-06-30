@@ -1,4 +1,4 @@
-#include <kernel/platform/x86/gdt.hpp>
+#include <kernel/arch/x86/gdt.hpp>
 #include <lib/constants.hpp>
 
 namespace kernel

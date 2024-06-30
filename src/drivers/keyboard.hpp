@@ -1,7 +1,7 @@
 #pragma once
 
-#include <kernel/platform/x86/interrupts.hpp>
-#include <kernel/platform/x86/port.hpp>
+#include <kernel/arch/x86/interrupts.hpp>
+#include <kernel/arch/x86/port.hpp>
 
 namespace drivers
 {

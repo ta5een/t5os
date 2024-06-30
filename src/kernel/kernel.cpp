@@ -1,8 +1,8 @@
 #include <drivers/keyboard.hpp>
 #include <drivers/vga.hpp>
-#include <kernel/platform/platform.hpp>
-#include <kernel/platform/x86/gdt.hpp>
-#include <kernel/platform/x86/interrupts.hpp>
+#include <kernel/arch/platform.hpp>
+#include <kernel/arch/x86/gdt.hpp>
+#include <kernel/arch/x86/interrupts.hpp>
 #include <lib/integers.hpp>
 
 using Multiboot = void *;

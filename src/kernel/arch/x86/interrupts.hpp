@@ -1,7 +1,7 @@
 #pragma once
 
-#include <kernel/platform/x86/gdt.hpp>
-#include <kernel/platform/x86/port.hpp>
+#include <kernel/arch/x86/gdt.hpp>
+#include <kernel/arch/x86/port.hpp>
 #include <lib/integers.hpp>
 
 namespace kernel
