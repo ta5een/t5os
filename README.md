@@ -137,6 +137,26 @@ mounts][docker-bind-mounts].
 - VMWare/VirtualBox/etc.: Build the `.iso` with `make iso` and boot the virtual
   machine with this disk image (via USB or CD/DVD).
 
+## License
+
+The majority of this project is based on the source code of the [Write your own
+Operating System][wyoos-yt-playlist] YouTube playlist by Viktor Engelmann,
+which itself is licensed under GPL-3.0. As such, I am required to license this
+project under GPL-3.0 too. See [License](./LICENSE) for more details.
+
+Additionally, many parts of this project, from its implementation to its
+behaviour, has been derived from multiple open-source projects. Wherever
+possible, I've added an attribution comment on top of the relevant
+file/function/line in the source code. For reference, here is a list of
+projects I've taken inspiration from (I highly recommend checking them out):
+
+- [SerenityOS](https://github.com/SerenityOS/serenity)
+- [RetrOS-32](https://github.com/joexbayer/RetrOS-32)
+- [SkiftOS](https://github.com/skift-org/skift)
+
+If for any reason you believe I have used your work and haven't credited you
+and/or abided by your license(s), please feel free to reach out to me :)
+
 ## Troubleshooting
 
 ### `bear` generates empty `compile_commands.json`
