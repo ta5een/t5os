@@ -27,13 +27,10 @@
 	.long FLAGS
 	.long CHECKSUM
 
-	.section .text
-	.extern _kmain                  # Entry point of kernel
-	.extern call_ctors              # Support for C++ constructors
-
 	/* The linker script specifies _start as the entry point to the kernel. The
 	 * bootloader will jump to this position once the kernel has been loaded.
 	 */
+	.section .text
 	.global _start
 	.type _start, @function
 _start:
@@ -47,6 +44,7 @@ _start:
 	 * rudimentary support for constructors. We have no interest in providing
 	 * support for exceptions.
 	 */
+	.extern call_ctors
 	call call_ctors
 	/* Push two values to the stack, to be available as parameters for the
 	 * kernel main function. According to the x86 C/C++ calling conventions,
@@ -67,6 +65,7 @@ _start:
 	 * 32-bit registers to the stack -- does this mean we did not preserve the
 	 * alignment?
 	 */
+	.extern _kmain
 	call _kmain
 	/* If the system has nothing more to do, put the computer into an infinite
 	 * loop. To do that:
