@@ -4,7 +4,7 @@ DEBUG ?= 1
 
 SRCDIR = src
 LIBDIR = src
-OUTDIR = out
+OUTDIR = build
 # TODO: This is hard-coded for now
 ARCHDIR = $(SRCDIR)/kernel/platform/x86/i386
 TOOLCHAIN_DIR = toolchain
