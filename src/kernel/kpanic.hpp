@@ -11,6 +11,8 @@ void _on_panic(const char *msg, const char *location, const char *function);
 
 } // namespace kernel
 
+// A constexpr template function is not possible with `__PRETTY_FUNCTION__`.
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define KPANIC(msg)                                                            \
     /* NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while) */                     \
     do                                                                         \
