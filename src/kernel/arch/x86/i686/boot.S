@@ -7,9 +7,9 @@
 
 	/* Declare constants for the Multiboot header.
 	 */
-	.set MAGIC, 0x1badb002          # Magic number for GRUB bootloader
-	.set ALIGN, 1<<0                # Align loaded modules on page boundaries
-	.set MEMINFO, 1<<1              # Provide memory map
+	.set MAGIC, 0x1badb002			# Magic number for GRUB bootloader
+	.set ALIGN, 1<<0				# Align loaded modules on page boundaries
+	.set MEMINFO, 1<<1				# Provide memory map
 	.set FLAGS, (ALIGN | MEMINFO)
 	.set CHECKSUM, -(MAGIC + FLAGS)
 
@@ -47,9 +47,11 @@ _start:
 	.extern call_ctors
 	call call_ctors
 	/* Push two values to the stack, to be available as parameters for the
-	 * kernel main function. According to the x86 C/C++ calling conventions,
-	 * function arguments are pushed on the stack from right to left, such that
-	 * the last push before call represents the first argument. [1][2]
+	 * kernel main function.
+	 *
+	 * According to the x86 C/C++ calling conventions, function arguments are
+	 * pushed on the stack from right to left, such that the last push before
+	 * call represents the first argument. [1][2]
 	 *
 	 * [1]: https://stackoverflow.com/a/9141701/10052039
 	 * [2]: https://en.wikipedia.org/wiki/X86_calling_conventions#List_of_x86_calling_conventions
@@ -80,5 +82,5 @@ _start:
 	jmp 1b
 
 	.section .bss
-	.space 2*1024*1024              # Add 2MiB padding
-stack:                              # Will point to some available space in RAM
+	.space 2*1024*1024				# Add 2MiB padding
+stack:								# Will point to some available space in RAM
