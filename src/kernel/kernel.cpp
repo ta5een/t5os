@@ -50,6 +50,15 @@ extern "C" void _kmain(Multiboot /*multiboot*/, u32 /*magic*/)
     drivers::KeyboardDriver keyboard{&interrupts};
     interrupts.activate();
 
-    // Infinite loop
-    while (true) {}
+    // Idle loop
+    while (true)
+    {
+#if ARCH(X86_32) || ARCH(X86_64)
+        // Use the hlt instruction to put the CPU in a low-power state when
+        // idle. This reduces CPU usage and power consumption compared to a
+        // busy-wait loop.
+        // NOLINTNEXTLINE(hicpp-no-assembler)
+        asm volatile("hlt");
+#endif
+    }
 }
