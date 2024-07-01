@@ -6,12 +6,7 @@
 namespace kernel
 {
 
-void _on_assert(
-    const char *msg,
-    const char *file,
-    usize line,
-    const char *function
-)
+void _on_assert(const char *msg, const char *location, const char *function)
 {
 #if ARCH(X86_32)
     // NOLINTNEXTLINE(hicpp-no-assembler)
@@ -26,9 +21,7 @@ void _on_assert(
     vga.put_string(msg);
     vga.new_line();
     vga.put_string("-> at ");
-    vga.put_string(file);
-    vga.put_string(":");
-    vga.put_integer(drivers::VgaWriter::Unsigned, line);
+    vga.put_string(location);
     vga.new_line();
     vga.put_string("-> in ");
     vga.put_string(function);

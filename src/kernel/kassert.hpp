@@ -1,16 +1,13 @@
 #pragma once
 
+#include <lib/core.hpp>
 #include <lib/integers.hpp>
 
 namespace kernel
 {
 
-[[noreturn]] void _on_assert(
-    const char *msg,
-    const char *file,
-    usize line,
-    const char *function
-);
+[[noreturn]]
+void _on_assert(const char *msg, const char *location, const char *function);
 
 } // namespace kernel
 
@@ -21,7 +18,9 @@ namespace kernel
         if (!static_cast<bool>(expr)) [[unlikely]]                             \
         {                                                                      \
             kernel::_on_assert(                                                \
-                #expr, __FILE__, __LINE__, __PRETTY_FUNCTION__                 \
+                #expr,                                                         \
+                __FILE__ ":" LIB_STRINGIFY(__LINE__),                          \
+                __PRETTY_FUNCTION__                                            \
             );                                                                 \
         }                                                                      \
     } while (0)
@@ -33,8 +32,10 @@ namespace kernel
         {                                                                      \
             if (!static_cast<bool>(expr)) [[unlikely]]                         \
             {                                                                  \
-                kernel::assert_handler(                                        \
-                    #expr, __FILE__, __LINE__, __PRETTY_FUNCTION__             \
+                kernel::_on_assert(                                            \
+                    #expr,                                                     \
+                    __FILE__ ":" LIB_STRINGIFY(__LINE__),                      \
+                    __PRETTY_FUNCTION__                                        \
                 );                                                             \
             }                                                                  \
         } while (0)

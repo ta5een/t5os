@@ -13,3 +13,6 @@
   private:                                                                     \
     T(T &&) = delete;                                                          \
     T &operator=(T &&) = delete;
+
+#define __LIB_STRINGIFY(s) #s
+#define LIB_STRINGIFY(s) __LIB_STRINGIFY(s)

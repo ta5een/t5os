@@ -5,12 +5,7 @@
 namespace kernel
 {
 
-void _on_panic(
-    const char *msg,
-    const char *file,
-    usize line,
-    const char *function
-)
+void _on_panic(const char *msg, const char *location, const char *function)
 {
     const auto &vga = drivers::VgaWriter::instance();
     vga.put_string("*** KERNEL PANIC ***\n");
@@ -18,9 +13,7 @@ void _on_panic(
     vga.put_string(msg);
     vga.new_line();
     vga.put_string("-> at ");
-    vga.put_string(file);
-    vga.put_string(":");
-    vga.put_integer(drivers::VgaWriter::Unsigned, line);
+    vga.put_string(location);
     vga.new_line();
     vga.put_string("-> in ");
     vga.put_string(function);
