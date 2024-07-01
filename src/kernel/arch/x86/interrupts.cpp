@@ -137,6 +137,8 @@ u32 InterruptManager::handle_interrupt(u8 interrupt_number, u32 esp)
 
 u32 InterruptManager::do_handle_interrupt(u8 interrupt_number, u32 esp)
 {
+    const auto &vga = drivers::VgaWriter::instance();
+
     if (m_handlers[interrupt_number] != nullptr)
     {
         esp = m_handlers[interrupt_number]->handle_interrupt(esp);
@@ -144,17 +146,15 @@ u32 InterruptManager::do_handle_interrupt(u8 interrupt_number, u32 esp)
     // Print log if it's NOT a timer interrupt
     else if (interrupt_number != 0x20)
     {
-        drivers::WRITER.new_line();
-        drivers::WRITER.put_string("*** UNHANDLED INTERRUPT ***\n");
-        drivers::WRITER.put_string("-> 0x");
-        drivers::WRITER.put_integer_with_radix(
+        vga.new_line();
+        vga.put_string("*** UNHANDLED INTERRUPT ***\n");
+        vga.put_string("-> 0x");
+        vga.put_integer_with_radix(
             drivers::VgaWriter::Unsigned, interrupt_number, 16
         );
-        drivers::WRITER.put_string(" 0x");
-        drivers::WRITER.put_integer_with_radix(
-            drivers::VgaWriter::Unsigned, esp, 16
-        );
-        drivers::WRITER.new_line();
+        vga.put_string(" 0x");
+        vga.put_integer_with_radix(drivers::VgaWriter::Unsigned, esp, 16);
+        vga.new_line();
     }
 
     if (0x20 <= interrupt_number && interrupt_number <= 0x30)

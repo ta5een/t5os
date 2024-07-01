@@ -34,10 +34,12 @@ extern "C" void _kmain(Multiboot /*multiboot*/, u32 /*magic*/)
 #    error "Unhandled case for current architecture"
 #endif
 
-    drivers::WRITER.clear_screen();
-    drivers::WRITER.put_string("t5os/1 (");
-    drivers::WRITER.put_string(arch_string);
-    drivers::WRITER.put_string(")\n");
+    const auto &vga = drivers::VgaWriter::instance();
+    vga.clear_screen();
+    vga.clear_screen();
+    vga.put_string("t5os/1 (");
+    vga.put_string(arch_string);
+    vga.put_string(")\n");
 
     kernel::GlobalDescriptorTable gdt{};
     gdt.load();

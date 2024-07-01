@@ -12,18 +12,19 @@ void _on_panic(
     const char *function
 )
 {
-    drivers::WRITER.put_string("*** KERNEL PANIC ***\n");
-    drivers::WRITER.put_string("-> ");
-    drivers::WRITER.put_string(msg);
-    drivers::WRITER.new_line();
-    drivers::WRITER.put_string("-> at ");
-    drivers::WRITER.put_string(file);
-    drivers::WRITER.put_string(":");
-    drivers::WRITER.put_integer(drivers::VgaWriter::Unsigned, line);
-    drivers::WRITER.new_line();
-    drivers::WRITER.put_string("-> in ");
-    drivers::WRITER.put_string(function);
-    drivers::WRITER.new_line();
+    const auto &vga = drivers::VgaWriter::instance();
+    vga.put_string("*** KERNEL PANIC ***\n");
+    vga.put_string("-> ");
+    vga.put_string(msg);
+    vga.new_line();
+    vga.put_string("-> at ");
+    vga.put_string(file);
+    vga.put_string(":");
+    vga.put_integer(drivers::VgaWriter::Unsigned, line);
+    vga.new_line();
+    vga.put_string("-> in ");
+    vga.put_string(function);
+    vga.new_line();
 
 // TODO: Call arch-specific 'halt' instruction
 #if ARCH(X86_32)

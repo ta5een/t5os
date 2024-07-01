@@ -38,6 +38,8 @@ class VgaWriter
     VgaWriter() = default;
     ~VgaWriter() = default;
 
+    static const VgaWriter &instance();
+
     enum SignedTag
     {
         Signed,
@@ -64,8 +66,5 @@ class VgaWriter
     [[nodiscard]] inline bool try_set_position(usize col, usize row) const;
     inline void unsafely_set_position(usize col, usize row) const;
 };
-
-// TODO: Wrap this in a mutex to ensure thread-safety
-extern inline const VgaWriter WRITER{};
 
 } // namespace drivers

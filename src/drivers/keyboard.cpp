@@ -30,6 +30,7 @@ KeyboardDriver::~KeyboardDriver() {}
 
 u32 KeyboardDriver::handle_interrupt(u32 esp)
 {
+    const auto &vga = VgaWriter::instance();
     u8 keycode = m_data_port.read();
 
     // Only care about key-down, not key-up (set as the 5th bit?)
@@ -44,11 +45,11 @@ u32 KeyboardDriver::handle_interrupt(u32 esp)
         //     WRITER.put_string("a");
         //     break;
         default:
-            WRITER.new_line();
-            WRITER.put_string("*** KEYBOARD INTERRUPT ***\n");
-            WRITER.put_string("-> 0x");
-            WRITER.put_integer_with_radix(VgaWriter::Unsigned, keycode, 16);
-            WRITER.new_line();
+            vga.new_line();
+            vga.put_string("*** KEYBOARD INTERRUPT ***\n");
+            vga.put_string("-> 0x");
+            vga.put_integer_with_radix(VgaWriter::Unsigned, keycode, 16);
+            vga.new_line();
             break;
         }
     }
