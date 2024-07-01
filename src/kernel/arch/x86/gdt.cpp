@@ -17,6 +17,8 @@ struct [[gnu::packed]] GlobalDescriptorTableRegister
     void *base;
 };
 
+static GlobalDescriptorTableRegister gdtr;
+
 GlobalDescriptorTable::GlobalDescriptorTable()
     : m_null_segment_selector(SegmentDescriptor::Empty)
     , m_unused_segment_selector(SegmentDescriptor::Empty)
@@ -34,12 +36,14 @@ GlobalDescriptorTable::GlobalDescriptorTable()
 void GlobalDescriptorTable::load()
 {
     // Define the size (limit) and start (base) of the descriptor table
-    GlobalDescriptorTableRegister data{
-        .limit = sizeof(GlobalDescriptorTable),
-        .base = (void *)this,
-    };
+    gdtr.limit = sizeof(GlobalDescriptorTable);
+    gdtr.base = (void *)this;
+
+    // From:
+    // https://github.com/SerenityOS/serenity/blob/9f0ab281ced15e30f511c91bc1b06deb8f79269a/Kernel/Arch/x86_64/Processor.cpp#L752-L753
+    // https://git.bananymous.com/Bananymous/banan-os/src/commit/f18c33563d52b4286707794d045ad9d52e758380/kernel/include/kernel/GDT.h#L137-L140
     // NOLINTNEXTLINE(hicpp-no-assembler)
-    asm volatile("lgdt (%0)" : : "p"(&data));
+    asm volatile("lgdt %0" : : "m"(gdtr) : "memory");
 }
 
 GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(
