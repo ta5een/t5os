@@ -28,15 +28,11 @@ extern "C" void call_ctors()
  */
 extern "C" void _kmain(Multiboot /*multiboot*/, u32 /*magic*/)
 {
-    const char *arch_string{};
-    if (ARCH(X86_32))
-    {
-        arch_string = "x86";
-    }
-    else
-    {
-        arch_string = "unknown";
-    }
+#if ARCH(X86_32)
+    const char *arch_string = "x86";
+#else
+#    error "Unhandled case for current architecture"
+#endif
 
     drivers::WRITER.clear_screen();
     drivers::WRITER.put_string("t5os/1 (");
