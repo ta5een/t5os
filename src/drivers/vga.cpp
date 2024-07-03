@@ -26,9 +26,6 @@ const char *const UITOA_SEARCH_STR = "0123456789abcdefghijklmnopqrstuvwxyz";
 const char *const SITOA_SEARCH_STR =
     "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
 
-// TODO: Wrap this in a mutex to ensure thread-safety
-const VgaWriter s_vga_writer{};
-
 constexpr VgaScreenChar create_screen_char(u8 byte, VgaColor fg, VgaColor bg)
 {
     u8 color_code = ((u8)fg) | (u8)((u8)bg << 4U);
@@ -87,7 +84,9 @@ class VgaMemoryBuffer
 
 const VgaWriter &VgaWriter::instance()
 {
-    return s_vga_writer;
+    // TODO: Wrap this in a mutex to ensure thread-safety
+    static const VgaWriter vga_writer{};
+    return vga_writer;
 }
 
 void VgaWriter::clear_screen() const

@@ -17,8 +17,6 @@ struct [[gnu::packed]] GlobalDescriptorTableRegister
     void *base;
 };
 
-static GlobalDescriptorTableRegister gdtr;
-
 GlobalDescriptorTable::GlobalDescriptorTable()
     : m_null_segment_selector(SegmentDescriptor::Empty)
     , m_unused_segment_selector(SegmentDescriptor::Empty)
@@ -35,6 +33,7 @@ GlobalDescriptorTable::GlobalDescriptorTable()
 
 void GlobalDescriptorTable::load()
 {
+    static GlobalDescriptorTableRegister gdtr;
     // Define the size (limit) and start (base) of the descriptor table
     gdtr.limit = sizeof(GlobalDescriptorTable);
     gdtr.base = (void *)this;
