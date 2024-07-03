@@ -1,6 +1,6 @@
 NAME = t5os
 ARCH = i686
-DEBUG ?= 1
+BUILD_TYPE ?= DEBUG
 
 SRCDIR = src
 LIBDIR = src
@@ -35,10 +35,17 @@ else
 $(error '$(ARCH)' is currently not supported)
 endif
 
-ifeq ($(DEBUG),1)
-	# Prepend debug flags to make it more prominent
-	CXXFLAGS := -g -DDEBUG_KERNEL $(CXXFLAGS)
+# Mimics CMake's `CMAKE_BUILD_TYPE`, as documented in this StackOverflow answer:
+# https://stackoverflow.com/a/59314670/10052039
+ifeq ($(BUILD_TYPE),DEBUG)
+	# Produce debug info, no optimisation, define DEBUG=1
+	CXXFLAGS := -g -O0 -DDEBUG $(CXXFLAGS)
 	QEMUFLAGS += -s -S -d int,cpu_reset
+else ifeq ($(BUILD_TYPE),RELEASE)
+	# Highest optimisation level
+	CXXFLAGS := -O3 $(CXXFLAGS)
+else
+$(error Invalid BUILD_TYPE '$(BUILD_TYPE)')
 endif
 
 .PHONY: default help toolchain kernel iso qemu gdb clean
