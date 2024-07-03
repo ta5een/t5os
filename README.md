@@ -153,6 +153,7 @@ projects I've taken inspiration from (I highly recommend checking them out):
 - [SerenityOS](https://github.com/SerenityOS/serenity)
 - [RetrOS-32](https://github.com/joexbayer/RetrOS-32)
 - [SkiftOS](https://github.com/skift-org/skift)
+- [banan-os](https://git.bananymous.com/Bananymous/banan-os)
 
 If for any reason you believe I have used your work and haven't credited you
 and/or abided by your license(s), please feel free to reach out to me :)
