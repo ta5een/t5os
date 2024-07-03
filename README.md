@@ -123,7 +123,7 @@ mounts][docker-bind-mounts].
 
     This will bind the current working directory as a volume in the Docker
     image and build the `.iso` image in a Linux environment. Once completed,
-    `./out/t5os.iso` will be available in your local filesystem.
+    `./build/t5os.iso` will be available in your local filesystem.
 
 1. Run the OS in `qemu`:
 
