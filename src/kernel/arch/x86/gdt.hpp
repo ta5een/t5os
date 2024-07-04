@@ -1,108 +1,89 @@
 #pragma once
 
+#include <kernel/arch/x86/descriptor_table.hpp>
 #include <lib/integers.hpp>
 
 namespace kernel
 {
 
-class GlobalDescriptorTable
+struct [[gnu::packed]] SegmentDescriptor
 {
   public:
-    /**
-     * An entry in a Global Descriptor Table.
-     */
-    class [[gnu::packed]] SegmentDescriptor
+    static constexpr u8 ACCESS_ACCESSED = 1U;
+    static constexpr u8 ACCESS_WRITEABLE = 1U << 1U;
+    static constexpr u8 ACCESS_CONFORMING = 1U << 2U;
+    static constexpr u8 ACCESS_EXECUTABLE = 1U << 3U;
+    static constexpr u8 ACCESS_USER_SEGMENT = 1U << 4U;
+    static constexpr u8 ACCESS_RING0 = 0U << 5U;
+    static constexpr u8 ACCESS_RING1 = 1U << 5U;
+    static constexpr u8 ACCESS_RING2 = 2U << 5U;
+    static constexpr u8 ACCESS_RING3 = 3U << 5U;
+    static constexpr u8 ACCESS_PRESENT = 1U << 7U;
+
+    static constexpr u8 FLAG_LONGMODE = 1U << 1U;
+    static constexpr u8 FLAG_DEFAULT_SIZE = 1U << 2U;
+    static constexpr u8 FLAG_GRANULARITY = 1U << 3U;
+
+    SegmentDescriptor() = default;
+
+    SegmentDescriptor(u32 base, u32 limit, u8 access, u8 flags)
+        : limit_0_15(limit & 0xffffU)
+        , base_0_15(base & 0xffffU)
+        , base_16_23((base >> 16U) & 0xffU)
+        , access_byte(access)
+        , flags_limit_16_19((flags << 4U) | ((limit >> 16U) & 0xfU))
+        , base_24_31((base >> 24U) & 0xffU)
     {
-      public:
-        enum EmptyTag
-        {
-            Empty
-        };
-        enum WithOptionsTag
-        {
-            WithOptions
-        };
-
-        struct Options
-        {
-          public:
-            u32 base{0};
-            u32 limit{0};
-            u8 access_byte{0};
-        };
-
-        /**
-         * Construct an empty SegmentDescriptor.
-         */
-        explicit SegmentDescriptor(EmptyTag /*unused*/);
-
-        /**
-         * Construct a SegmentDescriptor with a targeted base (offset), a
-         * targeted limit (size), and provided access byte flags.
-         */
-        explicit SegmentDescriptor(WithOptionsTag, Options options);
-
-        /**
-         * The decoded linear address where this segment begins.
-         */
-        u32 base() const;
-
-        /**
-         * The decoded limit of this segment, respecting the page granularity
-         * such that it value ranges from 1 byte to 4 GiB.
-         */
-        u32 limit() const;
-
-      private:
-        SegmentDescriptor();
-
-        u16 m_limit_0_15{0};
-        u16 m_base_0_15{0};
-        u8 m_base_16_23{0};
-        u8 m_access_byte{0};
-        u8 m_flags_limit_16_19{0};
-        u8 m_base_24_31{0};
-    };
-
-    /**
-     * Construct a GlobalDescriptorTable with predefined segments.
-     */
-    GlobalDescriptorTable();
-
-    /**
-     * TODO: No-op.
-     */
-    ~GlobalDescriptorTable() = default;
-
-    /**
-     * Load the GlobalDescriptorTable by calling the LGDT instruction.
-     */
-    void load();
-
-    /**
-     * The raw value of the kernel code segment selector.
-     */
-    u16 code_segment_selector() const
-    {
-        return (u8 *)&m_code_segment_selector - (u8 *)this;
     }
 
-    /**
-     * The raw value of the kernel data segment selector.
-     */
-    u16 data_segment_selector() const
+    u32 base() const
     {
-        return (u8 *)&m_data_segment_selector - (u8 *)this;
+        u32 result = base_0_15;
+        result |= base_16_23 << 16U;
+        result |= base_24_31 << 24U;
+        return result;
     }
 
-    // TODO: I'm not sure what the purpose of "m_unused_segment_selector" is
-    // for. Most online sources follow the kernel segments directly after the
-    // null segment.
-  private:
-    SegmentDescriptor m_null_segment_selector;
-    SegmentDescriptor m_unused_segment_selector;
-    SegmentDescriptor m_code_segment_selector;
-    SegmentDescriptor m_data_segment_selector;
+    u32 limit() const
+    {
+        u32 result = limit_0_15;
+        result |= (flags_limit_16_19 & 0xfU) << 16U;
+        return result;
+    }
+
+    u16 limit_0_15{0};
+    u16 base_0_15{0};
+    u8 base_16_23{0};
+    u8 access_byte{0};
+    u8 flags_limit_16_19{0};
+    u8 base_24_31{0};
 };
+
+static_assert(sizeof(SegmentDescriptor) == 8);
+
+class [[gnu::packed]] GlobalDescriptorTable
+{
+  public:
+    static constexpr usize NUM_ENTRIES = 4U;
+    static constexpr usize NULL_IDX = 0U;
+    static constexpr usize UNUSED_IDX = 1U;
+    static constexpr usize KERNEL_CS_IDX = 2U;
+    static constexpr usize KERNEL_DS_IDX = 3U;
+
+    using Entries = DescriptorTable<SegmentDescriptor, NUM_ENTRIES>;
+
+    explicit GlobalDescriptorTable() = default;
+
+    void write_entry(usize idx, const SegmentDescriptor &&segment);
+    void load() const;
+
+  private:
+    Entries m_entries;
+};
+
+static_assert(
+    sizeof(GlobalDescriptorTable) ==
+    (sizeof(SegmentDescriptor) * GlobalDescriptorTable::NUM_ENTRIES)
+);
 
 } // namespace kernel

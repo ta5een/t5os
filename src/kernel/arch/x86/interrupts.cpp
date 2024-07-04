@@ -1,5 +1,5 @@
-#include "drivers/vga.hpp"
-
+#include <drivers/vga.hpp>
+#include <kernel/arch/x86/gdt.hpp>
 #include <kernel/arch/x86/interrupts.hpp>
 
 namespace kernel
@@ -39,7 +39,7 @@ InterruptManager::InterruptManager(GlobalDescriptorTable *gdt)
     , pic_slave_command(0xa0)
     , pic_slave_data(0xa1)
 {
-    u16 code_segment = gdt->code_segment_selector();
+    u16 code_segment = gdt->KERNEL_CS_IDX * sizeof(SegmentDescriptor);
     const u8 IDT_INTERRUPT_GATE = 0xe;
 
     for (u16 i = 0; i < 256; i++)
@@ -75,9 +75,9 @@ InterruptManager::InterruptManager(GlobalDescriptorTable *gdt)
     pic_slave_data.write(0x00);
 
     InterruptDescriptorTablePointer idt{};
-    idt.size = 256 * sizeof(GateDescriptor) - 1;
-    idt.base = (u32)interrupt_descriptor_table;
-    asm volatile("lidt %0" ::"m"(idt));
+    idt.size = (256 * sizeof(GateDescriptor)) - 1;
+    idt.base = (void *)interrupt_descriptor_table;
+    asm volatile("lidt %0" : : "m"(idt) : "memory");
 }
 
 void InterruptManager::activate()

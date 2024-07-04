@@ -43,7 +43,7 @@ class InterruptManager
     struct [[gnu::packed]] InterruptDescriptorTablePointer
     {
         u16 size;
-        u32 base;
+        void *base;
     };
 
     static GateDescriptor interrupt_descriptor_table[256];
