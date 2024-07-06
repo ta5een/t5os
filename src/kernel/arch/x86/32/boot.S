@@ -27,6 +27,28 @@
 	.long FLAGS
 	.long CHECKSUM
 
+	/* Allocate space for a small stack for the kernel.
+	 *
+	 * The Multiboot standard does not define the value of the stack pointer
+	 * register (esp) and it is up to the kernel to provide a stack. This
+	 * allocates room for a small stack by creating a symbol at the bottom of
+	 * it, allocating 16 KiB, and finally creating a symbol at the top.
+	 *
+	 * The stack is in its own section so it can be marked nobits, which means
+	 * the kernel file is smaller because it does not contain an uninitialized
+	 * stack.
+	 *
+	 * The stack on x86 must be 16-byte aligned according to the System V ABI
+	 * standard and de-facto extensions. The compiler will assume the stack is
+	 * properly aligned -- failure to align the stack will result in undefined
+	 * behavior.
+	 */
+	.section .bss
+	.align 16
+stack_bottom:
+	.skip 16*1024					# 16 KiB
+stack_top:
+
 	/* The linker script specifies _start as the entry point to the kernel. The
 	 * bootloader will jump to this position once the kernel has been loaded.
 	 */
@@ -38,7 +60,7 @@ _start:
 	 * (as it grows downwards on x86 systems). This is necessarily done in ASM
 	 * as languages like C cannot function without a stack.
 	 */
-	mov $stack, %esp
+	mov $stack_top, %esp
 	/* C++ requires runtime support for global constructors and exceptions. To
 	 * provide this, we have defined a function in kernel.cpp to set up
 	 * rudimentary support for constructors. We have no interest in providing
@@ -81,6 +103,7 @@ _start:
 1:	hlt
 	jmp 1b
 
-	.section .bss
-	.space 2*1024*1024				# Add 2MiB padding
-stack:								# Will point to some available space in RAM
+	/* Set the size of the _start symbol to the current location ('.') minus its
+	 * start. This is useful when debugging or when you implement call tracking.
+	 */
+	.size _start, . - _start
