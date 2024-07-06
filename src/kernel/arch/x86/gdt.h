@@ -10,6 +10,21 @@
 #define GDT_IDX_USER_DS   4U // User Data segment
 #define GDT_NUM_ENTRIES   (GDT_IDX_USER_DS + 1U)
 
+#define GDT_ACCESS_ACCESS     1U
+#define GDT_ACCESS_WRITEABLE  1U << 1U
+#define GDT_ACCESS_CONFORMING 1U << 2U
+#define GDT_ACCESS_EXECUTABLE 1U << 3U
+#define GDT_ACCESS_NOT_SYSTEM 1U << 4U
+#define GDT_ACCESS_RING0      0U << 5U
+#define GDT_ACCESS_RING1      1U << 5U
+#define GDT_ACCESS_RING2      2U << 5U
+#define GDT_ACCESS_RING3      3U << 5U
+#define GDT_ACCESS_PRESENT    1U << 7U
+
+#define GDT_FLAG_LONG_MODE    1U << 1U
+#define GDT_FLAG_DEFAULT_SIZE 1U << 2U
+#define GDT_FLAG_GRANULARITY  1U << 3U
+
 /**
  * An entry in the Global Descriptor Table, representing a Segment Descriptor.
  */
