@@ -1,5 +1,5 @@
 /* The bootloader will look at this image and start execution at the symbol
- * designated as the entry point. 
+ * designated as the entry point.
  */
 ENTRY(_start)
 
@@ -20,10 +20,8 @@ SECTIONS
   /* Executable code.
    *
    * First, put the multiboot header, as it is required to be put very early in
-   * the image or else the bootloader won't recognize the file format.
-   *
-   * Next, put the .text section, which provides the C++ code for _kmain and
-   * call_ctors.
+   * the image or else the bootloader won't recognize the file format. Then,
+   * put the .text section.
    */
   .text BLOCK(4K) : ALIGN(4K)
   {

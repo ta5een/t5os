@@ -2,7 +2,7 @@
 	 *
 	 * This source file sets up important header symbols so that the bootloader
 	 * can detect this custom kernel. Additionally, it sets up a 2MiB stack
-	 * before jumping to the _kmain function in the kernel.
+	 * before jumping to the kmain function in the kernel.
 	 */
 
 	/* Declare constants for the Multiboot header.
@@ -61,13 +61,6 @@ _start:
 	 * as languages like C cannot function without a stack.
 	 */
 	mov $stack_top, %esp
-	/* C++ requires runtime support for global constructors and exceptions. To
-	 * provide this, we have defined a function in kernel.cpp to set up
-	 * rudimentary support for constructors. We have no interest in providing
-	 * support for exceptions.
-	 */
-	.extern call_ctors
-	call call_ctors
 	/* Push two values to the stack, to be available as parameters for the
 	 * kernel main function.
 	 *
@@ -78,8 +71,8 @@ _start:
 	 * [1]: https://stackoverflow.com/a/9141701/10052039
 	 * [2]: https://en.wikipedia.org/wiki/X86_calling_conventions#List_of_x86_calling_conventions
 	 */
-	push %eax                       # Multiboot magic number: 0x2badb002
-	push %ebx                       # Physical ptr to Multiboot info structure
+	push %eax						# Multiboot magic number: 0x2badb002
+	push %ebx						# Physical ptr to Multiboot info structure
 	/* Enter the high-level kernel.
 	 *
 	 * NOTE: OSDev.org mentions that the System V ABI requires the stack to be
@@ -89,8 +82,8 @@ _start:
 	 * 32-bit registers to the stack -- does this mean we did not preserve the
 	 * alignment?
 	 */
-	.extern _kmain
-	call _kmain
+	.extern kmain
+	call kmain
 	/* If the system has nothing more to do, put the computer into an infinite
 	 * loop. To do that:
 	 *
