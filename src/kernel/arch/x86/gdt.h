@@ -11,28 +11,7 @@
 #define GDT_NUM_ENTRIES   (GDT_IDX_USER_DS + 1U)
 
 /**
- * A data structure describing a pointer to a particular descriptor table.
- */
-typedef struct [[gnu::packed]] descriptor_table_register
-{
-    /**
-     * The size of the descriptor table.
-     */
-    uint16_t limit;
-    /**
-     * The linear address of the descriptor table.
-     */
-    void *base;
-} descriptor_table_register_t;
-
-#if defined(__i386__) && !defined(__x86_64__)
-static_assert(sizeof(descriptor_table_register_t) == 6);
-#elif defined(__x86_64__)
-static_assert(sizeof(descriptor_table_register_t) == 10);
-#endif
-
-/**
- * An entry in the Global Descriptor Table, a.k.a. the Segment Descriptor.
+ * An entry in the Global Descriptor Table, representing a Segment Descriptor.
  */
 typedef struct [[gnu::packed]] gdt_entry
 {
@@ -44,14 +23,19 @@ typedef struct [[gnu::packed]] gdt_entry
     uint8_t base_24_31;
 } gdt_entry_t;
 
-static_assert(sizeof(gdt_entry_t) == 8);
+static_assert(sizeof(gdt_entry_t) == 8U);
+
+typedef struct gdt
+{
+    gdt_entry_t entries[GDT_NUM_ENTRIES];
+} gdt_t;
 
 /**
  * Initialize the entries of the Global Descriptor Table.
  */
-void gdt_init();
+void gdt_init(gdt_t *gdt);
 
 /**
  * Load the Global Descriptor Table with the LGDT instruction.
  */
-void gdt_load();
+void gdt_load(const gdt_t gdt[static 1]);

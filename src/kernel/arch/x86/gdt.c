@@ -1,11 +1,10 @@
-#include "gdt.h"
+#include <kernel/arch/x86/descriptor_table.h>
+#include <kernel/arch/x86/gdt.h>
 
 #define GDT_LIMIT_4KiB 0xfffffU
 
-static gdt_entry_t m_entries[GDT_NUM_ENTRIES];
-static descriptor_table_register_t gdtr;
-
 void gdt_write_entry(
+    gdt_t *gdt,
     size_t index,
     uint32_t base,
     uint32_t limit,
@@ -14,7 +13,7 @@ void gdt_write_entry(
 )
 {
     // TODO: Assert index
-    gdt_entry_t *entry = &m_entries[index];
+    gdt_entry_t *entry = &gdt->entries[index];
 
     // Encode base
     entry->base_0_15 = base & 0xffffU;
@@ -29,19 +28,20 @@ void gdt_write_entry(
     entry->access = access;
 }
 
-void gdt_init()
+void gdt_init(gdt_t *gdt)
 {
-    gdt_write_entry(GDT_IDX_NULL, 0U, 0U, 0U, 0U);
-    gdt_write_entry(GDT_IDX_KERNEL_CS, 0U, GDT_LIMIT_4KiB, 0x9a, 0xc);
-    gdt_write_entry(GDT_IDX_KERNEL_DS, 0U, GDT_LIMIT_4KiB, 0x92, 0xc);
-    gdt_write_entry(GDT_IDX_USER_CS, 0U, GDT_LIMIT_4KiB, 0xfa, 0xc);
-    gdt_write_entry(GDT_IDX_USER_DS, 0U, GDT_LIMIT_4KiB, 0xf2, 0xc);
+    gdt_write_entry(gdt, GDT_IDX_NULL, 0U, 0U, 0U, 0U);
+    gdt_write_entry(gdt, GDT_IDX_KERNEL_CS, 0U, GDT_LIMIT_4KiB, 0x9a, 0xc);
+    gdt_write_entry(gdt, GDT_IDX_KERNEL_DS, 0U, GDT_LIMIT_4KiB, 0x92, 0xc);
+    gdt_write_entry(gdt, GDT_IDX_USER_CS, 0U, GDT_LIMIT_4KiB, 0xfa, 0xc);
+    gdt_write_entry(gdt, GDT_IDX_USER_DS, 0U, GDT_LIMIT_4KiB, 0xf2, 0xc);
     // TODO: Write entry for TSS
 }
 
-void gdt_load()
+void gdt_load(const gdt_t gdt[static 1])
 {
+    descriptor_table_register_t gdtr;
     gdtr.limit = (sizeof(gdt_entry_t) * GDT_NUM_ENTRIES) - 1;
-    gdtr.base = (void *)m_entries;
+    gdtr.base = (void *)gdt->entries;
     asm volatile("lgdt %0" : : "m"(gdtr) : "memory");
 }
