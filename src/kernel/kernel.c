@@ -8,8 +8,8 @@ typedef void(*multiboot_t);
 static gdt_t s_gdt;
 
 void kmain(
-    [[gnu::unused]] multiboot_t multiboot,
-    [[gnu::unused]] uint32_t magic
+    [[gnu::unused]] multiboot_t /*multiboot*/,
+    [[gnu::unused]] uint32_t /*magic*/
 )
 {
     // Load the GDT for the BSP
