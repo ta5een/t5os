@@ -7,8 +7,8 @@
 typedef void(*multiboot_t);
 
 void kmain(
-    __attribute__((unused)) multiboot_t multiboot,
-    __attribute__((unused)) uint32_t magic
+    [[gnu::unused]] multiboot_t multiboot,
+    [[gnu::unused]] uint32_t magic
 )
 {
     gdt_init();

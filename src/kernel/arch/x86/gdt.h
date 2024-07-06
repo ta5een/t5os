@@ -13,7 +13,7 @@
 /**
  * A data structure describing a pointer to a particular descriptor table.
  */
-typedef struct descriptor_table_register
+typedef struct [[gnu::packed]] descriptor_table_register
 {
     /**
      * The size of the descriptor table.
@@ -23,7 +23,7 @@ typedef struct descriptor_table_register
      * The linear address of the descriptor table.
      */
     void *base;
-} __attribute__((packed)) descriptor_table_register_t;
+} descriptor_table_register_t;
 
 #if defined(__i386__) && !defined(__x86_64__)
 static_assert(sizeof(descriptor_table_register_t) == 6);
@@ -34,7 +34,7 @@ static_assert(sizeof(descriptor_table_register_t) == 10);
 /**
  * An entry in the Global Descriptor Table, a.k.a. the Segment Descriptor.
  */
-typedef struct gdt_entry
+typedef struct [[gnu::packed]] gdt_entry
 {
     uint16_t limit_0_15;
     uint16_t base_0_15;
@@ -42,7 +42,7 @@ typedef struct gdt_entry
     uint8_t access;
     uint8_t flags_limit_16_19;
     uint8_t base_24_31;
-} __attribute__((packed)) gdt_entry_t;
+} gdt_entry_t;
 
 static_assert(sizeof(gdt_entry_t) == 8);
 
