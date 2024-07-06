@@ -1,6 +1,5 @@
 ---
 BasedOnStyle: Microsoft
-AccessModifierOffset: -2
 AlignAfterOpenBracket: BlockIndent
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Always
@@ -11,16 +10,11 @@ AllowShortLoopsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
-BreakConstructorInitializers: BeforeComma
 ColumnLimit: 80
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: true
-FixNamespaceComments: true
 IncludeBlocks: Regroup
 IndentPPDirectives: AfterHash
 IndentWidth: 4
-NamespaceIndentation: None
-PackConstructorInitializers: Never
 PointerAlignment: Right
 ReflowComments: true
 SortIncludes: CaseInsensitive
