@@ -16,6 +16,6 @@ void kmain(
         // idle. This reduces CPU usage and power consumption compared to a
         // busy-wait loop.
         // NOLINTNEXTLINE(hicpp-no-assembler)
-        __asm__ __volatile__("hlt");
+        asm volatile("hlt");
     }
 }

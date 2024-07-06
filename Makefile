@@ -19,7 +19,7 @@ AS = $(ARCH)-elf-as
 LD = $(ARCH)-elf-gcc
 QEMU ?= qemu-system-i386
 
-CCFLAGS := -std=c23 -Wall -Wextra -I$(LIBDIR) -ffreestanding
+CCFLAGS := -std=gnu23 -Wall -Wextra -I$(LIBDIR) -ffreestanding
 ASFLAGS :=
 LDFLAGS := -ffreestanding -lgcc -nostdlib
 QEMUFLAGS :=
