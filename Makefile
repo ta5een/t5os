@@ -30,7 +30,7 @@ OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OUTDIR)/%.o,$(CPP_SOURCES))
 OBJECTS += $(patsubst $(SRCDIR)/%.S,$(OUTDIR)/%.S.o,$(ASM_SOURCES))
 
 ifeq ($(ARCH),i686)
-	ARCHDIR = $(SRCDIR)/kernel/arch/x86/i686
+	ARCHDIR = $(SRCDIR)/kernel/arch/x86/32
 else
 $(error '$(ARCH)' is currently not supported)
 endif
