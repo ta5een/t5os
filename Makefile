@@ -14,19 +14,19 @@ TOOLCHAIN_BIN_DIR = $(TOOLCHAIN_DIR)/local/$(ARCH)/bin
 # LD = $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-g++
 # NOTE: For now, make sure to add `TOOLCHAIN_BIN_DIR` to your `$PATH` so that
 # `bear` can provide LSP support
-CXX = $(ARCH)-elf-g++
+CC = $(ARCH)-elf-gcc
 AS = $(ARCH)-elf-as
-LD = $(ARCH)-elf-g++
+LD = $(ARCH)-elf-gcc
 QEMU ?= qemu-system-i386
 
-CXXFLAGS := -std=c++20 -Wall -Wextra -I$(LIBDIR) -ffreestanding -fno-exceptions -fno-rtti -fno-use-cxa-atexit
+CCFLAGS := -std=c23 -Wall -Wextra -I$(LIBDIR) -ffreestanding
 ASFLAGS :=
 LDFLAGS := -ffreestanding -lgcc -nostdlib
 QEMUFLAGS :=
 
-CPP_SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
+C_SOURCES = $(shell find $(SRCDIR) -name '*.c')
 ASM_SOURCES = $(shell find $(SRCDIR) -name '*.S')
-OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OUTDIR)/%.o,$(CPP_SOURCES))
+OBJECTS := $(patsubst $(SRCDIR)/%.c,$(OUTDIR)/%.o,$(C_SOURCES))
 OBJECTS += $(patsubst $(SRCDIR)/%.S,$(OUTDIR)/%.S.o,$(ASM_SOURCES))
 
 ifeq ($(ARCH),i686)
@@ -39,11 +39,11 @@ endif
 # https://stackoverflow.com/a/59314670/10052039
 ifeq ($(BUILD_TYPE),DEBUG)
 	# Produce debug info, no optimisation, define DEBUG=1
-	CXXFLAGS := -g -O0 -DDEBUG $(CXXFLAGS)
+	CCFLAGS := -g -O0 -DDEBUG $(CCFLAGS)
 	QEMUFLAGS += -s -S -d int,cpu_reset
 else ifeq ($(BUILD_TYPE),RELEASE)
 	# Highest optimisation level
-	CXXFLAGS := -O3 $(CXXFLAGS)
+	CCFLAGS := -O3 $(CCFLAGS)
 else
 $(error Invalid BUILD_TYPE '$(BUILD_TYPE)')
 endif
@@ -75,9 +75,9 @@ $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-*:
 # When running `make` inside a running Docker container with a toolchain built
 # for the host system, `make` attempts to rebuild the project. This fails when
 # the host system uses a different binary format (e.g. Mach-O instead of ELF).
-$(OUTDIR)/%.o: $(SRCDIR)/%.cpp
+$(OUTDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -o $@ -c $<
+	$(CC) $(CCFLAGS) -o $@ -c $<
 
 $(OUTDIR)/%.S.o: $(SRCDIR)/%.S
 	@mkdir -p $(@D)
