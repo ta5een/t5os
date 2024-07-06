@@ -1,3 +1,5 @@
+#include "arch/x86/gdt.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -9,6 +11,9 @@ void kmain(
     __attribute__((unused)) uint32_t magic
 )
 {
+    gdt_init();
+    gdt_load();
+
     // Idle loop
     while (true)
     {
