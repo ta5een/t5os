@@ -28,7 +28,7 @@
 /**
  * An entry in the Global Descriptor Table, representing a Segment Descriptor.
  */
-typedef struct [[gnu::packed]] gdt_entry
+struct [[gnu::packed]] gdt_entry
 {
     uint16_t limit_0_15;
     uint16_t base_0_15;
@@ -36,21 +36,21 @@ typedef struct [[gnu::packed]] gdt_entry
     uint8_t access;
     uint8_t flags_limit_16_19;
     uint8_t base_24_31;
-} gdt_entry_t;
+};
 
-static_assert(sizeof(gdt_entry_t) == 8U);
+static_assert(sizeof(struct gdt_entry) == 8U);
 
-typedef struct gdt
+struct gdt
 {
-    gdt_entry_t entries[GDT_NUM_ENTRIES];
-} gdt_t;
+    struct gdt_entry entries[GDT_NUM_ENTRIES];
+};
 
 /**
  * Initialize the entries of the Global Descriptor Table.
  */
-void gdt_init(gdt_t *gdt);
+void gdt_init(struct gdt *gdt);
 
 /**
  * Load the Global Descriptor Table with the LGDT instruction.
  */
-void gdt_load(const gdt_t gdt[static 1]);
+void gdt_load(const struct gdt gdt[static 1]);

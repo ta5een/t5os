@@ -5,7 +5,7 @@
 
 typedef void(*multiboot_t);
 
-static gdt_t s_gdt;
+static struct gdt s_gdt;
 
 void kmain(
     [[gnu::unused]] multiboot_t /*multiboot*/,

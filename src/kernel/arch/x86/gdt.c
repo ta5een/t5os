@@ -17,7 +17,7 @@
 #define FLAGS_CS_64 (GDT_FLAG_GRANULARITY | GDT_FLAG_LONG_MODE)
 
 void gdt_set_entry(
-    gdt_entry_t target[static 1],
+    struct gdt_entry target[static 1],
     uint32_t base,
     uint32_t limit,
     uint8_t access,
@@ -37,7 +37,7 @@ void gdt_set_entry(
     target->access = access;
 }
 
-void gdt_init(gdt_t *gdt)
+void gdt_init(struct gdt *gdt)
 {
     // Null segment
     gdt_set_entry(&gdt->entries[GDT_IDX_NULL], 0U, 0U, 0U, 0U);
@@ -76,10 +76,10 @@ void gdt_init(gdt_t *gdt)
     // TODO: Write entry for TSS
 }
 
-void gdt_load(const gdt_t gdt[static 1])
+void gdt_load(const struct gdt gdt[static 1])
 {
-    descriptor_table_register_t gdtr;
-    gdtr.limit = (sizeof(gdt_entry_t) * GDT_NUM_ENTRIES) - 1;
+    struct descriptor_table_register gdtr;
+    gdtr.limit = (sizeof(struct gdt) * GDT_NUM_ENTRIES) - 1;
     gdtr.base = (void *)gdt->entries;
     asm volatile("lgdt %0" : : "m"(gdtr) : "memory");
 }
