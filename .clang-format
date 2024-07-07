@@ -14,7 +14,7 @@ BinPackParameters: false
 ColumnLimit: 80
 ContinuationIndentWidth: 4
 IncludeBlocks: Regroup
-IndentPPDirectives: AfterHash
+IndentPPDirectives: BeforeHash
 IndentWidth: 4
 PointerAlignment: Right
 ReflowComments: true
