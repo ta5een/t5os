@@ -10,7 +10,7 @@
 #define GDT_IDX_USER_DS   4U // User Data segment
 #define GDT_NUM_ENTRIES   (GDT_IDX_USER_DS + 1U)
 
-#define GDT_ACCESS_ACCESS     1U
+#define GDT_ACCESS_ACCESSED   1U
 #define GDT_ACCESS_WRITEABLE  1U << 1U
 #define GDT_ACCESS_CONFORMING 1U << 2U
 #define GDT_ACCESS_EXECUTABLE 1U << 3U
