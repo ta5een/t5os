@@ -22,7 +22,7 @@ QEMU ?= qemu-system-i386
 CCFLAGS := -std=gnu23 -Wall -Wextra -I$(LIBDIR) -ffreestanding
 ASFLAGS :=
 LDFLAGS := -ffreestanding -lgcc -nostdlib
-QEMUFLAGS :=
+QEMUFLAGS := -serial stdio
 
 C_SOURCES = $(shell find $(SRCDIR) -name '*.c')
 ASM_SOURCES = $(shell find $(SRCDIR) -name '*.S')
