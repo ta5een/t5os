@@ -18,9 +18,9 @@ struct [[gnu::packed]] descriptor_table_register
 };
 
 #if defined(__x86_64__)
-// NOLINTNEXTLINE(readability-*)
-static_assert(sizeof(struct descriptor_table_register) == 10U);
+// NOLINTNEXTLINE(readability-magic-numbers)
+static_assert((bool)(sizeof(struct descriptor_table_register) == 10U));
 #elif defined(__i386__)
-// NOLINTNEXTLINE(readability-*)
-static_assert(sizeof(struct descriptor_table_register) == 6U);
+// NOLINTNEXTLINE(readability-magic-numbers)
+static_assert((bool)(sizeof(struct descriptor_table_register) == 6U));
 #endif

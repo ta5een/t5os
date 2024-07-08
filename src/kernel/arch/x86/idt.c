@@ -88,18 +88,8 @@ void idt_deactivate(const struct idt idt[static 1])
     asm volatile("cli");
 }
 
-volatile uint16_t *VGA_BUFFER = (uint16_t *)0xb8000;
-
-void putc(uint8_t byte)
-{
-    uint8_t color_code = ((uint8_t)0xfU) | (uint8_t)((uint8_t)0x0U << 4U);
-    uint16_t screen_char = ((uint16_t)byte) | (uint16_t)(color_code << 8U);
-    VGA_BUFFER[0] = screen_char;
-}
-
 size_t idt_handle_interrupt(size_t interrupt_number, size_t esp)
 {
-    putc('A');
     return esp;
 }
 

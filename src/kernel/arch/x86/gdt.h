@@ -72,11 +72,11 @@ struct gdt
 };
 
 /**
- * Initialize the entries of the Global Descriptor Table.
+ * Initializes the entries of the Global Descriptor Table.
  */
 void gdt_init(struct gdt *gdt);
 
 /**
- * Load the Global Descriptor Table with the LGDT instruction.
+ * Loads the Global Descriptor Table with the LGDT instruction.
  */
 void gdt_load(const struct gdt gdt[static 1]);
