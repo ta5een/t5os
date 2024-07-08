@@ -4,7 +4,7 @@
 #define LIMIT_4KiB 0xfffffU
 
 #define ACCESS_DS                                                              \
-    (GDT_ACCESS_PRESENT | GDT_ACCESS_NOT_SYSTEM | GDT_ACCESS_WRITEABLE)
+    (GDT_ACCESS_WRITEABLE | GDT_ACCESS_NOT_SYSTEM | GDT_ACCESS_PRESENT)
 #define ACCESS_CS        (ACCESS_DS | GDT_ACCESS_EXECUTABLE)
 #define ACCESS_KERNEL_CS (GDT_ACCESS_RING0 | ACCESS_CS)
 #define ACCESS_KERNEL_DS (GDT_ACCESS_RING0 | ACCESS_DS)
@@ -20,8 +20,8 @@ void gdt_set_entry(
     struct gdt_entry target[static 1],
     uint32_t base,
     uint32_t limit,
-    uint8_t access,
-    uint8_t flags
+    enum gdt_access access,
+    enum gdt_flag flags
 )
 {
     // Encode base
@@ -43,7 +43,7 @@ void gdt_init(struct gdt *gdt)
     gdt_set_entry(&gdt->entries[GDT_IDX_NULL], 0U, 0U, 0U, 0U);
     // Kernel Mode Code segment
     gdt_set_entry(
-        &gdt->entries[GDT_IDX_KERNEL_CS],
+        &gdt->entries[GDT_IDX_KCODE],
         0U,
         LIMIT_4KiB,
         ACCESS_KERNEL_CS,
@@ -51,7 +51,7 @@ void gdt_init(struct gdt *gdt)
     );
     // Kernel Mode Data segment
     gdt_set_entry(
-        &gdt->entries[GDT_IDX_KERNEL_DS],
+        &gdt->entries[GDT_IDX_KDATA],
         0U,
         LIMIT_4KiB,
         ACCESS_KERNEL_DS,
@@ -59,7 +59,7 @@ void gdt_init(struct gdt *gdt)
     );
     // User Mode Code segment
     gdt_set_entry(
-        &gdt->entries[GDT_IDX_USER_CS],
+        &gdt->entries[GDT_IDX_UCODE],
         0U,
         LIMIT_4KiB,
         ACCESS_USER_CS,
@@ -67,7 +67,7 @@ void gdt_init(struct gdt *gdt)
     );
     // User Mode Data segment
     gdt_set_entry(
-        &gdt->entries[GDT_IDX_USER_DS],
+        &gdt->entries[GDT_IDX_UDATA],
         0U,
         LIMIT_4KiB,
         ACCESS_USER_DS,

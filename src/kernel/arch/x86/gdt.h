@@ -3,27 +3,52 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define GDT_IDX_NULL      0U // Null segment
-#define GDT_IDX_KERNEL_CS 1U // Kernel Code segment
-#define GDT_IDX_KERNEL_DS 2U // Kernel Data segment
-#define GDT_IDX_USER_CS   3U // User Code segment
-#define GDT_IDX_USER_DS   4U // User Data segment
-#define GDT_NUM_ENTRIES   (GDT_IDX_USER_DS + 1U)
+#define GDT_NUM_ENTRIES (GDT_IDX_UDATA + 1U)
 
-#define GDT_ACCESS_ACCESSED   1U
-#define GDT_ACCESS_WRITEABLE  1U << 1U
-#define GDT_ACCESS_CONFORMING 1U << 2U
-#define GDT_ACCESS_EXECUTABLE 1U << 3U
-#define GDT_ACCESS_NOT_SYSTEM 1U << 4U
-#define GDT_ACCESS_RING0      0U << 5U
-#define GDT_ACCESS_RING1      1U << 5U
-#define GDT_ACCESS_RING2      2U << 5U
-#define GDT_ACCESS_RING3      3U << 5U
-#define GDT_ACCESS_PRESENT    1U << 7U
+enum gdt_entry_index : uint8_t
+{
+    /**
+     * Null segment
+     */
+    GDT_IDX_NULL = 0U,
+    /**
+     * Kernel Mode code segment
+     */
+    GDT_IDX_KCODE = 1U,
+    /**
+     * Kernel Mode data segment
+     */
+    GDT_IDX_KDATA = 2U,
+    /**
+     * User Mode code segment
+     */
+    GDT_IDX_UCODE = 3U,
+    /**
+     * User Mode data segment
+     */
+    GDT_IDX_UDATA = 4U,
+};
 
-#define GDT_FLAG_LONG_MODE    1U << 1U
-#define GDT_FLAG_DEFAULT_SIZE 1U << 2U
-#define GDT_FLAG_GRANULARITY  1U << 3U
+enum gdt_access : uint8_t
+{
+    GDT_ACCESS_ACCESSED = 1U,
+    GDT_ACCESS_WRITEABLE = 1U << 1U,
+    GDT_ACCESS_CONFORMING = 1U << 2U,
+    GDT_ACCESS_EXECUTABLE = 1U << 3U,
+    GDT_ACCESS_NOT_SYSTEM = 1U << 4U,
+    GDT_ACCESS_RING0 = 0U << 5U,
+    GDT_ACCESS_RING1 = 1U << 5U,
+    GDT_ACCESS_RING2 = 2U << 5U,
+    GDT_ACCESS_RING3 = 3U << 5U,
+    GDT_ACCESS_PRESENT = 1U << 7U,
+};
+
+enum gdt_flag : uint8_t
+{
+    GDT_FLAG_LONG_MODE = 1U << 1U,
+    GDT_FLAG_DEFAULT_SIZE = 1U << 2U,
+    GDT_FLAG_GRANULARITY = 1U << 3U,
+};
 
 /**
  * An entry in the Global Descriptor Table, representing a Segment Descriptor.
@@ -38,6 +63,7 @@ struct [[gnu::packed]] gdt_entry
     uint8_t base_24_31;
 };
 
+// NOLINTNEXTLINE(readability-*)
 static_assert(sizeof(struct gdt_entry) == 8U);
 
 struct gdt
