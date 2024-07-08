@@ -7,7 +7,7 @@
 typedef void(*multiboot_t);
 
 static struct gdt s_gdt;
-static struct idt s_idt;
+// static struct idt s_idt;
 
 void kmain(
     [[gnu::unused]] multiboot_t /*multiboot*/,
@@ -19,9 +19,9 @@ void kmain(
     gdt_load(&s_gdt);
 
     // Load the IDT for the BSP
-    idt_init(&s_idt, GDT_IDX_KCODE);
-    idt_load(&s_idt);
-    idt_activate(&s_idt);
+    // idt_init(&s_idt, GDT_IDX_KCODE);
+    // idt_load(&s_idt);
+    // idt_activate(&s_idt);
 
     // Idle loop
     while (true)
