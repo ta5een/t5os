@@ -17,8 +17,10 @@ struct [[gnu::packed]] descriptor_table_register
     void *base;
 };
 
-#if defined(__i386__) && !defined(__x86_64__)
-static_assert(sizeof(struct descriptor_table_register) == 6);
-#elif defined(__x86_64__)
-static_assert(sizeof(struct descrdescriptor_table_register) == 10);
+#if defined(__x86_64__)
+// NOLINTNEXTLINE(readability-*)
+static_assert(sizeof(struct descriptor_table_register) == 10U);
+#elif defined(__i386__)
+// NOLINTNEXTLINE(readability-*)
+static_assert(sizeof(struct descriptor_table_register) == 6U);
 #endif
