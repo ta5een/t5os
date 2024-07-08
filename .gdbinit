@@ -6,6 +6,6 @@ layout src
 focus cmd
 
 # Break at useful functions
-break _kmain
-break kernel::_on_assert
-break kernel::_on_panic
+break kmain
+break _kernel_on_assert
+break _kernel_on_panic
