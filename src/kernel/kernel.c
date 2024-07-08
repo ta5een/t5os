@@ -1,4 +1,5 @@
 #include <kernel/arch/x86/gdt.h>
+#include <kernel/arch/x86/idt.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -6,6 +7,7 @@
 typedef void(*multiboot_t);
 
 static struct gdt s_gdt;
+static struct idt s_idt;
 
 void kmain(
     [[gnu::unused]] multiboot_t /*multiboot*/,
@@ -15,6 +17,11 @@ void kmain(
     // Load the GDT for the BSP
     gdt_init(&s_gdt);
     gdt_load(&s_gdt);
+
+    // Load the IDT for the BSP
+    idt_init(&s_idt, GDT_IDX_KCODE);
+    idt_load(&s_idt);
+    idt_activate(&s_idt);
 
     // Idle loop
     while (true)
