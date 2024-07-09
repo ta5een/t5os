@@ -1,7 +1,6 @@
 #pragma once
 
 #include <libcore/string_view.h>
-#include <stddef.h>
 #include <stdint.h>
 
 #define SERIAL_COM1_BASE 0x3f8 // COM1 base port
