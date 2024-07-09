@@ -22,13 +22,7 @@ void kmain(
     [[gnu::unused]] uint32_t /*magic*/
 )
 {
-    enum serial_init_response response = serial_init(SERIAL_COM1_BASE);
-    if (response == SERIAL_INIT_SUCCESS)
-    {
-        // TODO: Do something useful here...
-        putc('Y');
-    }
-    else
+    if (serial_init(SERIAL_COM1_BASE) != SERIAL_INIT_SUCCESS)
     {
         // TODO: Do something useful here...
         putc('N');
