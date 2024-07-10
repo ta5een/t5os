@@ -7,8 +7,8 @@
 
 enum serial_init_response
 {
-    SERIAL_INIT_SUCCESS = 0,
-    SERIAL_INIT_FAILURE = 1,
+    SERIAL_INIT_FAILURE = 0,
+    SERIAL_INIT_SUCCESS = 1,
 };
 
 /**
