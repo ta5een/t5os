@@ -17,29 +17,29 @@
  * `NUL` character. Pay attention to this, as the majority of graphemes
  * available in the Unicode Standard do NOT fit inside one byte.
  */
-#define LIBCORE_ARRAY_LENGTH(__array)                                          \
+#define LIBCORE_ARRAY_LENGTH($array)                                           \
     ({                                                                         \
         static_assert(                                                         \
             !__builtin_types_compatible_p(                                     \
-                typeof(__array), typeof(&(__array)[0])                         \
+                typeof($array), typeof(&($array)[0])                           \
             ),                                                                 \
             "The provided argument is not a fixed-size array"                  \
         );                                                                     \
-        (sizeof(__array) / sizeof((__array)[0]));                              \
+        (sizeof($array) / sizeof(($array)[0]));                                \
     })
 
-#define __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE(__str, __chtype)                  \
+#define __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE($str, $chtype)                    \
     ({                                                                         \
         static_assert(                                                         \
             __builtin_types_compatible_p(                                      \
-                typeof(__str), typeof(const __chtype[])                        \
+                typeof($str), typeof(const $chtype[])                          \
             ),                                                                 \
             "The provided argument is not a string literal"                    \
         );                                                                     \
         string_view_t view = {                                                 \
-            .stride = sizeof((__str)[0]),                                      \
-            .length = LIBCORE_ARRAY_LENGTH(__str) - 1,                         \
-            .data = (const uint8_t *)(__str)                                   \
+            .stride = sizeof(($str)[0]),                                       \
+            .length = LIBCORE_ARRAY_LENGTH($str) - 1,                          \
+            .data = (const uint8_t *)($str)                                    \
         };                                                                     \
         view;                                                                  \
     })
@@ -47,14 +47,14 @@
 /**
  * Creates a new instance of string_view_t given a fixed-size string.
  */
-#define LIBCORE_STRING_VIEW(__str)                                             \
-    __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE(__str, char)
+#define LIBCORE_STRING_VIEW($str)                                              \
+    __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE($str, char)
 
 /**
  * Creates a new instance of string_view_t given a fixed-size wide string.
  */
-#define LIBCORE_WIDE_STRING_VIEW(__str)                                        \
-    __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE(__str, wchar_t)
+#define LIBCORE_WIDE_STRING_VIEW($str)                                         \
+    __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE($str, wchar_t)
 
 /**
  * Represents an immutable view into a sequence of bytes.
