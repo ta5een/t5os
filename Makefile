@@ -40,7 +40,7 @@ endif
 ifeq ($(BUILD_TYPE),DEBUG)
 	# Produce debug info, no optimisation, define DEBUG=1
 	CCFLAGS := -g -O0 -DDEBUG $(CCFLAGS)
-	QEMUFLAGS += -s -S -d int,cpu_reset
+	QEMUFLAGS += -s -S -d int,cpu_reset -no-shutdown -no-reboot
 else ifeq ($(BUILD_TYPE),RELEASE)
 	# Highest optimisation level
 	CCFLAGS := -O3 $(CCFLAGS)
