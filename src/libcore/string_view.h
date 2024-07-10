@@ -89,12 +89,12 @@ typedef struct string_view
      * - For UTF-16 encoded strings, this will equal to 2.
      * - For UTF-32 encoded strings, this will equal to 4.
      */
-    size_t stride;
+    const size_t stride;
     /**
      * The total number of bytes that make up this string, NOT including the
      * `NUL` character.
      */
-    size_t length;
+    const size_t length;
     /**
      * A read-only view of the bytes that make up this string.
      */
