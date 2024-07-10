@@ -84,7 +84,7 @@ vga_buffer_index_at(size_t col, size_t row)
  * Reads the VGA character from the buffer at the provided column and row
  * indices.
  *
- * Do not assume the data returned represents a "valid" VGA character.
+ * Don't assume the data returned represents a "valid" VGA character.
  */
 static vga_char_t
 vga_buffer_read(const volatile vga_char_t *buffer, size_t col, size_t row)
