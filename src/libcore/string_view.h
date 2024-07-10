@@ -25,6 +25,8 @@
  *
  * TODO: Write about how string length is computed.
  * TODO: Show example of how to use this macro.
+ * FIXME: This macro currently accepts any array with elements that may be
+ * casted to uint8_t. There should be some mechanism to prevent this misuse.
  */
 #define LIBCORE_RESIZE_STRING_VIEW(identifier, string)                         \
     do                                                                         \
