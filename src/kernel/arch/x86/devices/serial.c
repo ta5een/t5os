@@ -100,7 +100,7 @@ typedef struct [[gnu::packed]]
  *   | Bit      | 7  6 | 5  | 4 | 3   | 2   | 1   | 0 |
  *   | Content  | lvl  | bs | r | dma | clt | clr | e |
  *   | Value    | 1  1 | 0  | 0 | 0   | 1   | 1   | 1 | = 0xc7
- *   '__________'______'____'___'_____'_____'_____'___'
+ *   '----------'------'----'---'-----'-----'-----'---'
  *
  * Legend:
  *   - lvl: How many bytes should be stored in the FIFO buffers (see [3] for
@@ -144,7 +144,7 @@ typedef struct [[gnu::packed]]
  *   | Bit      | 7 | 6 | 5  | 4  | 3   | 2   | 1   | 0   |
  *   | Content  | r | r | af | lb | ao2 | ao1 | rts | dtr |
  *   | Value    | 0 | 0 | 0  | 0  | 1   | 0   | 1   | 1   | = 0x0b
- *   '__________'___'___'____'____'_____'_____'_____'_____'
+ *   '----------'---'---'----'----'-----'-----'-----'-----'
  *
  * Legend:
  *   - r:   Reserved
