@@ -1,8 +1,6 @@
 # `t5os`
 
-`t5os` is my implementation of a small operating system, mostly following the
-[Write your own Operating System][wyoos-yt-playlist] YouTube playlist by Viktor
-Engelmann.
+`t5os` is a small hobby operating system written in C.
 
 ## Getting Started
 
@@ -137,12 +135,19 @@ mounts][docker-bind-mounts].
 - VMware/VirtualBox/etc.: Build the `.iso` with `make iso` and boot the virtual
   machine with this disk image (via USB or CD/DVD).
 
+## Online Resources
+
+Here is a non-exhaustive list of online resources that have helped me immensely
+in this project:
+
+- [OSDev Wiki](https://wiki.osdev.org/Expanded_Main_Page)
+- [The little book about OS development](https://littleosbook.github.io)
+- [Write Your Own Operating System (YouTube Playlist by Viktor Engelmann)](https://www.youtube.com/playlist?list=PLHh55M_Kq4OApWScZyPl5HhgsTJS9MZ6)
+
 ## License
 
-The majority of this project is based on the source code of the [Write your own
-Operating System][wyoos-yt-playlist] YouTube playlist by Viktor Engelmann,
-which itself is licensed under GPL-3.0. As such, I am required to license this
-project under GPL-3.0 too. See [License](./LICENSE) for more details.
+This project is licensed under the GNU General Public License v3.0. See
+[License](./LICENSE) for more details.
 
 Additionally, many parts of this project, from its implementation to its
 behaviour, have been derived from multiple open-source projects. Wherever
@@ -154,6 +159,7 @@ projects I've taken inspiration from (I highly recommend checking them out):
 - [RetrOS-32](https://github.com/joexbayer/RetrOS-32)
 - [SkiftOS](https://github.com/skift-org/skift)
 - [banan-os](https://git.bananymous.com/Bananymous/banan-os)
+- [opuntiaOS](https://github.com/opuntiaOS-Project/opuntiaOS/)
 
 If for any reason you believe I have used your work and haven't credited you
 and/or abided by your license(s), please feel free to reach out to me :)
@@ -181,4 +187,3 @@ repository][bear-gh-issue-comment].
 [bear-gh]: https://github.com/rizsotto/Bear
 [docker-bind-mounts]: https://docs.docker.com/storage/bind-mounts/
 [gnu-gcc-binutils-deps]: https://wiki.osdev.org/GCC_Cross-Compiler#Installing_Dependencies
-[wyoos-yt-playlist]: https://www.youtube.com/playlist?list=PLHh55M_Kq4OApWScZyPl5HhgsTJS9MZ6M
