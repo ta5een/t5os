@@ -4,67 +4,100 @@
 #include <stdint.h>
 
 /**
- * Computes the length of the provide array.
+ * Computes the length of a fixed-size array.
  *
  * A well-formed use of this macro is to provide an lvalue as the argument. It
- * is INCORRECT to provide a reference to an array as the argument, as this will
- * compute the size of the data being pointed to.
+ * is INCORRECT to provide a pointer or a reference as the argument, as this
+ * will compute the size of the pointer. This will be statically verified.
  *
  * Although not recommended, you may provide a string literal as the argument.
  * In this case, the computed length depends on the underlying encoding of the
  * string. For example, the length of a UTF-8 encoded string (where each element
  * is a char/uint8_t) represents the number of code points it contains, plus the
- * NULL character. Pay attention to this, as the majority of graphemes available
- * in the Unicode Standard does NOT fit inside one byte.
+ * `NUL` character. Pay attention to this, as the majority of graphemes
+ * available in the Unicode Standard do NOT fit inside one byte.
  */
-#define LIBCORE_ARRAY_LENGTH(array) (sizeof(array) / sizeof(array[0]))
+#define LIBCORE_ARRAY_LENGTH(__array)                                          \
+    ({                                                                         \
+        static_assert(                                                         \
+            !__builtin_types_compatible_p(                                     \
+                typeof(__array), typeof(&(__array)[0])                         \
+            ),                                                                 \
+            "The provided argument is not a fixed-size array"                  \
+        );                                                                     \
+        (sizeof(__array) / sizeof((__array)[0]));                              \
+    })
+
+#define __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE(__str, __chtype)                  \
+    ({                                                                         \
+        static_assert(                                                         \
+            __builtin_types_compatible_p(                                      \
+                typeof(__str), typeof(const __chtype[])                        \
+            ),                                                                 \
+            "The provided argument is not a string literal"                    \
+        );                                                                     \
+        string_view_t view = {                                                 \
+            .stride = sizeof((__str)[0]),                                      \
+            .length = LIBCORE_ARRAY_LENGTH(__str) - 1,                         \
+            .data = (const uint8_t *)(__str)                                   \
+        };                                                                     \
+        view;                                                                  \
+    })
 
 /**
- * Resizes the provided string view with the computed details of the provided
- * NULL-terminated string.
- *
- * TODO: Write about how string length is computed.
- * TODO: Show example of how to use this macro.
- * FIXME: This macro currently accepts any array with elements that may be
- * casted to uint8_t. There should be some mechanism to prevent this misuse.
+ * Creates a new instance of string_view_t given a fixed-size string.
  */
-#define LIBCORE_RESIZE_STRING_VIEW(identifier, string)                         \
-    do                                                                         \
-    {                                                                          \
-        identifier.stride = sizeof(string[0]);                                 \
-        identifier.length = LIBCORE_ARRAY_LENGTH(string);                      \
-        identifier.data = (const uint8_t *)string;                             \
-    } while (0)
+#define LIBCORE_STRING_VIEW(__str)                                             \
+    __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE(__str, char)
+
+/**
+ * Creates a new instance of string_view_t given a fixed-size wide string.
+ */
+#define LIBCORE_WIDE_STRING_VIEW(__str)                                        \
+    __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE(__str, wchar_t)
 
 /**
  * Represents an immutable view into a sequence of bytes.
  *
- * This data type facilitates passing a string along with its length as a
- * function argument. It clearly indicates that a string is expected,
- * not just a pointer to a single char, and it provides pre-computed details
- * of the string without needing iteration.
- *
- * To construct this data type, use the `LIBCORE_RESIZE_STRING_VIEW` macro. This
- * data type is relatively cheap to copy, and thus it is expected to be passed
- * by value.
+ * The purpose of this data type is to facilitate passing around fixed-size
+ * strings along with its length in a cheap-to-copy manner. By using the
+ * accompanying macros `LIBCORE_STRING_VIEW` and `LIBCORE_WIDE_STRING_VIEW`, the
+ * length and stride of the string can be computed at compile time. As such,
+ * this data type is only usable for fixed-size strings (i.e. string literals
+ * and variables that hold string literals).
  *
  * Internally, this data type is represented as a pointer to a contiguous
- * sequence of UTF-8 encoded bytes. The sequence is NOT guaranteed to end with a
- * NULL character, nor is it guaranteed to contain values suitable for a string
- * data type. It is the responsibility of both the provider and recipient to
- * ensure the data's validity.
+ * sequence of UTF-8 encoded bytes. The calculated length is guaranteed to
+ * represent the total number of bytes, even if there are multiple `NUL`
+ * characters interspersed within it. However, the contents of the string is
+ * NOT guaranteed to contain values suitable for a string data type (for
+ * example, the string may content nonsense bytes that translate to nonsense
+ * characters). It is the responsibility of both the provider and recipient
+ * to ensure the contents are valid.
  *
- * To support wide strings (e.g., UTF-16 and UTF-32), the `stride` property can
- * be used to determine the correct number of bytes per character when
- * iterating.
+ * To support wide strings (e.g., UTF-16 and UTF-32), the `stride` property
+ * can be used to determine the correct number of bytes per code point.
  *
  * TODO: Write about the expected lifetime of the underlying pointer.
- * TODO: Write about how this data type is limited to statically-sized strings.
  */
 typedef struct string_view
 {
+    /**
+     * The minimum number of bytes per code point.
+     *
+     * - For UTF-8 encoded strings, this will equal to 1.
+     * - For UTF-16 encoded strings, this will equal to 2.
+     * - For UTF-32 encoded strings, this will equal to 4.
+     */
     size_t stride;
+    /**
+     * The total number of bytes that make up this string, NOT including the
+     * `NUL` character.
+     */
     size_t length;
+    /**
+     * A read-only view of the bytes that make up this string.
+     */
     const uint8_t *data;
 } string_view_t;
 

@@ -2,7 +2,6 @@
 #include <kernel/arch/x86/devices/vga.h>
 #include <kernel/arch/x86/gdt.h>
 #include <kernel/arch/x86/idt.h>
-#include <libcore/string_view.h>
 
 #define VGA_BUFFER_ADDRESS ((volatile vga_char_t *)0xb8000U)
 
