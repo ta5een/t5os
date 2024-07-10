@@ -18,7 +18,7 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     struct vga *vga = vga_get();
     vga_init(vga, s_vga_buffer);
     vga_clear_screen(vga);
-    vga_println(vga, "Welcome to t5os");
+    vga_println(vga, "t5os v0.0.1");
 
     if (serial_init(SERIAL_COM1_BASE) != SERIAL_INIT_SUCCESS)
     {
@@ -36,6 +36,7 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     // idt_activate(&s_idt);
 
     // Idle loop
+    // TODO: Move this to generic CPU interface
     while (true)
     {
 #if defined(__i386__) || defined(__x86_64__)

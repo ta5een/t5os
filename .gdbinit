@@ -7,5 +7,5 @@ focus cmd
 
 # Break at useful functions
 break kmain
-break _kernel_on_assert
-break _kernel_on_panic
+break kernel_on_assert
+break kernel_on_panic
