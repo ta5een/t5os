@@ -8,7 +8,8 @@
 #define PORT_PIC_SLAVE_COMMAND  0xa0U
 #define PORT_PIC_SLAVE_DATA     0xa1U
 
-void idt_set_entry(
+void
+idt_set_entry(
     struct idt_entry target[static 1],
     size_t gdt_kernel_cs_selector,
     uint32_t handler,
@@ -23,7 +24,8 @@ void idt_set_entry(
     target->attributes = (1U << 7U) | type | ((dpl & 3U) << 5U);
 }
 
-void idt_init(struct idt *idt, size_t gdt_kernel_cs_selector)
+void
+idt_init(struct idt *idt, size_t gdt_kernel_cs_selector)
 {
     port_write_8(PORT_PIC_MASTER_COMMAND, 0x11U);
     port_write_8(PORT_PIC_SLAVE_COMMAND, 0x11U);
@@ -68,7 +70,8 @@ void idt_init(struct idt *idt, size_t gdt_kernel_cs_selector)
     );
 }
 
-void idt_load(const struct idt idt[static 1])
+void
+idt_load(const struct idt idt[static 1])
 {
     struct descriptor_table_register idtr;
     idtr.limit = (sizeof(struct idt_entry) * IDT_NUM_ENTRIES) - 1;
@@ -76,22 +79,28 @@ void idt_load(const struct idt idt[static 1])
     asm volatile("lidt %0" : : "m"(idtr) : "memory");
 }
 
-void idt_activate(const struct idt idt[static 1])
+void
+idt_activate(const struct idt idt[static 1])
 {
     // TODO: Assumes there is one processor to listen to interrupts
     asm volatile("sti");
 }
 
-void idt_deactivate(const struct idt idt[static 1])
+void
+idt_deactivate(const struct idt idt[static 1])
 {
     // TODO: Assumes there is one processor to stop listening to interrupts
     asm volatile("cli");
 }
 
-size_t idt_handle_interrupt(size_t interrupt_number, size_t esp)
+size_t
+idt_handle_interrupt(size_t interrupt_number, size_t esp)
 {
     return esp;
 }
 
-void idt_handle_interrupt_request_0x00() {};
-void idt_handle_interrupt_request_0x01() {};
+void
+idt_handle_interrupt_request_0x00() {};
+
+void
+idt_handle_interrupt_request_0x01() {};

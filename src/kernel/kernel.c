@@ -13,10 +13,8 @@ static volatile vga_char_t *s_vga_buffer = VGA_BUFFER_ADDRESS;
 static struct gdt s_gdt;
 // static struct idt s_idt;
 
-void kmain(
-    [[gnu::unused]] multiboot_t /*multiboot*/,
-    [[gnu::unused]] uint32_t /*magic*/
-)
+void
+kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
 {
     struct vga *vga = vga_get();
     vga_init(vga, s_vga_buffer);

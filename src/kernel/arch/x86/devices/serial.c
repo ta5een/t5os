@@ -31,7 +31,8 @@
  * divisor of that number, hence the resulting speed becomes (115'200 /
  * divisor) bits/sec.
  */
-static void serial_configure_baud_rate(uint16_t com_port, uint16_t divisor)
+static void
+serial_configure_baud_rate(uint16_t com_port, uint16_t divisor)
 {
     port_write_8(SERIAL_LINE_CONTROL_REG(com_port), SERIAL_LINE_ENABLE_DLAB);
     port_write_8(SERIAL_DATA_REG(com_port), (divisor >> 8U) & 0x00ffU);
@@ -72,10 +73,8 @@ typedef struct [[gnu::packed]]
  * [1]: https://littleosbook.github.io/#configuring-the-line
  * [2]: https://wiki.osdev.org/Serial_Ports#Line_Control_Register
  */
-static void serial_configure_line(
-    uint16_t com_port,
-    serial_line_configuration_t config
-)
+static void
+serial_configure_line(uint16_t com_port, serial_line_configuration_t config)
 {
     port_write_8(SERIAL_LINE_CONTROL_REG(com_port), *(uint8_t *)&config);
 }
@@ -117,10 +116,8 @@ typedef struct [[gnu::packed]]
  * [2]: https://wiki.osdev.org/Serial_Ports#First_In_First_Out_Control_Register
  * [3]: https://wiki.osdev.org/Serial_Ports#Interrupt_Trigger_Level
  */
-static void serial_configure_fifo(
-    uint16_t com_port,
-    serial_fifo_configuration_t config
-)
+static void
+serial_configure_fifo(uint16_t com_port, serial_fifo_configuration_t config)
 {
     port_write_8(SERIAL_FIFO_CONTROL_REG(com_port), *(uint8_t *)&config);
 }
@@ -161,10 +158,8 @@ typedef struct [[gnu::packed]]
  * [1]: https://littleosbook.github.io/#configuring-the-modem
  * [2]: https://wiki.osdev.org/Serial_Ports#Modem_Control_Register
  */
-static void serial_configure_modem(
-    uint16_t com_port,
-    serial_modem_configuration_t config
-)
+static void
+serial_configure_modem(uint16_t com_port, serial_modem_configuration_t config)
 {
     port_write_8(SERIAL_MODEM_CONTROL_REG(com_port), *(uint8_t *)&config);
 }
@@ -172,7 +167,8 @@ static void serial_configure_modem(
 /**
  * Tests the given COM port for faultiness.
  */
-static enum serial_init_response serial_test_port(uint16_t com_port)
+static enum serial_init_response
+serial_test_port(uint16_t com_port)
 {
     serial_modem_configuration_t config = {0, 0, 0, 0, 0, 0, 0};
 
@@ -207,13 +203,15 @@ static enum serial_init_response serial_test_port(uint16_t com_port)
 /**
  * Is the transmit FIFO queue empty for the given serial port?
  */
-static bool serial_is_transmit_fifo_empty(uint16_t com_port)
+static bool
+serial_is_transmit_fifo_empty(uint16_t com_port)
 {
     uint8_t value = port_read_8(com_port + 5) & 0x20U;
     return (bool)(value != 0U);
 }
 
-enum serial_init_response serial_init(uint16_t com_port)
+enum serial_init_response
+serial_init(uint16_t com_port)
 {
     // Disable all interrupts
     // NOTE: The example on OSDev Wiki writes to SERIAL_DATA_REG(com_port) + 1
@@ -261,7 +259,8 @@ enum serial_init_response serial_init(uint16_t com_port)
     return serial_test_port(com_port);
 }
 
-void serial_write(uint16_t com_port, string_view_t string)
+void
+serial_write(uint16_t com_port, string_view_t string)
 {
     // WARN: Assumes the provided string slice is encoded in UTF-8
     for (size_t i = 0; i < string.length; i++)

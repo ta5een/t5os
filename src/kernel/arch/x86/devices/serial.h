@@ -22,7 +22,8 @@ enum serial_init_response
  * TODO: Consider creating instances of serial ports to wrap in a mutex.
  */
 [[nodiscard]]
-enum serial_init_response serial_init(uint16_t com_port);
+enum serial_init_response
+serial_init(uint16_t com_port);
 
 /**
  * Writes a string to the given serial port.
@@ -32,4 +33,5 @@ enum serial_init_response serial_init(uint16_t com_port);
  *
  * TODO: Consider wrapping this operation in a no-interrupt scope.
  */
-void serial_write(uint16_t com_port, string_view_t string);
+void
+serial_write(uint16_t com_port, string_view_t string);

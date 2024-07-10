@@ -19,7 +19,8 @@ struct vga;
 /**
  * Retrieves the global instance of the VGA writer.
  */
-struct vga *vga_get();
+struct vga *
+vga_get();
 
 /**
  * Intializes the VGA writer with the address of the provided buffer.
@@ -38,19 +39,22 @@ struct vga *vga_get();
  * forever. Due to its volatile nature, it is inadvisable to directly read and
  * write to this buffer -- doing so will lead to unintended consequences.
  */
-void vga_init(struct vga *vga, volatile vga_char_t *buffer);
+void
+vga_init(struct vga *vga, volatile vga_char_t *buffer);
 
 /**
  * Clears the contents of the VGA buffer.
  */
-void vga_clear_screen(struct vga *vga);
+void
+vga_clear_screen(struct vga *vga);
 
 /**
  * Writes the contents of the provided string to the VGA buffer.
  *
  * TODO: Ability to accept a format string and variable number of arguments.
  */
-void vga_print(struct vga *vga, const char *str);
+void
+vga_print(struct vga *vga, const char *str);
 
 /**
  * Writes the contents of the provided string to the VGA buffer, moving the
@@ -58,4 +62,5 @@ void vga_print(struct vga *vga, const char *str);
  *
  * TODO: Ability to accept a format string and variable number of arguments.
  */
-void vga_println(struct vga *vga, const char *str);
+void
+vga_println(struct vga *vga, const char *str);

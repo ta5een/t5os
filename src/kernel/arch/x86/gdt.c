@@ -16,7 +16,8 @@
 #define FLAGS_DS_64 (GDT_FLAG_GRANULARITY | GDT_FLAG_DEFAULT_SIZE)
 #define FLAGS_CS_64 (GDT_FLAG_GRANULARITY | GDT_FLAG_LONG_MODE)
 
-void gdt_set_entry(
+void
+gdt_set_entry(
     struct gdt_entry target[static 1],
     uint32_t base,
     uint32_t limit,
@@ -37,7 +38,8 @@ void gdt_set_entry(
     target->access = access;
 }
 
-void gdt_init(struct gdt *gdt)
+void
+gdt_init(struct gdt *gdt)
 {
     // Null segment
     gdt_set_entry(&gdt->entries[GDT_IDX_NULL], 0U, 0U, 0U, 0U);
@@ -76,7 +78,8 @@ void gdt_init(struct gdt *gdt)
     // TODO: Write entry for TSS
 }
 
-void gdt_load(const struct gdt gdt[static 1])
+void
+gdt_load(const struct gdt gdt[static 1])
 {
     struct descriptor_table_register gdtr;
     gdtr.limit = (sizeof(struct gdt) * GDT_NUM_ENTRIES) - 1;

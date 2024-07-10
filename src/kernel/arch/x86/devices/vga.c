@@ -53,14 +53,16 @@ struct vga
     size_t row_pos;
 };
 
-struct vga *vga_get()
+struct vga *
+vga_get()
 {
     // TODO: Wrap accesses to this struct in a mutex
     static struct vga s_vga = {.buffer = NULL, .col_pos = 0, .row_pos = 0};
     return &s_vga;
 }
 
-void vga_init(struct vga *vga, volatile vga_char_t *buffer)
+void
+vga_init(struct vga *vga, volatile vga_char_t *buffer)
 {
     vga->buffer = buffer;
     vga->col_pos = 0;
@@ -71,7 +73,8 @@ void vga_init(struct vga *vga, volatile vga_char_t *buffer)
  * Calculates the appropriate offset from the start of the buffer given a column
  * and row indices.
  */
-static inline size_t vga_buffer_index_at(size_t col, size_t row)
+static inline size_t
+vga_buffer_index_at(size_t col, size_t row)
 {
     // TODO: Add asserts
     return (row * VGA_WIDTH) + col;
@@ -83,11 +86,8 @@ static inline size_t vga_buffer_index_at(size_t col, size_t row)
  *
  * Do not assume the data returned represents a "valid" VGA character.
  */
-static vga_char_t vga_buffer_read(
-    const volatile vga_char_t *buffer,
-    size_t col,
-    size_t row
-)
+static vga_char_t
+vga_buffer_read(const volatile vga_char_t *buffer, size_t col, size_t row)
 {
     size_t buffer_idx = vga_buffer_index_at(col, row);
     return buffer[buffer_idx];
@@ -97,7 +97,8 @@ static vga_char_t vga_buffer_read(
  * Writes the provided VGA character into the buffer at the provided column and
  * row indices.
  */
-static void vga_buffer_write(
+static void
+vga_buffer_write(
     volatile vga_char_t *buffer,
     vga_char_t vch,
     size_t col,
@@ -120,7 +121,8 @@ static void vga_buffer_write(
  * within the bounds of the VGA buffer. Use `vga_can_set_pos` and
  * `vga_try_set_pos` for that.
  */
-static inline void vga_unsafely_set_pos(struct vga *vga, size_t col, size_t row)
+static inline void
+vga_unsafely_set_pos(struct vga *vga, size_t col, size_t row)
 {
     vga->col_pos = col;
     vga->row_pos = row;
@@ -131,7 +133,8 @@ static inline void vga_unsafely_set_pos(struct vga *vga, size_t col, size_t row)
  * buffer?
  */
 [[nodiscard]]
-static inline bool vga_can_set_pos(size_t col, size_t row)
+static inline bool
+vga_can_set_pos(size_t col, size_t row)
 {
     // NOLINTNEXTLINE(readability-implicit-bool-conversion)
     return (col < VGA_WIDTH) && (row < VGA_HEIGHT);
@@ -144,7 +147,8 @@ static inline bool vga_can_set_pos(size_t col, size_t row)
  * Returns true if this operation succeeded, otherwise false.
  */
 [[nodiscard]]
-static inline bool vga_try_set_pos(struct vga *vga, size_t col, size_t row)
+static inline bool
+vga_try_set_pos(struct vga *vga, size_t col, size_t row)
 {
     if (vga_can_set_pos(col, row))
     {
@@ -158,7 +162,8 @@ static inline bool vga_try_set_pos(struct vga *vga, size_t col, size_t row)
 /**
  * Clears the contents of the provided row.
  */
-static void vga_clear_row(struct vga *vga, size_t row)
+static void
+vga_clear_row(struct vga *vga, size_t row)
 {
     for (size_t col = 0; col < VGA_WIDTH; col++)
     {
@@ -171,7 +176,8 @@ static void vga_clear_row(struct vga *vga, size_t row)
  * Moves the VGA writer position to the next line, scrolling the contents
  * upwards if necessary.
  */
-static void vga_new_line(struct vga *vga)
+static void
+vga_new_line(struct vga *vga)
 {
     // If we can't simply increment the y position because we're at the bottom
     // of the screen, we'll scroll the buffer contents upwards and then set the
@@ -203,7 +209,8 @@ static void vga_new_line(struct vga *vga)
  * other control characters and non-printable characters will be replaced with
  * ASCII_CHAR_UNKNOWN.
  */
-static void vga_put_byte(struct vga *vga, uint8_t byte)
+static void
+vga_put_byte(struct vga *vga, uint8_t byte)
 {
     if (byte == '\n')
     {
@@ -231,7 +238,8 @@ static void vga_put_byte(struct vga *vga, uint8_t byte)
     }
 }
 
-void vga_clear_screen(struct vga *vga)
+void
+vga_clear_screen(struct vga *vga)
 {
     for (size_t row = 0; row < VGA_HEIGHT; row++)
     {
@@ -242,7 +250,8 @@ void vga_clear_screen(struct vga *vga)
     vga_unsafely_set_pos(vga, 0, 0);
 }
 
-void vga_print(struct vga *vga, const char *str)
+void
+vga_print(struct vga *vga, const char *str)
 {
     for (size_t i = 0; str[i] != '\0'; i++)
     {
@@ -250,7 +259,8 @@ void vga_print(struct vga *vga, const char *str)
     }
 }
 
-void vga_println(struct vga *vga, const char *str)
+void
+vga_println(struct vga *vga, const char *str)
 {
     vga_print(vga, str);
     vga_new_line(vga);
