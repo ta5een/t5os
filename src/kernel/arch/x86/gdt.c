@@ -82,7 +82,7 @@ void
 gdt_load(const struct gdt gdt[static 1])
 {
     struct descriptor_table_register gdtr;
-    gdtr.limit = (sizeof(struct gdt) * GDT_NUM_ENTRIES) - 1;
-    gdtr.base = (void *)gdt->entries;
+    gdtr.limit = sizeof(struct gdt) - 1;
+    gdtr.base = (void *)gdt;
     asm volatile("lgdt %0" : : "m"(gdtr) : "memory");
 }
