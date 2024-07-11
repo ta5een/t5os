@@ -16,12 +16,26 @@ struct [[gnu::packed]] idt_entry
     uint16_t base_0_15;
     uint16_t segment_selector;
     uint8_t reserved;
-    uint8_t attributes;
+    uint8_t flags;
     uint16_t base_16_31;
 };
 
 // NOLINTNEXTLINE(readability-magic-numbers)
 static_assert((bool)(sizeof(struct idt_entry) == 8U));
+
+enum idt_flag : uint8_t
+{
+    IDT_FLAG_GATE_TASK = 0b0101U,
+    IDT_FLAG_GATE_INT_16 = 0b0101U,
+    IDT_FLAG_GATE_TRAP_16 = 0b0111U,
+    IDT_FLAG_GATE_INT_32 = 0b1101U,
+    IDT_FLAG_GATE_TRAP_32 = 0b1111U,
+    IDT_FLAG_RING0 = (0U << 5U),
+    IDT_FLAG_RING1 = (1U << 5U),
+    IDT_FLAG_RING2 = (2U << 5U),
+    IDT_FLAG_RING3 = (3U << 5U),
+    IDT_FLAG_PRESENT = (1U << 7U),
+};
 
 struct idt
 {
@@ -35,7 +49,7 @@ static_assert((bool)(sizeof(struct idt_entry) == 8U));
  * Initializes the gates of the Interrupt Descriptor Table.
  */
 void
-idt_init(struct idt *idt, size_t gdt_kernel_cs_selector);
+idt_init(struct idt *idt, size_t segment_selector);
 
 /**
  * Loads the Interrupt Descriptor Table with the LIDT instruction.
@@ -56,7 +70,7 @@ void
 idt_deactivate(const struct idt idt[static 1]);
 
 size_t
-idt_handle_interrupt(size_t interrupt_number, size_t esp);
+idt_handle_interrupt(uint8_t interrupt_number, size_t esp);
 
 extern void
 idt_ignore_interrupt_request();

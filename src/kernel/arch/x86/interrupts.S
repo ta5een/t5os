@@ -20,15 +20,15 @@
 	.global idt_ignore_interrupt_request
 
 	.macro handle_exception num
-	.global idt_handle_exception_\num\()Ev
-	idt_handle_exception_\num\()Ev:
+	.global idt_handle_exception_\num\()
+	idt_handle_exception_\num\():
 	movb  $\num, (interrupt_number)
 	jmp   interrupt_request_handler_stub
 	.endm
 
 	.macro handle_interrupt_request num
-	.global idt_handle_interrupt_request_\num\()Ev
-	idt_handle_interrupt_request_\num\()Ev:
+	.global idt_handle_interrupt_request_\num\()
+	idt_handle_interrupt_request_\num\():
 	movb  $\num + IRQ_BASE, (interrupt_number)
 	jmp   interrupt_request_handler_stub
 	.endm
@@ -37,20 +37,23 @@
 	handle_interrupt_request 0x01
 
 interrupt_request_handler_stub:
-	# Store current register values of this stack
-	pusha
+	# Save the current register values
+	pusha						# TODO: Shouldn't this be `pushad`?
 	pushl %ds
 	pushl %es
 	pushl %fs
 	pushl %gs
 
-	# Push interrupt number and stack pointer to this stack and call handler
+	# Push interrupt number and stack pointer to pass to the handler
 	push %esp
 	push (interrupt_number)
+	# Call the handler defined in C
 	call idt_handle_interrupt
+	# add %esp, 6				# TODO: This was commented out in WYOOS
+	# Switch the stack
 	movl %eax, %esp
 
-	# Restore the previous register values back to this stack (in reverse order)
+	# Restore the previous register values (in reverse order)
 	popl %gs
 	popl %fs
 	popl %es
