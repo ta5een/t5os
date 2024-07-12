@@ -3,7 +3,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define IDT_NUM_ENTRIES 256
+#define IDT_ENTRY_ALIGN   0x10U
+#define IDT_NUM_ENTRIES   0x100U
+#define IDT_HANDLER_ALIGN 16U
 
 /**
  * An entry in the Interrupt Descriptor Table, representing an Interrupt Gate,
@@ -52,29 +54,14 @@ idt_init();
 void
 idt_load();
 
-/**
- * Starts listening to interrupts.
- */
-void
-idt_activate();
+// /**
+//  * Starts listening to interrupts.
+//  */
+// void
+// idt_activate();
 
-/**
- * Stops listening to interrupts.
- */
-void
-idt_deactivate();
-
-size_t
-idt_handle_interrupt(uint8_t interrupt_number, size_t esp);
-
-[[gnu::cdecl]]
-void
-idt_ignore_interrupt_request();
-
-[[gnu::cdecl]]
-void
-idt_handle_interrupt_request_0x00();
-
-[[gnu::cdecl]]
-void
-idt_handle_interrupt_request_0x01();
+// /**
+//  * Stops listening to interrupts.
+//  */
+// void
+// idt_deactivate();

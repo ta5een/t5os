@@ -35,10 +35,18 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     // Load the IDT for the BSP
     idt_init();
     idt_load();
-    idt_activate();
+    // idt_activate();
 
-    vga_print(vga, "Triggering INT 0x01...");
-    asm volatile("int $0x21");
+    vga_print(vga, "Triggering INT 0x02...");
+    asm volatile("int $0x02");
+    vga_println(vga, " [DONE]");
+
+    vga_print(vga, "Triggering INT 0x03...");
+    asm volatile("int $0x03");
+    vga_println(vga, " [DONE]");
+
+    vga_print(vga, "Triggering INT 0x04...");
+    asm volatile("int $0x04");
     vga_println(vga, " [DONE]");
 
     // Idle loop
