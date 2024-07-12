@@ -20,15 +20,15 @@
 	.global idt_ignore_interrupt_request
 
 	.macro handle_exception num
-	.global idt_handle_exception_\num\()
-	idt_handle_exception_\num\():
+	.global idt_handle_exception_\num
+	idt_handle_exception_\num:
 	movb  $\num, (interrupt_number)
 	jmp   interrupt_request_handler_stub
 	.endm
 
 	.macro handle_interrupt_request num
-	.global idt_handle_interrupt_request_\num\()
-	idt_handle_interrupt_request_\num\():
+	.global idt_handle_interrupt_request_\num
+	idt_handle_interrupt_request_\num:
 	movb  $\num + IRQ_BASE, (interrupt_number)
 	jmp   interrupt_request_handler_stub
 	.endm
