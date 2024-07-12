@@ -26,9 +26,9 @@ static_assert((bool)(sizeof(struct idt_entry) == 8U));
 enum idt_flag : uint8_t
 {
     IDT_FLAG_GATE_TASK = 0b0101U,
-    IDT_FLAG_GATE_INT_16 = 0b0101U,
+    IDT_FLAG_GATE_INT_16 = 0b0110U,
     IDT_FLAG_GATE_TRAP_16 = 0b0111U,
-    IDT_FLAG_GATE_INT_32 = 0b1101U,
+    IDT_FLAG_GATE_INT_32 = 0b1110U,
     IDT_FLAG_GATE_TRAP_32 = 0b1111U,
     IDT_FLAG_RING0 = (0U << 5U),
     IDT_FLAG_RING1 = (1U << 5U),
