@@ -66,19 +66,14 @@ struct [[gnu::packed]] gdt_entry
 // NOLINTNEXTLINE(readability-*)
 static_assert(sizeof(struct gdt_entry) == 8U);
 
-struct gdt
-{
-    struct gdt_entry entries[GDT_NUM_ENTRIES];
-};
-
 /**
  * Initializes the entries of the Global Descriptor Table.
  */
 void
-gdt_init(struct gdt *gdt);
+gdt_init();
 
 /**
  * Loads the Global Descriptor Table with the LGDT instruction.
  */
 void
-gdt_load(const struct gdt gdt[static 1]);
+gdt_load();

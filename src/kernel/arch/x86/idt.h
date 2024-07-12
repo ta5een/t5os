@@ -37,11 +37,6 @@ enum idt_flag : uint8_t
     IDT_FLAG_PRESENT = (1U << 7U),
 };
 
-struct idt
-{
-    struct idt_entry entries[IDT_NUM_ENTRIES];
-};
-
 // NOLINTNEXTLINE(readability-magic-numbers)
 static_assert((bool)(sizeof(struct idt_entry) == 8U));
 
@@ -49,25 +44,25 @@ static_assert((bool)(sizeof(struct idt_entry) == 8U));
  * Initializes the gates of the Interrupt Descriptor Table.
  */
 void
-idt_init(struct idt *idt, size_t segment_selector);
+idt_init();
 
 /**
  * Loads the Interrupt Descriptor Table with the LIDT instruction.
  */
 void
-idt_load(const struct idt idt[static 1]);
+idt_load();
 
 /**
  * Starts listening to interrupts.
  */
 void
-idt_activate(const struct idt idt[static 1]);
+idt_activate();
 
 /**
  * Stops listening to interrupts.
  */
 void
-idt_deactivate(const struct idt idt[static 1]);
+idt_deactivate();
 
 size_t
 idt_handle_interrupt(uint8_t interrupt_number, size_t esp);

@@ -1,5 +1,6 @@
 #include <kernel/arch/x86/descriptor_table.h>
 #include <kernel/arch/x86/gdt.h>
+#include <stddef.h>
 
 #define LIMIT_4KiB 0xfffffU
 
@@ -16,73 +17,45 @@
 #define FLAGS_DS_64 (GDT_FLAG_GRANULARITY | GDT_FLAG_DEFAULT_SIZE)
 #define FLAGS_CS_64 (GDT_FLAG_GRANULARITY | GDT_FLAG_LONG_MODE)
 
+static struct gdt_entry s_gdt[GDT_NUM_ENTRIES];
+
+static struct descriptor_table_register s_gdtr = {
+    .limit = sizeof(s_gdt) - 1,
+    .base = (void *)s_gdt
+};
+
 void
 gdt_set_entry(
-    struct gdt_entry target[static 1],
+    size_t index,
     uint32_t base,
     uint32_t limit,
     enum gdt_access access,
     enum gdt_flag flags
 )
 {
-    // Encode base
-    target->base_0_15 = base & 0xffffU;
-    target->base_16_23 = (base >> 16U) & 0xffU;
-    target->base_24_31 = (base >> 24U) & 0xffU;
-
-    // Encode limit and flags
-    target->limit_0_15 = limit & 0xffffU;
-    target->flags_limit_16_19 = (flags << 4U) | ((limit >> 16U) & 0xfU);
-
-    // Encode access
-    target->access = access;
+    s_gdt[index] = (struct gdt_entry){
+        .base_0_15 = base & 0xffffU,
+        .base_16_23 = (base >> 16U) & 0xffU,
+        .base_24_31 = (base >> 24U) & 0xffU,
+        .limit_0_15 = limit & 0xffffU,
+        .flags_limit_16_19 = (flags << 4U) | ((limit >> 16U) & 0xfU),
+        .access = access,
+    };
 }
 
 void
-gdt_init(struct gdt *gdt)
+gdt_init()
 {
-    // Null segment
-    gdt_set_entry(&gdt->entries[GDT_IDX_NULL], 0U, 0U, 0U, 0U);
-    // Kernel Mode Code segment
-    gdt_set_entry(
-        &gdt->entries[GDT_IDX_KCODE],
-        0U,
-        LIMIT_4KiB,
-        ACCESS_KERNEL_CS,
-        FLAGS_CS_32
-    );
-    // Kernel Mode Data segment
-    gdt_set_entry(
-        &gdt->entries[GDT_IDX_KDATA],
-        0U,
-        LIMIT_4KiB,
-        ACCESS_KERNEL_DS,
-        FLAGS_DS_32
-    );
-    // User Mode Code segment
-    gdt_set_entry(
-        &gdt->entries[GDT_IDX_UCODE],
-        0U,
-        LIMIT_4KiB,
-        ACCESS_USER_CS,
-        FLAGS_CS_32
-    );
-    // User Mode Data segment
-    gdt_set_entry(
-        &gdt->entries[GDT_IDX_UDATA],
-        0U,
-        LIMIT_4KiB,
-        ACCESS_USER_DS,
-        FLAGS_DS_32
-    );
+    gdt_set_entry(GDT_IDX_NULL, 0U, 0U, 0U, 0U);
+    gdt_set_entry(GDT_IDX_KCODE, 0U, LIMIT_4KiB, ACCESS_KERNEL_CS, FLAGS_CS_32);
+    gdt_set_entry(GDT_IDX_KDATA, 0U, LIMIT_4KiB, ACCESS_KERNEL_DS, FLAGS_DS_32);
+    gdt_set_entry(GDT_IDX_UCODE, 0U, LIMIT_4KiB, ACCESS_USER_CS, FLAGS_CS_32);
+    gdt_set_entry(GDT_IDX_UDATA, 0U, LIMIT_4KiB, ACCESS_USER_DS, FLAGS_DS_32);
     // TODO: Write entry for TSS
 }
 
 void
-gdt_load(const struct gdt gdt[static 1])
+gdt_load()
 {
-    struct descriptor_table_register gdtr;
-    gdtr.limit = sizeof(struct gdt) - 1;
-    gdtr.base = (void *)gdt;
-    asm volatile("lgdt %0" : : "m"(gdtr) : "memory");
+    asm volatile("lgdt %0" : : "m"(s_gdtr) : "memory");
 }

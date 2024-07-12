@@ -1,6 +1,8 @@
 #include <kernel/arch/x86/descriptor_table.h>
+#include <kernel/arch/x86/gdt.h>
 #include <kernel/arch/x86/idt.h>
 #include <kernel/arch/x86/ports.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #define PORT_PIC_MASTER_COMMAND (0x20U)
@@ -8,44 +10,53 @@
 #define PORT_PIC_SLAVE_COMMAND  (0xa0U)
 #define PORT_PIC_SLAVE_DATA     (0xa1U)
 
+static struct idt_entry s_idt[IDT_NUM_ENTRIES];
+
+static struct descriptor_table_register s_idtr = {
+    .limit = sizeof(s_idt) - 1,
+    .base = (void *)s_idt,
+};
+
 void
 idt_set_entry(
-    struct idt_entry target[static 1],
+    size_t index,
     size_t segment_selector,
     uint32_t handler,
     enum idt_flag flags
 )
 {
-    target->reserved = 0;
-    target->base_0_15 = handler & 0xffffU;
-    target->base_16_31 = (handler >> 16U) & 0xffffU;
-    target->segment_selector = segment_selector;
-    target->flags = IDT_FLAG_PRESENT | flags;
+    s_idt[index] = (struct idt_entry){
+        .reserved = 0,
+        .base_0_15 = handler & 0xffffU,
+        .base_16_31 = (handler >> 16U) & 0xffffU,
+        .segment_selector = segment_selector,
+        .flags = IDT_FLAG_PRESENT | flags,
+    };
 }
 
 void
-idt_init(struct idt *idt, size_t segment_selector)
+idt_init()
 {
     for (size_t interrupt = 0; interrupt < IDT_NUM_ENTRIES; interrupt++)
     {
         idt_set_entry(
-            &idt->entries[interrupt],
-            segment_selector,
+            interrupt,
+            GDT_IDX_KCODE,
             (uint32_t)&idt_ignore_interrupt_request,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
     }
 
     idt_set_entry(
-        &idt->entries[0x20],
-        segment_selector,
+        0x20,
+        GDT_IDX_KCODE,
         (uint32_t)&idt_handle_interrupt_request_0x00,
         IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
     );
 
     idt_set_entry(
-        &idt->entries[0x21],
-        segment_selector,
+        0x21,
+        GDT_IDX_KCODE,
         (uint32_t)&idt_handle_interrupt_request_0x01,
         IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
     );
@@ -67,23 +78,20 @@ idt_init(struct idt *idt, size_t segment_selector)
 }
 
 void
-idt_load(const struct idt idt[static 1])
+idt_load()
 {
-    struct descriptor_table_register idtr;
-    idtr.limit = sizeof(struct idt) - 1;
-    idtr.base = (void *)idt;
-    asm volatile("lidt %0" : : "m"(idtr) : "memory");
+    asm volatile("lidt %0" : : "m"(s_idtr) : "memory");
 }
 
 void
-idt_activate(const struct idt idt[static 1])
+idt_activate()
 {
     // TODO: Assumes there is one processor to listen to interrupts
     asm volatile("sti");
 }
 
 void
-idt_deactivate(const struct idt idt[static 1])
+idt_deactivate()
 {
     // TODO: Assumes there is one processor to stop listening to interrupts
     asm volatile("cli");

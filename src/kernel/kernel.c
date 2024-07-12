@@ -9,8 +9,6 @@ typedef void(*multiboot_t);
 
 // Variables that will be available for the lifetime of the kernel
 static volatile vga_char_t *s_vga_buffer = VGA_BUFFER_ADDRESS;
-static struct gdt s_gdt;
-// static struct idt s_idt;
 
 void
 kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
@@ -27,13 +25,13 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     }
 
     // Load the GDT for the BSP
-    gdt_init(&s_gdt);
-    gdt_load(&s_gdt);
+    gdt_init();
+    gdt_load();
 
     // Load the IDT for the BSP
-    // idt_init(&s_idt, GDT_IDX_KCODE);
-    // idt_load(&s_idt);
-    // idt_activate(&s_idt);
+    // idt_init();
+    // idt_load();
+    // idt_activate();
 
     // Idle loop
     // TODO: Move this to generic CPU interface
