@@ -22,15 +22,15 @@
 	.macro handle_exception num
 	.global idt_handle_exception_\num
 	idt_handle_exception_\num:
-	movb  $\num, (interrupt_number)
-	jmp   interrupt_request_handler_stub
+		movb  $\num, (interrupt_number)
+		jmp   interrupt_request_handler_stub
 	.endm
 
 	.macro handle_interrupt_request num
 	.global idt_handle_interrupt_request_\num
 	idt_handle_interrupt_request_\num:
-	movb  $\num + IRQ_BASE, (interrupt_number)
-	jmp   interrupt_request_handler_stub
+		movb  $\num + IRQ_BASE, (interrupt_number)
+		jmp   interrupt_request_handler_stub
 	.endm
 
 	handle_interrupt_request 0x00
@@ -38,7 +38,7 @@
 
 interrupt_request_handler_stub:
 	# Save the current register values
-	pusha						# TODO: Shouldn't this be `pushad`?
+	pusha
 	pushl %ds
 	pushl %es
 	pushl %fs

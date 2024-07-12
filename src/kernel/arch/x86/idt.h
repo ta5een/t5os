@@ -67,11 +67,14 @@ idt_deactivate();
 size_t
 idt_handle_interrupt(uint8_t interrupt_number, size_t esp);
 
-extern void
+[[gnu::cdecl]]
+void
 idt_ignore_interrupt_request();
 
+[[gnu::cdecl]]
 void
 idt_handle_interrupt_request_0x00();
 
+[[gnu::cdecl]]
 void
 idt_handle_interrupt_request_0x01();

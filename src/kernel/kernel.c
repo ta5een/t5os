@@ -18,6 +18,10 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     vga_clear_screen(vga);
     vga_println(vga, "t5os v0.0.1");
 
+    vga_print(vga, "Clearing interrupts...");
+    asm volatile("cli");
+    vga_println(vga, " [DONE]");
+
     if (serial_init(SERIAL_COM1_BASE) != SERIAL_INIT_SUCCESS)
     {
         // TODO: Do something useful here...
@@ -29,9 +33,13 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     gdt_load();
 
     // Load the IDT for the BSP
-    // idt_init();
-    // idt_load();
-    // idt_activate();
+    idt_init();
+    idt_load();
+    idt_activate();
+
+    vga_print(vga, "Triggering INT 0x01...");
+    asm volatile("int $0x21");
+    vga_println(vga, " [DONE]");
 
     // Idle loop
     // TODO: Move this to generic CPU interface

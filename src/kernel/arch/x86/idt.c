@@ -21,14 +21,14 @@ void
 idt_set_entry(
     size_t index,
     size_t segment_selector,
-    uint32_t handler,
+    void (*handler)(),
     enum idt_flag flags
 )
 {
     s_idt[index] = (struct idt_entry){
         .reserved = 0,
-        .base_0_15 = handler & 0xffffU,
-        .base_16_31 = (handler >> 16U) & 0xffffU,
+        .base_0_15 = ((uint32_t)handler) & 0xffffU,
+        .base_16_31 = (((uint32_t)handler) >> 16U) & 0xffffU,
         .segment_selector = segment_selector,
         .flags = IDT_FLAG_PRESENT | flags,
     };
@@ -42,7 +42,7 @@ idt_init()
         idt_set_entry(
             interrupt,
             GDT_IDX_KCODE,
-            (uint32_t)&idt_ignore_interrupt_request,
+            &idt_ignore_interrupt_request,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
     }
@@ -50,14 +50,14 @@ idt_init()
     idt_set_entry(
         0x20,
         GDT_IDX_KCODE,
-        (uint32_t)&idt_handle_interrupt_request_0x00,
+        &idt_handle_interrupt_request_0x00,
         IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
     );
 
     idt_set_entry(
         0x21,
         GDT_IDX_KCODE,
-        (uint32_t)&idt_handle_interrupt_request_0x01,
+        &idt_handle_interrupt_request_0x01,
         IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
     );
 
