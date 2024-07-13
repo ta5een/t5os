@@ -14,7 +14,7 @@
 [[gnu::aligned(IDT_ENTRY_ALIGN)]]
 static struct idt_entry s_idt[IDT_NUM_ENTRIES];
 
-static struct descriptor_table_register s_idtr = {
+static const struct descriptor_table_register s_idtr = {
     .limit = sizeof(s_idt) - 1,
     .base = (void *)s_idt,
 };
@@ -101,7 +101,53 @@ idt_load()
 //     asm volatile("cli");
 // }
 
-struct [[gnu::packed]] registers
+#define ITOA_DEFAULT_RADIX 10U
+#define ITOA_MAX_STR_LEN   255U
+#define ITOA_RADIX_MIN     2U
+#define ITOA_RADIX_MAX     36U
+
+const char *const ITOA_SEARCH_STR = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+void
+write_uint(
+    size_t integer,
+    size_t radix,
+    void (*handler)(struct vga *vga, const char *str)
+)
+{
+    char str[ITOA_MAX_STR_LEN] = {0};
+    size_t idx = 0;
+    size_t value = integer;
+
+    // Convert each digit to a character, from the least significant digit to
+    // the most significant (i.e. in reverse order).
+    do
+    {
+        str[idx] = ITOA_SEARCH_STR[value % radix];
+        idx += 1;
+        value /= radix; // this will truncate (discard) the fractional part
+    } while (value != 0);
+
+    // Ensure the string is terminated
+    str[idx] = '\0';
+    idx -= 1;
+
+    // Flip string to the correct order
+    size_t rev = 0;
+    while (rev < idx)
+    {
+        char tmp = str[idx];
+        str[idx] = str[rev];
+        str[rev] = tmp;
+        rev += 1;
+        idx -= 1;
+    }
+
+    struct vga *vga = vga_get();
+    handler(vga, str);
+}
+
+struct [[gnu::packed]] interrupt_frame
 {
     // Data segment, manually pushed by us
     size_t ds;
@@ -112,27 +158,37 @@ struct [[gnu::packed]] registers
     // Manually pushed by us
     size_t error_code;
     // Pushed automatically by the CPU, listed here in reverse order
-    size_t eip, cs, eflags, esp, ss;
+    size_t eip, cs, eflags, user_esp, ss;
 };
 
 [[gnu::cdecl]]
 void
-isr_handler(struct registers *registers)
+isr_handler(struct interrupt_frame *frame)
 {
+    // if (frame->interrupt_number == 0xd)
+    // {
+    //     asm volatile("hlt");
+    // }
+
     struct vga *vga = vga_get();
-    switch (registers->interrupt_number)
-    {
-    case 0x02:
-        vga_println(vga, "INT 0x02");
-        break;
-    case 0x03:
-        vga_println(vga, "INT 0x03");
-        break;
-    case 0x04:
-        vga_println(vga, "INT 0x04");
-        break;
-    default:
-        vga_println(vga, "INT ????");
-        break;
-    }
+    vga_print(vga, "INT ");
+    write_uint(frame->interrupt_number, 10U, vga_print);
+    vga_print(vga, " -> EAX 0x");
+    write_uint(frame->eax, 16U, vga_print);
+    vga_print(vga, " EBX 0x");
+    write_uint(frame->ebx, 16U, vga_print);
+    vga_print(vga, " ECX 0x");
+    write_uint(frame->ecx, 16U, vga_print);
+    vga_print(vga, " EDX 0x");
+    write_uint(frame->edx, 16U, vga_println);
+    vga_print(vga, "    ESI 0x");
+    write_uint(frame->esi, 16U, vga_print);
+    vga_print(vga, " EDI 0x");
+    write_uint(frame->edi, 16U, vga_print);
+    vga_print(vga, " EBP 0x");
+    write_uint(frame->ebp, 16U, vga_print);
+    vga_print(vga, " ESP 0x");
+    write_uint(frame->kernel_esp, 16U, vga_println);
+    // vga_print(vga, " EFLAGS 0x");
+    // write_uint(frame->eflags, 16U, vga_println);
 }
