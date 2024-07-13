@@ -15,7 +15,6 @@
 
 	.code32
 	.section .text
-	.set IRQ_BASE, $0x20
 	.extern isr_handler
 	.extern irq_handler
 
@@ -82,35 +81,57 @@ DEFINE_ISR_ERR		0x11
 DEFINE_ISR_NO_ERR	0x12
 DEFINE_ISR_NO_ERR	0x13
 DEFINE_ISR_NO_ERR	0x14
-DEFINE_ISR_ERR		0x15
-# ... Skip reserved ...
+DEFINE_ISR_NO_ERR	0x15
+DEFINE_ISR_NO_ERR	0x16
+DEFINE_ISR_NO_ERR	0x17
+DEFINE_ISR_NO_ERR	0x18
+DEFINE_ISR_NO_ERR	0x19
+DEFINE_ISR_NO_ERR	0x1a
+DEFINE_ISR_NO_ERR	0x1b
+DEFINE_ISR_NO_ERR	0x1c
+DEFINE_ISR_NO_ERR	0x1d
+DEFINE_ISR_ERR		0x1e		# Apparently has en error code (OSDev Wiki)
+DEFINE_ISR_NO_ERR	0x1f
+# Start user-defined interrupts
 DEFINE_ISR_NO_ERR	0x20
-# ... Skip unhandled ...
 DEFINE_ISR_NO_ERR	0x80
 
 isr_stub:
-	pusha						# Push eax, ecx, edx, ebx, esp, ebp, esi, edi
+	/* Store all general-purpose registers in the following order:
+	 * eax, ecx, edx, ebx, esp, ebp, esi, edi
+	 */
+	pusha
 
+	/* Save current data segment */
 	xor %eax, %eax
 	mov %ds, %ax
 	push %eax
 
+	/* Load the kernel data segment */
 	mov $0x10, %ax
 	mov %ax, %ds
 	mov %ax, %es
 	mov %ax, %fs
 	mov %ax, %gs
 
+	/* Push the address of the frame structure */
 	push %esp
+	/* Call the C handler */
 	call isr_handler
+	/* Pop the address of the frame structure */
 	add $4, %esp
 
+	/* Restore the original data segment */
 	pop %eax
 	mov %ax, %ds
 	mov %ax, %es
 	mov %ax, %fs
 	mov %ax, %gs
 
+	/* Restore general-purpose registers */
 	popa
+	/* Remove the error code and interrupt number from the stack */
 	add $8, %esp
+
+	/* Return from the interrupt */
 	iret
