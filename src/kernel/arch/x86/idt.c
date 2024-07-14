@@ -11,15 +11,20 @@
 #define PORT_PIC_SLAVE_COMMAND  (0xa0U)
 #define PORT_PIC_SLAVE_DATA     (0xa1U)
 
-[[gnu::aligned(IDT_ENTRY_ALIGN)]]
+#define ISR_NUM_DEFINED_HANDLERS (0x1fU + 1U)
+#define ISR_HANDLER_ALIGNMENT    (16U)
+
+extern uint8_t isr_0x00[];
+
+typedef void (*isr_handler_t)(void);
+extern isr_handler_t isr_unhandled_stub;
+
 static struct idt_entry s_idt[IDT_NUM_ENTRIES];
 
 static const struct descriptor_table_register s_idtr = {
     .limit = sizeof(s_idt) - 1,
     .base = (void *)s_idt,
 };
-
-extern uint8_t isr_0x00[];
 
 void
 idt_set_entry(
@@ -43,12 +48,24 @@ idt_init()
 {
     for (size_t interrupt = 0; interrupt < IDT_NUM_ENTRIES; interrupt++)
     {
-        idt_set_entry(
-            interrupt,
-            GDT_IDX_KCODE,
-            (uint32_t)isr_0x00 + (interrupt * 16U),
-            IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-        );
+        if (interrupt < ISR_NUM_DEFINED_HANDLERS)
+        {
+            idt_set_entry(
+                interrupt,
+                GDT_IDX_KCODE,
+                (uint32_t)isr_0x00 + (interrupt * ISR_HANDLER_ALIGNMENT),
+                IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
+            );
+        }
+        else
+        {
+            idt_set_entry(
+                interrupt,
+                GDT_IDX_KCODE,
+                (uint32_t)isr_unhandled_stub,
+                IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
+            );
+        }
     }
 
     // idt_set_entry(
@@ -172,23 +189,23 @@ isr_handler(struct interrupt_frame *frame)
 
     struct vga *vga = vga_get();
     vga_print(vga, "INT ");
-    write_uint(frame->interrupt_number, 10U, vga_print);
-    vga_print(vga, " -> EAX 0x");
-    write_uint(frame->eax, 16U, vga_print);
-    vga_print(vga, " EBX 0x");
-    write_uint(frame->ebx, 16U, vga_print);
-    vga_print(vga, " ECX 0x");
-    write_uint(frame->ecx, 16U, vga_print);
-    vga_print(vga, " EDX 0x");
-    write_uint(frame->edx, 16U, vga_println);
-    vga_print(vga, "    ESI 0x");
-    write_uint(frame->esi, 16U, vga_print);
-    vga_print(vga, " EDI 0x");
-    write_uint(frame->edi, 16U, vga_print);
-    vga_print(vga, " EBP 0x");
-    write_uint(frame->ebp, 16U, vga_print);
-    vga_print(vga, " ESP 0x");
-    write_uint(frame->kernel_esp, 16U, vga_println);
+    write_uint(frame->interrupt_number, 10U, vga_println);
+    // vga_print(vga, " -> EAX 0x");
+    // write_uint(frame->eax, 16U, vga_print);
+    // vga_print(vga, " EBX 0x");
+    // write_uint(frame->ebx, 16U, vga_print);
+    // vga_print(vga, " ECX 0x");
+    // write_uint(frame->ecx, 16U, vga_print);
+    // vga_print(vga, " EDX 0x");
+    // write_uint(frame->edx, 16U, vga_println);
+    // vga_print(vga, "    ESI 0x");
+    // write_uint(frame->esi, 16U, vga_print);
+    // vga_print(vga, " EDI 0x");
+    // write_uint(frame->edi, 16U, vga_print);
+    // vga_print(vga, " EBP 0x");
+    // write_uint(frame->ebp, 16U, vga_print);
+    // vga_print(vga, " ESP 0x");
+    // write_uint(frame->kernel_esp, 16U, vga_println);
     // vga_print(vga, " EFLAGS 0x");
     // write_uint(frame->eflags, 16U, vga_println);
 }

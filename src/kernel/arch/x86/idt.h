@@ -3,9 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define IDT_ENTRY_ALIGN   0x10U
-#define IDT_NUM_ENTRIES   0x100U
-#define IDT_HANDLER_ALIGN 16U
+#define IDT_NUM_ENTRIES 0x100U
 
 /**
  * An entry in the Interrupt Descriptor Table, representing an Interrupt Gate,

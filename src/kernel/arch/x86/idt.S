@@ -18,8 +18,7 @@
 	.extern isr_handler
 	.extern irq_handler
 
-	/**
-	 * Defines an ISR for interrupts that do not push an error code.
+	/* Defines an ISR for interrupts that do not push an error code.
 	 *
 	 * In x86 protected mode, some exceptions and hardware interrupts do not
 	 * push an error code onto the stack. This macro handles such interrupts by
@@ -36,12 +35,11 @@
 		jmp isr_stub
 	.endm
 
-	/**
-	 * Defines an ISR for interrupts that push an error code.
+	/* Defines an ISR for interrupts that push an error code.
 	 *
 	 * In x86 protected mode, certain exceptions automatically push an error
 	 * code onto the stack before transferring control to the interrupt handler.
-	 * This macro is used for such interrupts. 
+	 * This macro is used for such interrupts.
 	 */
 	.macro DEFINE_ISR_ERR num
 	.align 16
@@ -92,9 +90,9 @@ DEFINE_ISR_NO_ERR	0x1c
 DEFINE_ISR_NO_ERR	0x1d
 DEFINE_ISR_ERR		0x1e		# Apparently has en error code (OSDev Wiki)
 DEFINE_ISR_NO_ERR	0x1f
-# Start user-defined interrupts
-DEFINE_ISR_NO_ERR	0x20
-DEFINE_ISR_NO_ERR	0x80
+# # Start user-defined interrupts
+# DEFINE_ISR_NO_ERR	0x20
+# DEFINE_ISR_NO_ERR	0x80
 
 isr_stub:
 	/* Store all general-purpose registers in the following order:
@@ -135,3 +133,9 @@ isr_stub:
 
 	/* Return from the interrupt */
 	iret
+
+	.global isr_unhandled_stub
+isr_unhandled_stub:
+	# iret
+	cli
+	hlt
