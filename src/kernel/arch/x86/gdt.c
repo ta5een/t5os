@@ -17,6 +17,7 @@
 #define FLAGS_DS_32 (GDT_FLAG_32BIT | GDT_FLAG_GRANULARITY_4K)
 #define FLAGS_CS_64 (GDT_FLAG_64BIT | GDT_FLAG_GRANULARITY_4K)
 // NOTE: Not sure why OSDev Wiki instructs setting the data segment flag to 0xc
+// for 64-bit data segments:
 // https://wiki.osdev.org/GDT_Tutorial#Flat_/_Long_Mode_Setup
 #define FLAGS_DS_64 (GDT_FLAG_32BIT | GDT_FLAG_GRANULARITY_4K)
 

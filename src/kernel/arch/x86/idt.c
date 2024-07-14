@@ -14,8 +14,23 @@
 #define ISR_NUM_DEFINED_HANDLERS (0x1fU + 1U)
 #define ISR_HANDLER_ALIGNMENT    (16U)
 
+/**
+ * Points to the first ISR handler, defined in "isr.S".
+ *
+ * The type of `isr_0x00` is not important, we only care about the address it
+ * occupies. Since all handlers we currently define are aligned to 16 bytes, we
+ * can use this address to calculate the addresses of subsequent ISRs. For
+ * example, to get the address of the 0x10th ISR, we can calculate it like so:
+ *
+ *     isr_0x00 + (0x10 * ISR_HANDLER_ALIGNMENT)
+ *
+ * https://github.com/dreamportdev/Osdev-Notes/blob/master/02_Architecture/05_InterruptHandling.md#an-example-stub
+ */
 extern uint8_t isr_0x00[];
 
+/**
+ * All other ISRs will point to this stub (which for now will halt the OS).
+ */
 typedef void (*isr_handler_t)(void);
 extern isr_handler_t isr_unhandled_stub;
 
@@ -68,20 +83,7 @@ idt_init()
         }
     }
 
-    // idt_set_entry(
-    //     0x20,
-    //     GDT_IDX_KCODE,
-    //     &idt_handle_interrupt_request_0x00,
-    //     IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-    // );
-    //
-    // idt_set_entry(
-    //     0x21,
-    //     GDT_IDX_KCODE,
-    //     &idt_handle_interrupt_request_0x01,
-    //     IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-    // );
-
+    // TODO: Write to the PIC to remap the IRQs
     // port_write_8(PORT_PIC_MASTER_COMMAND, 0x11U);
     // port_write_8(PORT_PIC_SLAVE_COMMAND, 0x11U);
     //
@@ -118,6 +120,35 @@ idt_load()
 //     asm volatile("cli");
 // }
 
+// Temporary workaround until printf is implemented
+void
+vga_print_uint(struct vga *vga, size_t integer, size_t radix);
+
+struct [[gnu::packed]] interrupt_frame
+{
+    // Data segment, manually pushed by us
+    size_t ds;
+    // Pushed with PUSHA, listed here in reverse order
+    size_t edi, esi, ebp, kernel_esp, ebx, edx, ecx, eax;
+    // Manually pushed by us
+    size_t interrupt_number;
+    // Manually pushed by us
+    size_t error_code;
+    // Pushed automatically by the CPU, listed here in reverse order
+    size_t eip, cs, eflags, user_esp, ss;
+};
+
+[[gnu::cdecl]]
+void
+isr_handler(struct interrupt_frame *frame)
+{
+    // Print the interrupt number for now
+    struct vga *vga = vga_get();
+    vga_print(vga, "INT ");
+    // Until printf is implemented, this will do for now
+    vga_print_uint(vga, frame->interrupt_number, 10U);
+}
+
 #define ITOA_DEFAULT_RADIX 10U
 #define ITOA_MAX_STR_LEN   255U
 #define ITOA_RADIX_MIN     2U
@@ -126,11 +157,7 @@ idt_load()
 const char *const ITOA_SEARCH_STR = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 void
-write_uint(
-    size_t integer,
-    size_t radix,
-    void (*handler)(struct vga *vga, const char *str)
-)
+vga_print_uint(struct vga *vga, size_t integer, size_t radix)
 {
     char str[ITOA_MAX_STR_LEN] = {0};
     size_t idx = 0;
@@ -160,52 +187,5 @@ write_uint(
         idx -= 1;
     }
 
-    struct vga *vga = vga_get();
-    handler(vga, str);
-}
-
-struct [[gnu::packed]] interrupt_frame
-{
-    // Data segment, manually pushed by us
-    size_t ds;
-    // Pushed with PUSHA, listed here in reverse order
-    size_t edi, esi, ebp, kernel_esp, ebx, edx, ecx, eax;
-    // Manually pushed by us
-    size_t interrupt_number;
-    // Manually pushed by us
-    size_t error_code;
-    // Pushed automatically by the CPU, listed here in reverse order
-    size_t eip, cs, eflags, user_esp, ss;
-};
-
-[[gnu::cdecl]]
-void
-isr_handler(struct interrupt_frame *frame)
-{
-    // if (frame->interrupt_number == 0xd)
-    // {
-    //     asm volatile("hlt");
-    // }
-
-    struct vga *vga = vga_get();
-    vga_print(vga, "INT ");
-    write_uint(frame->interrupt_number, 10U, vga_println);
-    // vga_print(vga, " -> EAX 0x");
-    // write_uint(frame->eax, 16U, vga_print);
-    // vga_print(vga, " EBX 0x");
-    // write_uint(frame->ebx, 16U, vga_print);
-    // vga_print(vga, " ECX 0x");
-    // write_uint(frame->ecx, 16U, vga_print);
-    // vga_print(vga, " EDX 0x");
-    // write_uint(frame->edx, 16U, vga_println);
-    // vga_print(vga, "    ESI 0x");
-    // write_uint(frame->esi, 16U, vga_print);
-    // vga_print(vga, " EDI 0x");
-    // write_uint(frame->edi, 16U, vga_print);
-    // vga_print(vga, " EBP 0x");
-    // write_uint(frame->ebp, 16U, vga_print);
-    // vga_print(vga, " ESP 0x");
-    // write_uint(frame->kernel_esp, 16U, vga_println);
-    // vga_print(vga, " EFLAGS 0x");
-    // write_uint(frame->eflags, 16U, vga_println);
+    vga_println(vga, str);
 }

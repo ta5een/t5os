@@ -1,6 +1,5 @@
 ---
 BasedOnStyle: Microsoft
-AlwaysBreakAfterReturnType: All
 AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveMacros: Consecutive
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -9,6 +8,7 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: All
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false

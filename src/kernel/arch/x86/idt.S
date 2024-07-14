@@ -11,12 +11,16 @@
 	 * for interrupts that do push an error code (DEFINE_ISR_ERR), and a macro
 	 * for interrupts triggered by the PIC (DEFINE_IRQ), which needs to be
 	 * handled slightly differently.
+	 *
+	 * A majority of this code has been adapted from the following sources:
+	 * - https://www.youtube.com/watch?v=lWhyXLXflt4&list=PLFjM7v6KGMpiH2G-kT781ByCNC_0pKpPN&index=15
+	 * - https://github.com/nanobyte-dev/nanobyte_os/blob/db304f43138d8367e938080bf688960010d178ef/src/kernel/arch/i686/isr.asm
 	 */
 
 	.code32
 	.section .text
 	.extern isr_handler
-	.extern irq_handler
+	# .extern irq_handler
 
 	/* Defines an ISR for interrupts that do not push an error code.
 	 *
@@ -27,9 +31,9 @@
 	 * simplifying the interrupt handling process.
 	 */
 	.macro DEFINE_ISR_NO_ERR num
-	.align 16
-	.global isr_\num
-	isr_\num:
+		.align 16
+		.global isr_\num
+		isr_\num:
 		push $0					# Push dummy error code
 		push $\num				# Push interrupt number
 		jmp isr_stub
@@ -42,57 +46,57 @@
 	 * This macro is used for such interrupts.
 	 */
 	.macro DEFINE_ISR_ERR num
-	.align 16
-	.global isr_\num
-	isr_\num:
+		.align 16
+		.global isr_\num
+		isr_\num:
 								# CPU pushes error code here
 		push $\num				# Push interrupt number
 		jmp isr_stub
 	.endm
 
 	# .macro DEFINE_IRQ num
-	# .align 16
-	# .global irq_\num
-	# irq_\num:
+	# 	.align 16
+	# 	.global irq_\num
+	# 	irq_\num:
 	# 	push $\num				# Push interrupt number
-	# 	jmp irq_stub
+	# 	jmp irq_stub    		# TODO: Not implemented
 	# .endm
 
-DEFINE_ISR_NO_ERR	0x00
-DEFINE_ISR_NO_ERR	0x01
-DEFINE_ISR_NO_ERR	0x02
-DEFINE_ISR_NO_ERR	0x03
-DEFINE_ISR_NO_ERR	0x04
-DEFINE_ISR_NO_ERR	0x05
-DEFINE_ISR_NO_ERR	0x06
-DEFINE_ISR_NO_ERR	0x07
-DEFINE_ISR_ERR		0x08
-DEFINE_ISR_NO_ERR	0x09
-DEFINE_ISR_ERR		0x0a
-DEFINE_ISR_ERR		0x0b
-DEFINE_ISR_ERR		0x0c
-DEFINE_ISR_ERR		0x0d
-DEFINE_ISR_ERR		0x0e
-DEFINE_ISR_NO_ERR	0x0f
-DEFINE_ISR_NO_ERR	0x10
-DEFINE_ISR_ERR		0x11
-DEFINE_ISR_NO_ERR	0x12
-DEFINE_ISR_NO_ERR	0x13
-DEFINE_ISR_NO_ERR	0x14
-DEFINE_ISR_NO_ERR	0x15
-DEFINE_ISR_NO_ERR	0x16
-DEFINE_ISR_NO_ERR	0x17
-DEFINE_ISR_NO_ERR	0x18
-DEFINE_ISR_NO_ERR	0x19
-DEFINE_ISR_NO_ERR	0x1a
-DEFINE_ISR_NO_ERR	0x1b
-DEFINE_ISR_NO_ERR	0x1c
-DEFINE_ISR_NO_ERR	0x1d
-DEFINE_ISR_ERR		0x1e		# Apparently has en error code (OSDev Wiki)
-DEFINE_ISR_NO_ERR	0x1f
-# # Start user-defined interrupts
-# DEFINE_ISR_NO_ERR	0x20
-# DEFINE_ISR_NO_ERR	0x80
+	DEFINE_ISR_NO_ERR	0x00
+	DEFINE_ISR_NO_ERR	0x01
+	DEFINE_ISR_NO_ERR	0x02
+	DEFINE_ISR_NO_ERR	0x03
+	DEFINE_ISR_NO_ERR	0x04
+	DEFINE_ISR_NO_ERR	0x05
+	DEFINE_ISR_NO_ERR	0x06
+	DEFINE_ISR_NO_ERR	0x07
+	DEFINE_ISR_ERR		0x08
+	DEFINE_ISR_NO_ERR	0x09
+	DEFINE_ISR_ERR		0x0a
+	DEFINE_ISR_ERR		0x0b
+	DEFINE_ISR_ERR		0x0c
+	DEFINE_ISR_ERR		0x0d
+	DEFINE_ISR_ERR		0x0e
+	DEFINE_ISR_NO_ERR	0x0f
+	DEFINE_ISR_NO_ERR	0x10
+	DEFINE_ISR_ERR		0x11
+	DEFINE_ISR_NO_ERR	0x12
+	DEFINE_ISR_NO_ERR	0x13
+	DEFINE_ISR_NO_ERR	0x14
+	DEFINE_ISR_NO_ERR	0x15
+	DEFINE_ISR_NO_ERR	0x16
+	DEFINE_ISR_NO_ERR	0x17
+	DEFINE_ISR_NO_ERR	0x18
+	DEFINE_ISR_NO_ERR	0x19
+	DEFINE_ISR_NO_ERR	0x1a
+	DEFINE_ISR_NO_ERR	0x1b
+	DEFINE_ISR_NO_ERR	0x1c
+	DEFINE_ISR_NO_ERR	0x1d
+	DEFINE_ISR_NO_ERR	0x1e	# Apparently this has an error code (OSDev Wiki)
+	DEFINE_ISR_NO_ERR	0x1f
+	# # Start user-defined interrupts
+	# DEFINE_ISR_NO_ERR	0x20
+	# DEFINE_ISR_NO_ERR	0x80
 
 isr_stub:
 	/* Store all general-purpose registers in the following order:
@@ -136,6 +140,6 @@ isr_stub:
 
 	.global isr_unhandled_stub
 isr_unhandled_stub:
-	# iret
+	/* Halt the OS for now */
 	cli
 	hlt
