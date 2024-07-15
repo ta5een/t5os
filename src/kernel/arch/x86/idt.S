@@ -31,7 +31,7 @@
 	 * simplifying the interrupt handling process.
 	 */
 	.macro DEFINE_ISR_NO_ERR num
-		.align 16
+		# .align 16
 		.global isr_\num
 		isr_\num:
 		push $0					# Push dummy error code
@@ -46,7 +46,7 @@
 	 * This macro is used for such interrupts.
 	 */
 	.macro DEFINE_ISR_ERR num
-		.align 16
+		# .align 16
 		.global isr_\num
 		isr_\num:
 								# CPU pushes error code here
@@ -110,7 +110,7 @@ isr_stub:
 	push %eax
 
 	/* Load the kernel data segment */
-	mov $0x10, %ax
+	mov $0x18, %ax				# Note: This seems to accept $0x10 and $0x18???
 	mov %ax, %ds
 	mov %ax, %es
 	mov %ax, %fs

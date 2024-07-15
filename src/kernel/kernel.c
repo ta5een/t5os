@@ -35,9 +35,10 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     // Load the IDT for the BSP
     idt_init();
     idt_load();
-    // TODO: Activate all interrupts with STI
+    // TODO: Activate all interrupts with STI once IRQs are implemented
     // idt_activate();
 
+    // Test software interrupts
     vga_print(vga, "Triggering INT 0x02...");
     asm volatile("int $0x02");
     vga_println(vga, " [DONE]");

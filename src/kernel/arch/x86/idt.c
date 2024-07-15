@@ -14,6 +14,41 @@
 #define ISR_NUM_DEFINED_HANDLERS (0x1fU + 1U)
 #define ISR_HANDLER_ALIGNMENT    (16U)
 
+typedef void(isr_handler_t)(void);
+
+extern isr_handler_t isr_0x00;
+extern isr_handler_t isr_0x01;
+extern isr_handler_t isr_0x02;
+extern isr_handler_t isr_0x03;
+extern isr_handler_t isr_0x04;
+extern isr_handler_t isr_0x05;
+extern isr_handler_t isr_0x06;
+extern isr_handler_t isr_0x07;
+extern isr_handler_t isr_0x08;
+extern isr_handler_t isr_0x09;
+extern isr_handler_t isr_0x0a;
+extern isr_handler_t isr_0x0b;
+extern isr_handler_t isr_0x0c;
+extern isr_handler_t isr_0x0d;
+extern isr_handler_t isr_0x0e;
+extern isr_handler_t isr_0x0f;
+extern isr_handler_t isr_0x10;
+extern isr_handler_t isr_0x11;
+extern isr_handler_t isr_0x12;
+extern isr_handler_t isr_0x13;
+extern isr_handler_t isr_0x14;
+extern isr_handler_t isr_0x15;
+extern isr_handler_t isr_0x16;
+extern isr_handler_t isr_0x17;
+extern isr_handler_t isr_0x18;
+extern isr_handler_t isr_0x19;
+extern isr_handler_t isr_0x1a;
+extern isr_handler_t isr_0x1b;
+extern isr_handler_t isr_0x1c;
+extern isr_handler_t isr_0x1d;
+extern isr_handler_t isr_0x1e;
+extern isr_handler_t isr_0x1f;
+
 /**
  * Points to the first ISR handler, defined in "isr.S".
  *
@@ -26,12 +61,11 @@
  *
  * https://github.com/dreamportdev/Osdev-Notes/blob/master/02_Architecture/05_InterruptHandling.md#an-example-stub
  */
-extern uint8_t isr_0x00[];
+// extern uint8_t isr_0x00[];
 
 /**
  * All other ISRs will point to this stub (which for now will halt the OS).
  */
-typedef void (*isr_handler_t)(void);
 extern isr_handler_t isr_unhandled_stub;
 
 static struct idt_entry s_idt[IDT_NUM_ENTRIES];
@@ -44,15 +78,15 @@ static const struct descriptor_table_register s_idtr = {
 void
 idt_set_entry(
     size_t index,
-    size_t segment_index,
+    size_t segment_selector,
     uint32_t handler,
     enum idt_flag flags
 )
 {
     s_idt[index] = (struct idt_entry){
-        .base_0_15 = handler & 0xffffU,
+        .base_0_15 = (handler) & 0xffffU,
         .base_16_31 = (handler >> 16U) & 0xffffU,
-        .segment_selector = segment_index * sizeof(struct gdt_entry),
+        .segment_selector = segment_selector,
         .flags = IDT_FLAG_PRESENT | flags,
         .reserved = 0,
     };
@@ -61,27 +95,65 @@ idt_set_entry(
 void
 idt_init()
 {
+    // for (size_t interrupt = 0; interrupt < IDT_NUM_ENTRIES; interrupt++)
+    // {
+    //     if (interrupt < ISR_NUM_DEFINED_HANDLERS)
+    //     {
+    //         idt_set_entry(
+    //             interrupt,
+    //             0x10,
+    //             (uint32_t)isr_0x00 + (interrupt * ISR_HANDLER_ALIGNMENT),
+    //             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
+    //         );
+    //     }
+    //     else
+    //     {
+    //         idt_set_entry(
+    //             interrupt,
+    //             0x10,
+    //             (uint32_t)isr_unhandled_stub,
+    //             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
+    //         );
+    //     }
+    // }
+
     for (size_t interrupt = 0; interrupt < IDT_NUM_ENTRIES; interrupt++)
     {
-        if (interrupt < ISR_NUM_DEFINED_HANDLERS)
-        {
-            idt_set_entry(
-                interrupt,
-                GDT_IDX_KCODE,
-                (uint32_t)isr_0x00 + (interrupt * ISR_HANDLER_ALIGNMENT),
-                IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-            );
-        }
-        else
-        {
-            idt_set_entry(
-                interrupt,
-                GDT_IDX_KCODE,
-                (uint32_t)isr_unhandled_stub,
-                IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-            );
-        }
+        idt_set_entry(interrupt, 0x10, (uint32_t)isr_unhandled_stub, 0xe);
     }
+
+    idt_set_entry(0x00, 0x10, (uint32_t)isr_0x00, 0xe);
+    idt_set_entry(0x01, 0x10, (uint32_t)isr_0x01, 0xe);
+    idt_set_entry(0x02, 0x10, (uint32_t)isr_0x02, 0xe);
+    idt_set_entry(0x03, 0x10, (uint32_t)isr_0x03, 0xe);
+    idt_set_entry(0x04, 0x10, (uint32_t)isr_0x04, 0xe);
+    idt_set_entry(0x05, 0x10, (uint32_t)isr_0x05, 0xe);
+    idt_set_entry(0x06, 0x10, (uint32_t)isr_0x06, 0xe);
+    idt_set_entry(0x07, 0x10, (uint32_t)isr_0x07, 0xe);
+    idt_set_entry(0x08, 0x10, (uint32_t)isr_0x08, 0xe);
+    idt_set_entry(0x09, 0x10, (uint32_t)isr_0x09, 0xe);
+    idt_set_entry(0x0a, 0x10, (uint32_t)isr_0x0a, 0xe);
+    idt_set_entry(0x0b, 0x10, (uint32_t)isr_0x0b, 0xe);
+    idt_set_entry(0x0c, 0x10, (uint32_t)isr_0x0c, 0xe);
+    idt_set_entry(0x0d, 0x10, (uint32_t)isr_0x0d, 0xe);
+    idt_set_entry(0x0e, 0x10, (uint32_t)isr_0x0e, 0xe);
+    idt_set_entry(0x0f, 0x10, (uint32_t)isr_0x0f, 0xe);
+    idt_set_entry(0x10, 0x10, (uint32_t)isr_0x10, 0xe);
+    idt_set_entry(0x11, 0x10, (uint32_t)isr_0x11, 0xe);
+    idt_set_entry(0x12, 0x10, (uint32_t)isr_0x12, 0xe);
+    idt_set_entry(0x13, 0x10, (uint32_t)isr_0x13, 0xe);
+    idt_set_entry(0x14, 0x10, (uint32_t)isr_0x14, 0xe);
+    idt_set_entry(0x15, 0x10, (uint32_t)isr_0x15, 0xe);
+    idt_set_entry(0x16, 0x10, (uint32_t)isr_0x16, 0xe);
+    idt_set_entry(0x17, 0x10, (uint32_t)isr_0x17, 0xe);
+    idt_set_entry(0x18, 0x10, (uint32_t)isr_0x18, 0xe);
+    idt_set_entry(0x19, 0x10, (uint32_t)isr_0x19, 0xe);
+    idt_set_entry(0x1a, 0x10, (uint32_t)isr_0x1a, 0xe);
+    idt_set_entry(0x1b, 0x10, (uint32_t)isr_0x1b, 0xe);
+    idt_set_entry(0x1c, 0x10, (uint32_t)isr_0x1c, 0xe);
+    idt_set_entry(0x1d, 0x10, (uint32_t)isr_0x1d, 0xe);
+    idt_set_entry(0x1e, 0x10, (uint32_t)isr_0x1e, 0xe);
+    idt_set_entry(0x1f, 0x10, (uint32_t)isr_0x1f, 0xe);
 
     // TODO: Write to the PIC to remap the IRQs
     // port_write_8(PORT_PIC_MASTER_COMMAND, 0x11U);
