@@ -9,8 +9,8 @@
 	 * To define an ISR for all exceptions and a select number of user-defined
 	 * interrupts, this source file provides the following macros:
 	 *
-	 * - DEFINE_ISR_ERR to define interrupts that push an error code
-	 * - DEFINE_ISR_NO_ERR to define interrupts that don't push an error code
+	 * - DEFINE_ISR_ERR, for interrupts that push an error code
+	 * - DEFINE_ISR_NO_ERR, for interrupts that don't push an error code
 	 *
 	 * Hardware requests (IRQs) are not defined in this file. Please refer to
 	 * "irq.S" instead.
@@ -123,9 +123,9 @@ i686_isr_stub:
 
 	/* Call the C handler.
 	 *
-	 * The stack at this point holds the contents of all the information we've
-	 * collected so far. To pass this to the C function, we'll push a pointer to
-	 * the stack before calling the function.
+	 * The stack at this point holds information we've collected so far. To
+	 * pass this to the C function, we'll push a pointer to the stack before
+	 * calling the function.
 	 *
 	 * Once we return from the C function, we'll make sure to remove the
 	 * argument from the stack.

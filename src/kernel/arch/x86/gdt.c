@@ -23,7 +23,7 @@
 
 static struct gdt_entry s_gdt[GDT_NUM_ENTRIES];
 
-static struct descriptor_table_register s_gdtr = {
+static const struct descriptor_table_register s_gdtr = {
     .limit = sizeof(s_gdt) - 1,
     .base = (void *)s_gdt
 };
@@ -49,11 +49,13 @@ gdt_set_entry(
 
 /**
  * Loads the Global Descriptor Table with the LGDT instruction.
+ *
+ * Refer to "gdt.S" for more information.
  */
 [[gnu::cdecl]]
 extern void
 i686_gdt_load(
-    struct descriptor_table_register *gdtr,
+    const struct descriptor_table_register *gdtr,
     size_t code_segment_selector,
     size_t data_segment_selector
 );
