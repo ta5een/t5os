@@ -80,10 +80,4 @@ static_assert(sizeof(struct gdt_entry) == 8U);
  * Initializes the entries of the Global Descriptor Table.
  */
 void
-gdt_init();
-
-/**
- * Loads the Global Descriptor Table with the LGDT instruction.
- */
-void
-gdt_load();
+i686_gdt_init();

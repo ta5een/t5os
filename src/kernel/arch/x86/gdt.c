@@ -47,17 +47,9 @@ gdt_set_entry(
     };
 }
 
-void
-gdt_init()
-{
-    gdt_set_entry(GDT_IDX_NULL, 0U, 0U, 0U, 0U);
-    gdt_set_entry(GDT_IDX_KCODE, 0U, LIMIT_4KiB, ACCESS_KERNEL_CS, FLAGS_CS_32);
-    gdt_set_entry(GDT_IDX_KDATA, 0U, LIMIT_4KiB, ACCESS_KERNEL_DS, FLAGS_DS_32);
-    gdt_set_entry(GDT_IDX_UCODE, 0U, LIMIT_4KiB, ACCESS_USER_CS, FLAGS_CS_32);
-    gdt_set_entry(GDT_IDX_UDATA, 0U, LIMIT_4KiB, ACCESS_USER_DS, FLAGS_DS_32);
-    // TODO: Write entry for TSS
-}
-
+/**
+ * Loads the Global Descriptor Table with the LGDT instruction.
+ */
 [[gnu::cdecl]]
 extern void
 i686_gdt_load(
@@ -67,8 +59,22 @@ i686_gdt_load(
 );
 
 void
-gdt_load()
+i686_gdt_init()
 {
+    // Set up a minimal GDT using the flat memory model.
+    //
+    // Since we will primarily use paging for memory protection, this setup
+    // defines the essential segment descriptors: a null segment, and separate
+    // code and data segments for both kernel and user mode.
+    //
+    // https://wiki.osdev.org/GDT_Tutorial#Flat_/_Long_Mode_Setup
+    gdt_set_entry(GDT_IDX_NULL, 0U, 0U, 0U, 0U);
+    gdt_set_entry(GDT_IDX_KCODE, 0U, LIMIT_4KiB, ACCESS_KERNEL_CS, FLAGS_CS_32);
+    gdt_set_entry(GDT_IDX_KDATA, 0U, LIMIT_4KiB, ACCESS_KERNEL_DS, FLAGS_DS_32);
+    gdt_set_entry(GDT_IDX_UCODE, 0U, LIMIT_4KiB, ACCESS_USER_CS, FLAGS_CS_32);
+    gdt_set_entry(GDT_IDX_UDATA, 0U, LIMIT_4KiB, ACCESS_USER_DS, FLAGS_DS_32);
+    // TODO: Write entry for TSS
+
     i686_gdt_load(
         &s_gdtr, GDT_SELECTOR(GDT_IDX_KCODE), GDT_SELECTOR(GDT_IDX_KDATA)
     );
