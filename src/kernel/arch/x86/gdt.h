@@ -3,35 +3,32 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// #define GDT_NUM_ENTRIES     (GDT_IDX_UDATA + 1U)
-// #define GDT_SELECTOR(index) (index * sizeof(struct gdt_entry))
+#define GDT_NUM_ENTRIES     (GDT_IDX_UDATA + 1U)
+#define GDT_SELECTOR(index) (index * sizeof(struct gdt_entry))
 
-// TODO: Hard-coded for now
-#define GDT_NUM_ENTRIES (5)
-
-// enum gdt_entry_index : uint8_t
-// {
-//     /**
-//      * Null segment
-//      */
-//     GDT_IDX_NULL = 0U,
-//     /**
-//      * Kernel Mode code segment
-//      */
-//     GDT_IDX_KCODE = 1U,
-//     /**
-//      * Kernel Mode data segment
-//      */
-//     GDT_IDX_KDATA = 2U,
-//     /**
-//      * User Mode code segment
-//      */
-//     GDT_IDX_UCODE = 3U,
-//     /**
-//      * User Mode data segment
-//      */
-//     GDT_IDX_UDATA = 4U,
-// };
+enum gdt_entry_index : uint8_t
+{
+    /**
+     * Null segment
+     */
+    GDT_IDX_NULL = 0U,
+    /**
+     * Kernel Mode code segment
+     */
+    GDT_IDX_KCODE = 1U,
+    /**
+     * Kernel Mode data segment
+     */
+    GDT_IDX_KDATA = 2U,
+    /**
+     * User Mode code segment
+     */
+    GDT_IDX_UCODE = 3U,
+    /**
+     * User Mode data segment
+     */
+    GDT_IDX_UDATA = 4U,
+};
 
 enum gdt_access : uint8_t
 {

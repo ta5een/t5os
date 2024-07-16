@@ -50,20 +50,11 @@ gdt_set_entry(
 void
 gdt_init()
 {
-    /*
     gdt_set_entry(GDT_IDX_NULL, 0U, 0U, 0U, 0U);
     gdt_set_entry(GDT_IDX_KCODE, 0U, LIMIT_4KiB, ACCESS_KERNEL_CS, FLAGS_CS_32);
     gdt_set_entry(GDT_IDX_KDATA, 0U, LIMIT_4KiB, ACCESS_KERNEL_DS, FLAGS_DS_32);
     gdt_set_entry(GDT_IDX_UCODE, 0U, LIMIT_4KiB, ACCESS_USER_CS, FLAGS_CS_32);
     gdt_set_entry(GDT_IDX_UDATA, 0U, LIMIT_4KiB, ACCESS_USER_DS, FLAGS_DS_32);
-    */
-
-    // FIXME: Loading an "unused" segment between NULL and Kernel Code works
-    gdt_set_entry(0, 0, 0, 0, 0);
-    gdt_set_entry(1, 0, 0xfffff, 0x9a, 0xc);
-    gdt_set_entry(2, 0, 0xfffff, 0x92, 0xc);
-    gdt_set_entry(3, 0, 0xfffff, 0xfa, 0xc);
-    gdt_set_entry(4, 0, 0xfffff, 0xf2, 0xc);
     // TODO: Write entry for TSS
 }
 
@@ -78,5 +69,7 @@ i686_gdt_load(
 void
 gdt_load()
 {
-    i686_gdt_load(&s_gdtr, 0x08, 0x10);
+    i686_gdt_load(
+        &s_gdtr, GDT_SELECTOR(GDT_IDX_KCODE), GDT_SELECTOR(GDT_IDX_KDATA)
+    );
 }
