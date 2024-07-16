@@ -1,4 +1,5 @@
 #include <kernel/arch/x86/descriptor_table.h>
+#include <kernel/arch/x86/devices/vga.h>
 #include <kernel/arch/x86/gdt.h>
 #include <kernel/arch/x86/idt.h>
 #include <kernel/arch/x86/ports.h>
@@ -10,104 +11,55 @@
 #define PORT_PIC_SLAVE_COMMAND  (0xa0U)
 #define PORT_PIC_SLAVE_DATA     (0xa1U)
 
-static struct idt_entry s_idt[IDT_NUM_ENTRIES];
+static struct i686_idt_entry s_idt[IDT_NUM_ENTRIES];
 
-static struct descriptor_table_register s_idtr = {
+static const struct descriptor_table_register s_idtr = {
     .limit = sizeof(s_idt) - 1,
     .base = (void *)s_idt,
 };
 
+/**
+ * Loads the Interrupt Descriptor Table with the LIDT instruction.
+ */
 void
-idt_set_entry(
-    size_t index,
-    size_t segment_selector,
-    uint32_t handler,
-    enum idt_flag flags
-)
-{
-    s_idt[index] = (struct idt_entry){
-        .reserved = 0,
-        .base_0_15 = handler & 0xffffU,
-        .base_16_31 = (handler >> 16U) & 0xffffU,
-        .segment_selector = segment_selector,
-        .flags = IDT_FLAG_PRESENT | flags,
-    };
-}
-
-void
-idt_init()
-{
-    for (size_t interrupt = 0; interrupt < IDT_NUM_ENTRIES; interrupt++)
-    {
-        idt_set_entry(
-            interrupt,
-            GDT_IDX_KCODE,
-            (uint32_t)&idt_ignore_interrupt_request,
-            IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-        );
-    }
-
-    idt_set_entry(
-        0x20,
-        GDT_IDX_KCODE,
-        (uint32_t)&idt_handle_interrupt_request_0x00,
-        IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-    );
-
-    idt_set_entry(
-        0x21,
-        GDT_IDX_KCODE,
-        (uint32_t)&idt_handle_interrupt_request_0x01,
-        IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-    );
-
-    port_write_8(PORT_PIC_MASTER_COMMAND, 0x11U);
-    port_write_8(PORT_PIC_SLAVE_COMMAND, 0x11U);
-
-    port_write_8(PORT_PIC_MASTER_DATA, 0x20U);
-    port_write_8(PORT_PIC_SLAVE_DATA, 0x28U);
-
-    port_write_8(PORT_PIC_MASTER_DATA, 0x04U);
-    port_write_8(PORT_PIC_SLAVE_DATA, 0x02U);
-
-    port_write_8(PORT_PIC_MASTER_DATA, 0x01U);
-    port_write_8(PORT_PIC_SLAVE_DATA, 0x01U);
-
-    port_write_8(PORT_PIC_MASTER_DATA, 0x00U);
-    port_write_8(PORT_PIC_SLAVE_DATA, 0x00U);
-}
-
-void
-idt_load()
+i686_idt_load()
 {
     asm volatile("lidt %0" : : "m"(s_idtr) : "memory");
 }
 
 void
-idt_activate()
+i686_idt_init()
 {
-    // TODO: Assumes there is one processor to listen to interrupts
-    asm volatile("sti");
+    i686_idt_load();
 }
 
 void
-idt_deactivate()
+i686_idt_set_entry(
+    size_t vector,
+    i686_idt_handler_t handler,
+    size_t segment_selector,
+    enum idt_flag flags
+)
 {
-    // TODO: Assumes there is one processor to stop listening to interrupts
-    asm volatile("cli");
+    s_idt[vector] = (struct i686_idt_entry){
+        .base_0_15 = ((uint32_t)handler) & 0xffffU,
+        .base_16_31 = ((uint32_t)handler >> 16U) & 0xffffU,
+        .segment_selector = segment_selector,
+        .flags = IDT_FLAG_PRESENT | flags,
+        .reserved = 0,
+    };
 }
 
-size_t
-idt_handle_interrupt(uint8_t interrupt_number, size_t esp)
-{
-    if (0x20 <= interrupt_number && interrupt_number <= 0x30)
-    {
-        port_write_8(PORT_PIC_MASTER_COMMAND, 0x20);
-        if (0x28 <= interrupt_number)
-        {
-            port_write_8(PORT_PIC_SLAVE_COMMAND, 0x20);
-        }
-    }
+// void
+// idt_activate()
+// {
+//     // TODO: Assumes there is one processor to listen to interrupts
+//     asm volatile("sti");
+// }
 
-    return esp;
-}
+// void
+// idt_deactivate()
+// {
+//     // TODO: Assumes there is one processor to stop listening to interrupts
+//     asm volatile("cli");
+// }

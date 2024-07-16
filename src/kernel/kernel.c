@@ -2,6 +2,7 @@
 #include <kernel/arch/x86/devices/vga.h>
 #include <kernel/arch/x86/gdt.h>
 #include <kernel/arch/x86/idt.h>
+#include <kernel/arch/x86/isr.h>
 
 #define VGA_BUFFER_ADDRESS ((volatile vga_char_t *)0xb8000U)
 
@@ -18,6 +19,10 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     vga_clear_screen(vga);
     vga_println(vga, "t5os v0.0.1");
 
+    vga_print(vga, "Clearing interrupts...");
+    asm volatile("cli");
+    vga_println(vga, " [DONE]");
+
     if (serial_init(SERIAL_COM1_BASE) != SERIAL_INIT_SUCCESS)
     {
         // TODO: Do something useful here...
@@ -25,13 +30,31 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     }
 
     // Load the GDT for the BSP
-    gdt_init();
-    gdt_load();
+    i686_gdt_init();
 
-    // Load the IDT for the BSP
-    // idt_init();
-    // idt_load();
+    // Load the IDT and register the ISRs and IRQs for the BSP
+    i686_idt_init();
+    i686_isr_init();
+
+    // TODO: Activate all interrupts with STI once IRQs are implemented
     // idt_activate();
+
+    // Test software interrupts
+    vga_print(vga, "Triggering INT 0x02...");
+    asm volatile("int $0x02");
+    vga_println(vga, " [DONE]");
+
+    vga_print(vga, "Triggering INT 0x03...");
+    asm volatile("int $0x03");
+    vga_println(vga, " [DONE]");
+
+    vga_print(vga, "Triggering INT 0x04...");
+    asm volatile("int $0x04");
+    vga_println(vga, " [DONE]");
+
+    vga_print(vga, "Triggering INT 0x1f...");
+    asm volatile("int $0x1f");
+    vga_println(vga, " [DONE]");
 
     // Idle loop
     // TODO: Move this to generic CPU interface

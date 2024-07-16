@@ -4,22 +4,26 @@
 
 #define LIMIT_4KiB 0xfffffU
 
+#define ACCESS_CS                                                              \
+    (GDT_ACCESS_CODE_SEGMENT | GDT_ACCESS_CODE_READABLE | GDT_ACCESS_PRESENT)
 #define ACCESS_DS                                                              \
-    (GDT_ACCESS_WRITEABLE | GDT_ACCESS_NOT_SYSTEM | GDT_ACCESS_PRESENT)
-#define ACCESS_CS        (ACCESS_DS | GDT_ACCESS_EXECUTABLE)
+    (GDT_ACCESS_DATA_SEGMENT | GDT_ACCESS_DATA_WRITEABLE | GDT_ACCESS_PRESENT)
 #define ACCESS_KERNEL_CS (GDT_ACCESS_RING0 | ACCESS_CS)
 #define ACCESS_KERNEL_DS (GDT_ACCESS_RING0 | ACCESS_DS)
 #define ACCESS_USER_CS   (GDT_ACCESS_RING3 | ACCESS_CS)
 #define ACCESS_USER_DS   (GDT_ACCESS_RING3 | ACCESS_DS)
 
-#define FLAGS_DS_32 (GDT_FLAG_GRANULARITY | GDT_FLAG_DEFAULT_SIZE)
-#define FLAGS_CS_32 (FLAGS_DS_32)
-#define FLAGS_DS_64 (GDT_FLAG_GRANULARITY | GDT_FLAG_DEFAULT_SIZE)
-#define FLAGS_CS_64 (GDT_FLAG_GRANULARITY | GDT_FLAG_LONG_MODE)
+#define FLAGS_CS_32 (GDT_FLAG_32BIT | GDT_FLAG_GRANULARITY_4K)
+#define FLAGS_DS_32 (GDT_FLAG_32BIT | GDT_FLAG_GRANULARITY_4K)
+#define FLAGS_CS_64 (GDT_FLAG_64BIT | GDT_FLAG_GRANULARITY_4K)
+// NOTE: Not sure why OSDev Wiki instructs setting the data segment flag to 0xc
+// for 64-bit data segments:
+// https://wiki.osdev.org/GDT_Tutorial#Flat_/_Long_Mode_Setup
+#define FLAGS_DS_64 (GDT_FLAG_32BIT | GDT_FLAG_GRANULARITY_4K)
 
 static struct gdt_entry s_gdt[GDT_NUM_ENTRIES];
 
-static struct descriptor_table_register s_gdtr = {
+static const struct descriptor_table_register s_gdtr = {
     .limit = sizeof(s_gdt) - 1,
     .base = (void *)s_gdt
 };
@@ -43,19 +47,37 @@ gdt_set_entry(
     };
 }
 
+/**
+ * Loads the Global Descriptor Table with the LGDT instruction.
+ *
+ * Refer to "gdt.S" for more information.
+ */
+[[gnu::cdecl]]
+extern void
+i686_gdt_load(
+    const struct descriptor_table_register *gdtr,
+    size_t code_segment_selector,
+    size_t data_segment_selector
+);
+
 void
-gdt_init()
+i686_gdt_init()
 {
+    // Set up a minimal GDT using the flat memory model.
+    //
+    // Since we will primarily use paging for memory protection, this setup
+    // defines the essential segment descriptors: a null segment, and separate
+    // code and data segments for both kernel and user mode.
+    //
+    // https://wiki.osdev.org/GDT_Tutorial#Flat_/_Long_Mode_Setup
     gdt_set_entry(GDT_IDX_NULL, 0U, 0U, 0U, 0U);
     gdt_set_entry(GDT_IDX_KCODE, 0U, LIMIT_4KiB, ACCESS_KERNEL_CS, FLAGS_CS_32);
     gdt_set_entry(GDT_IDX_KDATA, 0U, LIMIT_4KiB, ACCESS_KERNEL_DS, FLAGS_DS_32);
     gdt_set_entry(GDT_IDX_UCODE, 0U, LIMIT_4KiB, ACCESS_USER_CS, FLAGS_CS_32);
     gdt_set_entry(GDT_IDX_UDATA, 0U, LIMIT_4KiB, ACCESS_USER_DS, FLAGS_DS_32);
     // TODO: Write entry for TSS
-}
 
-void
-gdt_load()
-{
-    asm volatile("lgdt %0" : : "m"(s_gdtr) : "memory");
+    i686_gdt_load(
+        &s_gdtr, GDT_SELECTOR(GDT_IDX_KCODE), GDT_SELECTOR(GDT_IDX_KDATA)
+    );
 }
