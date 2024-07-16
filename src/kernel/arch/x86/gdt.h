@@ -7,7 +7,7 @@
 // #define GDT_SELECTOR(index) (index * sizeof(struct gdt_entry))
 
 // TODO: Hard-coded for now
-#define GDT_NUM_ENTRIES (6)
+#define GDT_NUM_ENTRIES (5)
 
 // enum gdt_entry_index : uint8_t
 // {

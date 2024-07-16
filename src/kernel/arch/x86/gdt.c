@@ -60,17 +60,23 @@ gdt_init()
 
     // FIXME: Loading an "unused" segment between NULL and Kernel Code works
     gdt_set_entry(0, 0, 0, 0, 0);
-    gdt_set_entry(1, 0, 0, 0, 0);
-    gdt_set_entry(2, 0, 0xfffff, 0x9a, 0xc);
-    gdt_set_entry(3, 0, 0xfffff, 0x92, 0xc);
-    gdt_set_entry(4, 0, 0xfffff, 0xfa, 0xc);
-    gdt_set_entry(5, 0, 0xfffff, 0xf2, 0xc);
-
+    gdt_set_entry(1, 0, 0xfffff, 0x9a, 0xc);
+    gdt_set_entry(2, 0, 0xfffff, 0x92, 0xc);
+    gdt_set_entry(3, 0, 0xfffff, 0xfa, 0xc);
+    gdt_set_entry(4, 0, 0xfffff, 0xf2, 0xc);
     // TODO: Write entry for TSS
 }
+
+[[gnu::cdecl]]
+extern void
+i686_gdt_load(
+    struct descriptor_table_register *gdtr,
+    size_t code_segment_selector,
+    size_t data_segment_selector
+);
 
 void
 gdt_load()
 {
-    asm volatile("lgdt %0" : : "m"(s_gdtr) : "memory");
+    i686_gdt_load(&s_gdtr, 0x08, 0x10);
 }
