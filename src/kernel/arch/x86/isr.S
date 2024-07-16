@@ -12,9 +12,8 @@
 	 * for interrupts triggered by the PIC (DEFINE_IRQ), which needs to be
 	 * handled slightly differently.
 	 *
-	 * A majority of this code has been adapted from the following sources:
-	 * - https://www.youtube.com/watch?v=lWhyXLXflt4&list=PLFjM7v6KGMpiH2G-kT781ByCNC_0pKpPN&index=15
-	 * - https://github.com/nanobyte-dev/nanobyte_os/blob/db304f43138d8367e938080bf688960010d178ef/src/kernel/arch/i686/isr.asm
+	 * A majority of this code has been adapted from nanoybyte_os:
+	 * - https://github.com/nanobyte-dev/nanobyte_os/blob/fe61d210896d05c98a731b2d77cded21c4d2c45f/src/kernel/arch/i686/isr_asm.asm
 	 */
 
 	.code32
@@ -31,7 +30,7 @@
 	 * simplifying the interrupt handling process.
 	 */
 	.macro DEFINE_ISR_NO_ERR num
-		# .align 16
+		.align 16
 		.global isr_\num
 		isr_\num:
 		push $0					# Push dummy error code
@@ -46,7 +45,7 @@
 	 * This macro is used for such interrupts.
 	 */
 	.macro DEFINE_ISR_ERR num
-		# .align 16
+		.align 16
 		.global isr_\num
 		isr_\num:
 								# CPU pushes error code here
@@ -110,7 +109,7 @@ isr_stub:
 	push %eax
 
 	/* Load the kernel data segment */
-	mov $0x18, %ax				# Note: This seems to accept $0x10 and $0x18???
+	mov $0x10, %ax
 	mov %ax, %ds
 	mov %ax, %es
 	mov %ax, %fs
