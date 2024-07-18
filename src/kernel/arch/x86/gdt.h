@@ -3,31 +3,32 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define GDT_NUM_ENTRIES     (GDT_IDX_UDATA + 1U)
-#define GDT_SELECTOR(index) (index * sizeof(struct gdt_entry))
+#define GDT_SELECTOR(index)          ((uint16_t)(index << 3U))
+#define GDT_SELECTOR_INDEX(selector) ((enum gdt_selector)selector >> 3U)
+#define GDT_NUM_ENTRIES              (GDT_SELECTOR_INDEX(GDT_UDATA) + 1U)
 
-enum gdt_entry_index : uint8_t
+enum gdt_selector : uint16_t
 {
     /**
-     * Null segment
+     * Null Descriptor selector
      */
-    GDT_IDX_NULL = 0U,
+    GDT_NULL = GDT_SELECTOR(0U),
     /**
-     * Kernel Mode code segment
+     * Kernel Mode Code Segment selector
      */
-    GDT_IDX_KCODE = 1U,
+    GDT_KCODE = GDT_SELECTOR(1U),
     /**
-     * Kernel Mode data segment
+     * Kernel Mode Data Segment selector
      */
-    GDT_IDX_KDATA = 2U,
+    GDT_KDATA = GDT_SELECTOR(2U),
     /**
-     * User Mode code segment
+     * User Mode Code Segment selector
      */
-    GDT_IDX_UCODE = 3U,
+    GDT_UCODE = GDT_SELECTOR(3U),
     /**
-     * User Mode data segment
+     * User Mode Data Segment selector
      */
-    GDT_IDX_UDATA = 4U,
+    GDT_UDATA = GDT_SELECTOR(4U),
 };
 
 enum gdt_access : uint8_t
@@ -77,7 +78,9 @@ struct [[gnu::packed]] gdt_entry
 static_assert(sizeof(struct gdt_entry) == 8U);
 
 /**
- * Initializes the entries of the Global Descriptor Table.
+ * Initializes the entries of the Global Descriptor Table and loads it.
+ *
+ * This will call the IA-32 or IA-64 variant depending on the selected target.
  */
 void
-i686_gdt_init();
+gdt_init();

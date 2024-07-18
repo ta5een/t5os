@@ -1,7 +1,8 @@
+#include "isr.h"
+
 #include <kernel/arch/x86/devices/vga.h>
 #include <kernel/arch/x86/gdt.h>
 #include <kernel/arch/x86/idt.h>
-#include <kernel/arch/x86/isr.h>
 
 #define ISR_HANDLER_ALIGNMENT      (16U)
 #define ISR_EXCEPTION_VECTOR_START (0x00U)
@@ -38,7 +39,7 @@ i686_isr_init()
         i686_idt_set_entry(
             exception,
             i686_isr_0x00 + (exception * ISR_HANDLER_ALIGNMENT),
-            GDT_SELECTOR(GDT_IDX_KCODE),
+            GDT_KCODE,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
     }
@@ -51,7 +52,7 @@ i686_isr_init()
         i686_idt_set_entry(
             interrupt,
             i686_isr_unhandled_stub,
-            GDT_SELECTOR(GDT_IDX_KCODE),
+            GDT_KCODE,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
     }

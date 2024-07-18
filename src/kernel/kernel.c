@@ -30,7 +30,7 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     }
 
     // Load the GDT for the BSP
-    i686_gdt_init();
+    gdt_init();
 
     // Load the IDT and register the ISRs and IRQs for the BSP
     i686_idt_init();

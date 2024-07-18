@@ -15,9 +15,9 @@
 	 * @param size_t data_segment_selector
 	 * @returns void
 	 */
-	.global i686_gdt_load
-	.type i686_gdt_load, @function
-i686_gdt_load:
+	.global ia32_gdt_load
+	.type ia32_gdt_load, @function
+ia32_gdt_load:
 	/* Prologue: make a new call frame for this subroutine. */
 	push %ebp					# Save the caller's base pointer value
 	mov %esp, %ebp				# Set the new base pointer value
@@ -35,8 +35,8 @@ i686_gdt_load:
 	 * code segment and will start executing instructions at the new instruction
 	 * pointer within this new context.
 	 *
-	 * After `i686_gdt_load` returns with `ret`, execution continues at the
-	 * instruction following the `i686_gdt_load` call, using the new code
+	 * After `ia32_gdt_load` returns with `ret`, execution continues at the
+	 * instruction following the `ia32_gdt_load` call, using the new code
 	 * segment specified by `code_segment_selector`.
 	 */
 	mov 12(%ebp), %eax			# Push 2nd arg (code_segment_selector)

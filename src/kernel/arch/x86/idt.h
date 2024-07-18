@@ -1,5 +1,6 @@
 #pragma once
 
+#include <kernel/arch/x86/gdt.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -14,7 +15,7 @@
 struct [[gnu::packed]] i686_idt_entry
 {
     uint16_t base_0_15;
-    uint16_t segment_selector;
+    enum gdt_selector segment_selector;
     uint8_t reserved;
     uint8_t flags;
     uint16_t base_16_31;
@@ -56,7 +57,7 @@ void
 i686_idt_set_entry(
     size_t vector,
     i686_idt_handler_t handler,
-    size_t segment_selector,
+    enum gdt_selector segment_selector,
     enum idt_flag flags
 );
 

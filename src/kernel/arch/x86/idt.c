@@ -1,7 +1,8 @@
+#include "idt.h"
+
 #include <kernel/arch/x86/descriptor_table.h>
 #include <kernel/arch/x86/devices/vga.h>
 #include <kernel/arch/x86/gdt.h>
-#include <kernel/arch/x86/idt.h>
 #include <kernel/arch/x86/ports.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -37,7 +38,7 @@ void
 i686_idt_set_entry(
     size_t vector,
     i686_idt_handler_t handler,
-    size_t segment_selector,
+    enum gdt_selector segment_selector,
     enum idt_flag flags
 )
 {
