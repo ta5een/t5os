@@ -3,6 +3,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/**
+ * Constructs a segment selector for a given index in the GDT.
+ *
+ * A segment selector is 16 bits wide, with the descriptor's byte offset set in
+ * bits 3-15. Since we don't make use of the lower 3 bits (bits 0-2) for now,
+ * we'll simply calculate the selector by shifting the index by 3, which
+ * conveniently provides its byte offset.
+ */
 #define GDT_SELECTOR(index)          ((uint16_t)(index << 3U))
 #define GDT_SELECTOR_INDEX(selector) ((enum gdt_selector)selector >> 3U)
 #define GDT_NUM_ENTRIES              (GDT_SELECTOR_INDEX(GDT_UDATA) + 1U)

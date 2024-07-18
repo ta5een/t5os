@@ -41,7 +41,7 @@ enum ia32_idt_flag : uint8_t
 // NOLINTNEXTLINE(readability-magic-numbers)
 static_assert((bool)(sizeof(struct ia32_idt_entry) == 8U));
 
-// FIXME: ISR handlers expect a pointer to a `struct interrupt_frame`.
+// FIXME: ISR handlers expect a pointer to a `struct ia32_interrupt_frame`.
 typedef void(ia32_idt_handler_t)(void);
 
 /*
