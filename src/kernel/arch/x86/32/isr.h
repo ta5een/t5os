@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-struct [[gnu::packed]] i686_interrupt_frame
+struct [[gnu::packed]] ia32_interrupt_frame
 {
     /**
      * The data segment selector at the time the interrupt was triggered,
@@ -32,4 +32,4 @@ struct [[gnu::packed]] i686_interrupt_frame
 };
 
 void
-i686_isr_init();
+ia32_isr_init();

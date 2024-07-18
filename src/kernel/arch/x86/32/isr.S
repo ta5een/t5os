@@ -22,7 +22,7 @@
 
 	.code32
 	.section .text
-	.extern i686_isr_handler
+	.extern ia32_isr_handler
 
 	/* Defines an ISR for interrupts that do not push an error code.
 	 *
@@ -34,11 +34,11 @@
 	 */
 	.macro DEFINE_ISR_NO_ERR num
 		.align 16
-		.global i686_isr_\num
-		i686_isr_\num:
+		.global ia32_isr_\num
+		ia32_isr_\num:
 		push $0					# Push dummy error code
 		push $\num				# Push interrupt number
-		jmp i686_isr_stub
+		jmp ia32_isr_stub
 	.endm
 
 	/* Defines an ISR for interrupts that push an error code.
@@ -49,11 +49,11 @@
 	 */
 	.macro DEFINE_ISR_ERR num
 		.align 16
-		.global i686_isr_\num
-		i686_isr_\num:
+		.global ia32_isr_\num
+		ia32_isr_\num:
 								# CPU pushes error code here
 		push $\num				# Push interrupt number
-		jmp i686_isr_stub
+		jmp ia32_isr_stub
 	.endm
 
 	DEFINE_ISR_NO_ERR	0x00
@@ -92,7 +92,7 @@
 	# DEFINE_ISR_NO_ERR	0x20
 	# DEFINE_ISR_NO_ERR	0x80
 
-i686_isr_stub:
+ia32_isr_stub:
 	/* Store all general-purpose registers in the following order:
 	 * EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI
 	 */
@@ -131,7 +131,7 @@ i686_isr_stub:
 	 * argument from the stack.
 	 */
 	push %esp
-	call i686_isr_handler
+	call ia32_isr_handler
 	add $4, %esp
 
 	/* Restore the original data segment. */
@@ -152,8 +152,8 @@ i686_isr_stub:
 	add $8, %esp
 	iret
 
-	.global i686_isr_unhandled_stub
-i686_isr_unhandled_stub:
+	.global ia32_isr_unhandled_stub
+ia32_isr_unhandled_stub:
 	/* Halt the OS for now */
 	cli
 	hlt

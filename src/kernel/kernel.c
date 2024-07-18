@@ -1,8 +1,8 @@
+#include <kernel/arch/x86/32/idt.h>
+#include <kernel/arch/x86/32/isr.h>
 #include <kernel/arch/x86/devices/serial.h>
 #include <kernel/arch/x86/devices/vga.h>
 #include <kernel/arch/x86/gdt.h>
-#include <kernel/arch/x86/idt.h>
-#include <kernel/arch/x86/isr.h>
 
 #define VGA_BUFFER_ADDRESS ((volatile vga_char_t *)0xb8000U)
 
@@ -33,8 +33,8 @@ kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
     gdt_init();
 
     // Load the IDT and register the ISRs and IRQs for the BSP
-    i686_idt_init();
-    i686_isr_init();
+    ia32_idt_init();
+    ia32_isr_init();
 
     // TODO: Activate all interrupts with STI once IRQs are implemented
     // idt_activate();

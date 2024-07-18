@@ -1,8 +1,7 @@
 #include "isr.h"
 
+#include <kernel/arch/x86/32/idt.h>
 #include <kernel/arch/x86/devices/vga.h>
-#include <kernel/arch/x86/gdt.h>
-#include <kernel/arch/x86/idt.h>
 
 #define ISR_HANDLER_ALIGNMENT      (16U)
 #define ISR_EXCEPTION_VECTOR_START (0x00U)
@@ -17,28 +16,28 @@
  * ISRs. For example, to get the address of the 0x10th ISR, we can calculate it
  * like so:
  *
- *     isr_0x00 + (0x10 * ISR_HANDLER_ALIGNMENT)
+ *     ia32_isr_0x00 + (0x10 * ISR_HANDLER_ALIGNMENT)
  *
  * https://github.com/dreamportdev/Osdev-Notes/blob/master/02_Architecture/05_InterruptHandling.md#an-example-stub
  */
-extern i686_idt_handler_t i686_isr_0x00;
+extern ia32_idt_handler_t ia32_isr_0x00;
 
 /**
  * All other ISRs will point to this stub (which for now will halt the OS).
  */
-extern i686_idt_handler_t i686_isr_unhandled_stub;
+extern ia32_idt_handler_t ia32_isr_unhandled_stub;
 
 void
-i686_isr_init()
+ia32_isr_init()
 {
     // Initialize entries for exceptions with their respective handlers
     for (size_t exception = ISR_EXCEPTION_VECTOR_START;
          exception < ISR_INTERRUPT_VECTOR_START;
          exception++)
     {
-        i686_idt_set_entry(
+        ia32_idt_set_entry(
             exception,
-            i686_isr_0x00 + (exception * ISR_HANDLER_ALIGNMENT),
+            ia32_isr_0x00 + (exception * ISR_HANDLER_ALIGNMENT),
             GDT_KCODE,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
@@ -49,9 +48,9 @@ i686_isr_init()
          interrupt < IDT_NUM_ENTRIES;
          interrupt++)
     {
-        i686_idt_set_entry(
+        ia32_idt_set_entry(
             interrupt,
-            i686_isr_unhandled_stub,
+            ia32_isr_unhandled_stub,
             GDT_KCODE,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
@@ -64,7 +63,7 @@ vga_print_uint(struct vga *vga, size_t integer, size_t radix);
 
 [[gnu::cdecl]]
 void
-i686_isr_handler(struct i686_interrupt_frame *frame)
+ia32_isr_handler(struct ia32_interrupt_frame *frame)
 {
     // Print the interrupt number for now
     struct vga *vga = vga_get();
