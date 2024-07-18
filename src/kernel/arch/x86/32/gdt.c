@@ -38,7 +38,7 @@ ia32_gdt_load(
 );
 
 static inline void
-gdt_set_entry(
+ia32_gdt_set_entry(
     enum gdt_selector selector,
     uint32_t base,
     uint32_t limit,
@@ -66,11 +66,11 @@ ia32_gdt_init()
     // code and data segments for both kernel and user mode.
     //
     // https://wiki.osdev.org/GDT_Tutorial#Flat_/_Long_Mode_Setup
-    gdt_set_entry(GDT_NULL, 0U, 0U, 0U, 0U);
-    gdt_set_entry(GDT_KCODE, 0U, LIMIT_4KiB, ACCESS_KERNEL_CS, FLAGS_CS_32);
-    gdt_set_entry(GDT_KDATA, 0U, LIMIT_4KiB, ACCESS_KERNEL_DS, FLAGS_DS_32);
-    gdt_set_entry(GDT_UCODE, 0U, LIMIT_4KiB, ACCESS_USER_CS, FLAGS_CS_32);
-    gdt_set_entry(GDT_UDATA, 0U, LIMIT_4KiB, ACCESS_USER_DS, FLAGS_DS_32);
+    ia32_gdt_set_entry(GDT_NULL, 0, 0, 0, 0);
+    ia32_gdt_set_entry(GDT_KCODE, 0, LIMIT_4KiB, ACCESS_KERNEL_CS, FLAGS_CS_32);
+    ia32_gdt_set_entry(GDT_KDATA, 0, LIMIT_4KiB, ACCESS_KERNEL_DS, FLAGS_DS_32);
+    ia32_gdt_set_entry(GDT_UCODE, 0, LIMIT_4KiB, ACCESS_USER_CS, FLAGS_CS_32);
+    ia32_gdt_set_entry(GDT_UDATA, 0, LIMIT_4KiB, ACCESS_USER_DS, FLAGS_DS_32);
     // TODO: Write entry for TSS
 
     ia32_gdt_load(&s_gdtr, GDT_KCODE, GDT_KDATA);

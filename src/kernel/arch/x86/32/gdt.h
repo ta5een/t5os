@@ -1,3 +1,5 @@
+#pragma once
+
 /**
  * Initializes the entries of the Global Descriptor Table and loads it.
  */

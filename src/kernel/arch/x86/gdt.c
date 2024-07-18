@@ -13,7 +13,7 @@ void
 gdt_init()
 {
 #if defined(__x86_64__)
-    #error "'ia64_gdt_load' not yet defined"
+    #error "'gdt_init' not yet defined for x86_64"
 #elif defined(__i386__)
     ia32_gdt_init();
 #endif
