@@ -1,4 +1,4 @@
-#include <kernel/arch/generic/arch_cpu_init.h>
+#include <kernel/arch/cpu.h>
 #include <kernel/arch/x86/32/idt.h>
 #include <kernel/arch/x86/32/isr.h>
 #include <kernel/arch/x86/devices/serial.h>
