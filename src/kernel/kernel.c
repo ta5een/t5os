@@ -1,4 +1,4 @@
-#include <kernel/arch/generic/init.h>
+#include <kernel/arch/generic/arch_cpu_init.h>
 #include <stdint.h>
 
 typedef void(*multiboot_t);
@@ -7,7 +7,7 @@ void
 kmain(multiboot_t /*multiboot*/, uint32_t /*magic*/)
 {
     // Initialize architecture-specific components
-    arch_init();
+    arch_cpu_init();
 
     // Idle loop
     // TODO: Move this to generic CPU interface

@@ -1,4 +1,4 @@
 #pragma once
 
 void
-arch_init();
+arch_cpu_init();
