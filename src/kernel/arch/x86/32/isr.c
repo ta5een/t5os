@@ -1,6 +1,6 @@
 #include "isr.h"
 
-#include <kernel/arch/x86/32/interrupts/idt.h>
+#include <kernel/arch/x86/32/idt.h>
 #include <kernel/arch/x86/devices/vga.h>
 
 #define ISR_HANDLER_ALIGNMENT      (16U)

@@ -1,8 +1,9 @@
 #include <kernel/arch/generic/arch_cpu_init.h>
+#include <kernel/arch/x86/32/idt.h>
+#include <kernel/arch/x86/32/isr.h>
 #include <kernel/arch/x86/devices/serial.h>
 #include <kernel/arch/x86/devices/vga.h>
 #include <kernel/arch/x86/gdt.h>
-#include <kernel/arch/x86/interrupts.h>
 
 #define VGA_BUFFER_ADDRESS ((volatile vga_char_t *)0xb8000U)
 
@@ -28,9 +29,10 @@ arch_cpu_init()
 
     // Load the GDT for the BSP
     gdt_init();
-
     // Load the IDT and register the ISRs and IRQs for the BSP
-    interrupts_init();
+    ia32_idt_init();
+    ia32_isr_init();
+
     // TODO: Activate all interrupts with STI once IRQs are implemented
     // interrupts_activate();
 
