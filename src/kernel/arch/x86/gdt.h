@@ -12,10 +12,10 @@
  * conveniently provides its byte offset.
  */
 #define GDT_SELECTOR(index)          ((uint16_t)(index << 3U))
-#define GDT_SELECTOR_INDEX(selector) ((enum gdt_selector)selector >> 3U)
+#define GDT_SELECTOR_INDEX(selector) ((enum x86_gdt_selector)selector >> 3U)
 #define GDT_NUM_ENTRIES              (GDT_SELECTOR_INDEX(GDT_UDATA) + 1U)
 
-enum gdt_selector : uint16_t
+enum x86_gdt_selector : uint16_t
 {
     /**
      * Null Descriptor selector
@@ -39,7 +39,7 @@ enum gdt_selector : uint16_t
     GDT_UDATA = GDT_SELECTOR(4U),
 };
 
-enum gdt_access : uint8_t
+enum x86_gdt_access : uint8_t
 {
     GDT_ACCESS_DATA_WRITEABLE = 1U << 1U,
     GDT_ACCESS_CODE_READABLE = 1U << 1U,
@@ -59,7 +59,7 @@ enum gdt_access : uint8_t
     GDT_ACCESS_PRESENT = 1U << 7U,
 };
 
-enum gdt_flag : uint8_t
+enum x86_gdt_flag : uint8_t
 {
     GDT_FLAG_16BIT = 0b00U << 1U,
     GDT_FLAG_32BIT = 0b10U << 1U,
@@ -72,7 +72,7 @@ enum gdt_flag : uint8_t
 /**
  * An entry in the Global Descriptor Table, representing a Segment Descriptor.
  */
-struct [[gnu::packed]] gdt_entry
+struct [[gnu::packed]] x86_gdt_entry
 {
     uint16_t limit_0_15;
     uint16_t base_0_15;
@@ -83,7 +83,7 @@ struct [[gnu::packed]] gdt_entry
 };
 
 // NOLINTNEXTLINE(readability-*)
-static_assert(sizeof(struct gdt_entry) == 8U);
+static_assert(sizeof(struct x86_gdt_entry) == 8U);
 
 /**
  * Initializes the entries of the Global Descriptor Table and loads it.
@@ -91,4 +91,4 @@ static_assert(sizeof(struct gdt_entry) == 8U);
  * This will call the IA-32 or IA-64 variant depending on the selected target.
  */
 void
-gdt_init();
+x86_gdt_init();

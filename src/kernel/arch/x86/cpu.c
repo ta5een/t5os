@@ -12,6 +12,7 @@ static volatile vga_char_t *s_vga_buffer = VGA_BUFFER_ADDRESS;
 void
 arch_cpu_init()
 {
+    // TODO: Move this to pre-init function
     struct vga *vga = vga_get();
     vga_init(vga, s_vga_buffer);
     vga_clear_screen(vga);
@@ -28,27 +29,32 @@ arch_cpu_init()
     }
 
     // Load the GDT for the BSP
-    gdt_init();
+    x86_gdt_init();
+
     // Load the IDT and register the ISRs and IRQs for the BSP
-    ia32_idt_init();
-    ia32_isr_init();
-
+    // TODO: Refactor this to use x86-generic variants
+    x86_32_idt_init();
+    x86_32_isr_init();
     // TODO: Activate all interrupts with STI once IRQs are implemented
-    // interrupts_activate();
+    // x86_32_idt_activate();
 
+    // TODO: Remove this
     // Test software interrupts
     vga_print(vga, "Triggering INT 0x02...");
     asm volatile("int $0x02");
     vga_println(vga, " [DONE]");
 
+    // TODO: Remove this
     vga_print(vga, "Triggering INT 0x03...");
     asm volatile("int $0x03");
     vga_println(vga, " [DONE]");
 
+    // TODO: Remove this
     vga_print(vga, "Triggering INT 0x04...");
     asm volatile("int $0x04");
     vga_println(vga, " [DONE]");
 
+    // TODO: Remove this
     vga_print(vga, "Triggering INT 0x1f...");
     asm volatile("int $0x1f");
     vga_println(vga, " [DONE]");

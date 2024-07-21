@@ -16,28 +16,28 @@
  * ISRs. For example, to get the address of the 0x10th ISR, we can calculate it
  * like so:
  *
- *     ia32_isr_0x00 + (0x10 * ISR_HANDLER_ALIGNMENT)
+ *     x86_32_isr_0x00 + (0x10 * ISR_HANDLER_ALIGNMENT)
  *
  * https://github.com/dreamportdev/Osdev-Notes/blob/master/02_Architecture/05_InterruptHandling.md#an-example-stub
  */
-extern ia32_idt_handler_t ia32_isr_0x00;
+extern x86_32_idt_handler_t x86_32_isr_0x00;
 
 /**
  * All other ISRs will point to this stub (which for now will halt the OS).
  */
-extern ia32_idt_handler_t ia32_isr_unhandled_stub;
+extern x86_32_idt_handler_t x86_32_isr_unhandled_stub;
 
 void
-ia32_isr_init()
+x86_32_isr_init()
 {
     // Initialize entries for exceptions with their respective handlers
     for (size_t exception = ISR_EXCEPTION_VECTOR_START;
          exception < ISR_INTERRUPT_VECTOR_START;
          exception++)
     {
-        ia32_idt_set_entry(
+        x86_32_idt_set_entry(
             exception,
-            ia32_isr_0x00 + (exception * ISR_HANDLER_ALIGNMENT),
+            x86_32_isr_0x00 + (exception * ISR_HANDLER_ALIGNMENT),
             GDT_KCODE,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
@@ -48,9 +48,9 @@ ia32_isr_init()
          interrupt < IDT_NUM_ENTRIES;
          interrupt++)
     {
-        ia32_idt_set_entry(
+        x86_32_idt_set_entry(
             interrupt,
-            ia32_isr_unhandled_stub,
+            x86_32_isr_unhandled_stub,
             GDT_KCODE,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
@@ -63,7 +63,7 @@ vga_print_uint(struct vga *vga, size_t integer, size_t radix);
 
 [[gnu::cdecl]]
 void
-ia32_isr_handler(struct ia32_interrupt_frame *frame)
+x86_32_isr_handler(struct x86_32_interrupt_frame *frame)
 {
     // Print the interrupt number for now
     struct vga *vga = vga_get();

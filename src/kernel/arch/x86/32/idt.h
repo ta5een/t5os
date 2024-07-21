@@ -12,19 +12,19 @@
  *
  * NOTE: This is specific to IA-32.
  */
-struct [[gnu::packed]] ia32_idt_entry
+struct [[gnu::packed]] x86_32_idt_entry
 {
     uint16_t base_0_15;
-    enum gdt_selector segment_selector;
+    enum x86_gdt_selector segment_selector;
     uint8_t reserved;
     uint8_t flags;
     uint16_t base_16_31;
 };
 
 // NOLINTNEXTLINE(readability-magic-numbers)
-static_assert((bool)(sizeof(struct ia32_idt_entry) == 8U));
+static_assert((bool)(sizeof(struct x86_32_idt_entry) == 8U));
 
-enum ia32_idt_flag : uint8_t
+enum x86_32_idt_flag : uint8_t
 {
     IDT_FLAG_GATE_TASK = 0b0101U,
     IDT_FLAG_GATE_INT_16 = 0b0110U,
@@ -39,36 +39,36 @@ enum ia32_idt_flag : uint8_t
 };
 
 // NOLINTNEXTLINE(readability-magic-numbers)
-static_assert((bool)(sizeof(struct ia32_idt_entry) == 8U));
+static_assert((bool)(sizeof(struct x86_32_idt_entry) == 8U));
 
-// FIXME: ISR handlers expect a pointer to a `struct ia32_interrupt_frame`.
-typedef void(ia32_idt_handler_t)(void);
+// FIXME: ISR handlers expect a pointer to a `struct x86_32_interrupt_frame`.
+typedef void(x86_32_idt_handler_t)(void);
 
 /*
  * Initializes the gates of the Interrupt Descriptor Table.
  */
 void
-ia32_idt_init();
+x86_32_idt_init();
 
 /**
  * Modifies the contents of an IDT gate corresponding to the provided vector.
  */
 void
-ia32_idt_set_entry(
+x86_32_idt_set_entry(
     size_t vector,
-    ia32_idt_handler_t handler,
-    enum gdt_selector segment_selector,
-    enum ia32_idt_flag flags
+    x86_32_idt_handler_t handler,
+    enum x86_gdt_selector segment_selector,
+    enum x86_32_idt_flag flags
 );
 
 // /**
 //  * Starts listening to interrupts.
 //  */
 // void
-// ia32_idt_activate();
+// x86_32_idt_activate();
 
 // /**
 //  * Stops listening to interrupts.
 //  */
 // void
-// ia32_idt_deactivate();
+// x86_32_idt_deactivate();
