@@ -1,5 +1,3 @@
-#include "gdt.h"
-
 #include <kernel/arch/x86/descriptor_table.h>
 #include <kernel/arch/x86/gdt.h>
 
@@ -56,7 +54,7 @@ ia32_gdt_set_entry(
     };
 }
 
-void
+static inline void
 ia32_gdt_init()
 {
     // Set up a minimal GDT using the flat memory model.
@@ -74,4 +72,10 @@ ia32_gdt_init()
     // TODO: Write entry for TSS
 
     ia32_gdt_load(&s_gdtr, GDT_KCODE, GDT_KDATA);
+}
+
+void
+gdt_init()
+{
+    ia32_gdt_init();
 }
