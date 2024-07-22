@@ -12,12 +12,13 @@ static volatile vga_char_t *s_vga_buffer = VGA_BUFFER_ADDRESS;
 void
 arch_cpu_init()
 {
-    // TODO: Move this to pre-init function
+    // TODO: Move this to arch-generic console_init function
     struct vga *vga = vga_get();
     vga_init(vga, s_vga_buffer);
     vga_clear_screen(vga);
     vga_println(vga, "t5os v0.0.1");
 
+    // TODO: Consider removing this
     vga_print(vga, "Clearing interrupts...");
     asm volatile("cli");
     vga_println(vga, " [DONE]");

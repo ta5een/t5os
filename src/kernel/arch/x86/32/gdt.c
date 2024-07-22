@@ -64,11 +64,11 @@ x86_32_gdt_init()
     // code and data segments for both kernel and user mode.
     //
     // https://wiki.osdev.org/GDT_Tutorial#Flat_/_Long_Mode_Setup
-    x86_32_gdt_set_entry(GDT_NULL, 0, 0, 0, 0);
-    x86_32_gdt_set_entry(GDT_KCODE, 0, LIMIT_4KiB, ACCESS_KCODE, FLAGS_CS_32);
-    x86_32_gdt_set_entry(GDT_KDATA, 0, LIMIT_4KiB, ACCESS_KDATA, FLAGS_DS_32);
-    x86_32_gdt_set_entry(GDT_UCODE, 0, LIMIT_4KiB, ACCESS_UCODE, FLAGS_CS_32);
-    x86_32_gdt_set_entry(GDT_UDATA, 0, LIMIT_4KiB, ACCESS_UDATA, FLAGS_DS_32);
+    x86_32_gdt_set_entry(GDT_NULL, 0U, 0U, 0U, 0U);
+    x86_32_gdt_set_entry(GDT_KCODE, 0U, LIMIT_4KiB, ACCESS_KCODE, FLAGS_CS_32);
+    x86_32_gdt_set_entry(GDT_KDATA, 0U, LIMIT_4KiB, ACCESS_KDATA, FLAGS_DS_32);
+    x86_32_gdt_set_entry(GDT_UCODE, 0U, LIMIT_4KiB, ACCESS_UCODE, FLAGS_CS_32);
+    x86_32_gdt_set_entry(GDT_UDATA, 0U, LIMIT_4KiB, ACCESS_UDATA, FLAGS_DS_32);
     // TODO: Write entry for TSS
 
     x86_32_gdt_load(&s_gdtr, GDT_KCODE, GDT_KDATA);
