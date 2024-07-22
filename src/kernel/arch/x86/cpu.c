@@ -61,6 +61,15 @@ arch_cpu_init()
 }
 
 void
+arch_cpu_halt()
+{
+    while (true)
+    {
+        asm volatile("cli; hlt");
+    }
+}
+
+void
 arch_cpu_idle_loop()
 {
     while (true)
