@@ -138,11 +138,11 @@ mounts][docker-bind-mounts].
 ## Online Resources
 
 Here is a non-exhaustive list of online resources that have helped me immensely
-in this project:
+in this project (in no particular order):
 
 - [OSDev Wiki](https://wiki.osdev.org/Expanded_Main_Page)
 - [The little book about OS development](https://littleosbook.github.io)
-- [Write Your Own Operating System (YouTube Playlist by Viktor Engelmann)](https://www.youtube.com/playlist?list=PLHh55M_Kq4OApWScZyPl5HhgsTJS9MZ6)
+- [Building an OS (YouTube playlist by nanobyte)](https://youtube.com/playlist?list=PLFjM7v6KGMpiH2G-kT781ByCNC_0pKpPN)
 
 ## License
 
@@ -153,13 +153,15 @@ Additionally, many parts of this project, from its implementation to its
 behaviour, have been derived from multiple open-source projects. Wherever
 possible, I've added an attribution comment on top of the relevant
 file/function/line in the source code. For reference, here is a list of
-projects I've taken inspiration from (I highly recommend checking them out):
+projects I've taken inspiration from (in alphabetical order):
 
-- [SerenityOS](https://github.com/SerenityOS/serenity)
-- [RetrOS-32](https://github.com/joexbayer/RetrOS-32)
-- [SkiftOS](https://github.com/skift-org/skift)
 - [banan-os](https://git.bananymous.com/Bananymous/banan-os)
-- [opuntiaOS](https://github.com/opuntiaOS-Project/opuntiaOS/)
+- [HelenOS](https://github.com/HelenOS/helenos)
+- [nanobyte_os](https://github.com/nanobyte-dev/nanobyte_os)
+- [opuntiaOS](https://github.com/opuntiaOS-Project/opuntiaOS)
+- [RetrOS-32](https://github.com/joexbayer/RetrOS-32)
+- [SerenityOS](https://github.com/SerenityOS/serenity)
+- [SkiftOS](https://github.com/skift-org/skift)
 
 If for any reason you believe I have used your work and haven't credited you
 and/or abided by your license(s), please feel free to reach out to me :)
