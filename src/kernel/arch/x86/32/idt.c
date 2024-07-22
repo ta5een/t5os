@@ -1,8 +1,6 @@
+#include "idt.h"
+
 #include <kernel/arch/x86/descriptor_table.h>
-#include <kernel/arch/x86/devices/vga.h>
-#include <kernel/arch/x86/gdt.h>
-#include <kernel/arch/x86/idt.h>
-#include <kernel/arch/x86/ports.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -11,9 +9,9 @@
 #define PORT_PIC_SLAVE_COMMAND  (0xa0U)
 #define PORT_PIC_SLAVE_DATA     (0xa1U)
 
-static struct i686_idt_entry s_idt[IDT_NUM_ENTRIES];
+static struct x86_32_idt_entry s_idt[IDT_NUM_ENTRIES];
 
-static const struct descriptor_table_register s_idtr = {
+static const struct x86_descriptor_table_register s_idtr = {
     .limit = sizeof(s_idt) - 1,
     .base = (void *)s_idt,
 };
@@ -22,26 +20,26 @@ static const struct descriptor_table_register s_idtr = {
  * Loads the Interrupt Descriptor Table with the LIDT instruction.
  */
 void
-i686_idt_load()
+x86_32_idt_load()
 {
     asm volatile("lidt %0" : : "m"(s_idtr) : "memory");
 }
 
 void
-i686_idt_init()
+x86_32_idt_init()
 {
-    i686_idt_load();
+    x86_32_idt_load();
 }
 
 void
-i686_idt_set_entry(
+x86_32_idt_set_entry(
     size_t vector,
-    i686_idt_handler_t handler,
-    size_t segment_selector,
-    enum idt_flag flags
+    x86_32_idt_handler_t handler,
+    enum x86_gdt_selector segment_selector,
+    uint8_t flags
 )
 {
-    s_idt[vector] = (struct i686_idt_entry){
+    s_idt[vector] = (struct x86_32_idt_entry){
         .base_0_15 = ((uint32_t)handler) & 0xffffU,
         .base_16_31 = ((uint32_t)handler >> 16U) & 0xffffU,
         .segment_selector = segment_selector,
@@ -51,14 +49,14 @@ i686_idt_set_entry(
 }
 
 // void
-// idt_activate()
+// x86_32_idt_activate()
 // {
 //     // TODO: Assumes there is one processor to listen to interrupts
 //     asm volatile("sti");
 // }
 
 // void
-// idt_deactivate()
+// x86_32_idt_deactivate()
 // {
 //     // TODO: Assumes there is one processor to stop listening to interrupts
 //     asm volatile("cli");

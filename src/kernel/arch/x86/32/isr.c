@@ -1,7 +1,7 @@
+#include "isr.h"
+
+#include <kernel/arch/x86/32/idt.h>
 #include <kernel/arch/x86/devices/vga.h>
-#include <kernel/arch/x86/gdt.h>
-#include <kernel/arch/x86/idt.h>
-#include <kernel/arch/x86/isr.h>
 
 #define ISR_HANDLER_ALIGNMENT      (16U)
 #define ISR_EXCEPTION_VECTOR_START (0x00U)
@@ -16,29 +16,29 @@
  * ISRs. For example, to get the address of the 0x10th ISR, we can calculate it
  * like so:
  *
- *     isr_0x00 + (0x10 * ISR_HANDLER_ALIGNMENT)
+ *     x86_32_isr_0x00 + (0x10 * ISR_HANDLER_ALIGNMENT)
  *
  * https://github.com/dreamportdev/Osdev-Notes/blob/master/02_Architecture/05_InterruptHandling.md#an-example-stub
  */
-extern i686_idt_handler_t i686_isr_0x00;
+extern x86_32_idt_handler_t x86_32_isr_0x00;
 
 /**
  * All other ISRs will point to this stub (which for now will halt the OS).
  */
-extern i686_idt_handler_t i686_isr_unhandled_stub;
+extern x86_32_idt_handler_t x86_32_isr_unhandled_stub;
 
 void
-i686_isr_init()
+x86_32_isr_init()
 {
     // Initialize entries for exceptions with their respective handlers
     for (size_t exception = ISR_EXCEPTION_VECTOR_START;
          exception < ISR_INTERRUPT_VECTOR_START;
          exception++)
     {
-        i686_idt_set_entry(
+        x86_32_idt_set_entry(
             exception,
-            i686_isr_0x00 + (exception * ISR_HANDLER_ALIGNMENT),
-            GDT_SELECTOR(GDT_IDX_KCODE),
+            x86_32_isr_0x00 + (exception * ISR_HANDLER_ALIGNMENT),
+            GDT_KCODE,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
     }
@@ -48,10 +48,10 @@ i686_isr_init()
          interrupt < IDT_NUM_ENTRIES;
          interrupt++)
     {
-        i686_idt_set_entry(
+        x86_32_idt_set_entry(
             interrupt,
-            i686_isr_unhandled_stub,
-            GDT_SELECTOR(GDT_IDX_KCODE),
+            x86_32_isr_unhandled_stub,
+            GDT_KCODE,
             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
         );
     }
@@ -63,7 +63,7 @@ vga_print_uint(struct vga *vga, size_t integer, size_t radix);
 
 [[gnu::cdecl]]
 void
-i686_isr_handler(struct i686_interrupt_frame *frame)
+x86_32_isr_handler(struct x86_32_interrupt_frame *frame)
 {
     // Print the interrupt number for now
     struct vga *vga = vga_get();

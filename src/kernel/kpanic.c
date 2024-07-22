@@ -1,10 +1,12 @@
+#include <kernel/arch/cpu.h>
 #include <kernel/arch/x86/devices/vga.h>
 #include <kernel/kpanic.h>
 
 void
 kernel_on_panic(const char *msg, const char *location, const char *function)
 {
-    // TODO: Write to VGA and serial port...
+    // TODO: Write to both VGA and serial port
+    // TODO: VGA API should be abstracted into generic arch interface
     struct vga *vga = vga_get();
     vga_println(vga, "*** KERNEL PANIC ***");
     vga_print(vga, "-> ");
@@ -14,13 +16,5 @@ kernel_on_panic(const char *msg, const char *location, const char *function)
     vga_print(vga, "-> in ");
     vga_println(vga, function);
 
-    // TODO: Move this to generic CPU interface
-#if defined(__i386__) || defined(__x86_64__)
-    while (true)
-    {
-        asm volatile("cli; hlt");
-    }
-#else
-    #error "`kernel_on_panic` not implemented for current architecture"
-#endif
+    arch_cpu_halt();
 }

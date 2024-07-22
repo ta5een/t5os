@@ -1,5 +1,5 @@
 #include <kernel/arch/x86/devices/serial.h>
-#include <kernel/arch/x86/ports.h>
+#include <kernel/arch/x86/port.h>
 #include <libcore/string_view.h>
 #include <stdint.h>
 
@@ -34,9 +34,11 @@
 static void
 serial_configure_baud_rate(uint16_t com_port, uint16_t divisor)
 {
-    port_write_8(SERIAL_LINE_CONTROL_REG(com_port), SERIAL_LINE_ENABLE_DLAB);
-    port_write_8(SERIAL_DATA_REG(com_port), (divisor >> 8U) & 0x00ffU);
-    port_write_8(SERIAL_DATA_REG(com_port), divisor & 0x00ffU);
+    x86_port_write_8(
+        SERIAL_LINE_CONTROL_REG(com_port), SERIAL_LINE_ENABLE_DLAB
+    );
+    x86_port_write_8(SERIAL_DATA_REG(com_port), (divisor >> 8U) & 0x00ffU);
+    x86_port_write_8(SERIAL_DATA_REG(com_port), divisor & 0x00ffU);
     // TODO: OSDev Wiki instructs to "clear the most signficant bit of the Line
     // Control Register" here -- what does this mean?
 }
@@ -76,7 +78,7 @@ typedef struct [[gnu::packed]]
 static void
 serial_configure_line(uint16_t com_port, serial_line_configuration_t config)
 {
-    port_write_8(SERIAL_LINE_CONTROL_REG(com_port), *(uint8_t *)&config);
+    x86_port_write_8(SERIAL_LINE_CONTROL_REG(com_port), *(uint8_t *)&config);
 }
 
 typedef struct [[gnu::packed]]
@@ -119,7 +121,7 @@ typedef struct [[gnu::packed]]
 static void
 serial_configure_fifo(uint16_t com_port, serial_fifo_configuration_t config)
 {
-    port_write_8(SERIAL_FIFO_CONTROL_REG(com_port), *(uint8_t *)&config);
+    x86_port_write_8(SERIAL_FIFO_CONTROL_REG(com_port), *(uint8_t *)&config);
 }
 
 typedef struct [[gnu::packed]]
@@ -161,7 +163,7 @@ typedef struct [[gnu::packed]]
 static void
 serial_configure_modem(uint16_t com_port, serial_modem_configuration_t config)
 {
-    port_write_8(SERIAL_MODEM_CONTROL_REG(com_port), *(uint8_t *)&config);
+    x86_port_write_8(SERIAL_MODEM_CONTROL_REG(com_port), *(uint8_t *)&config);
 }
 
 /**
@@ -182,8 +184,8 @@ serial_test_port(uint16_t com_port)
 
     // Send SERIAL_TEST_BYTE to the port, and check if the serial reponds with
     // the exact same byte.
-    port_write_8(SERIAL_DATA_REG(com_port), SERIAL_TEST_BYTE);
-    if (port_read_8(SERIAL_DATA_REG(com_port)) != SERIAL_TEST_BYTE)
+    x86_port_write_8(SERIAL_DATA_REG(com_port), SERIAL_TEST_BYTE);
+    if (x86_port_read_8(SERIAL_DATA_REG(com_port)) != SERIAL_TEST_BYTE)
     {
         return SERIAL_INIT_FAILURE;
     }
@@ -206,7 +208,7 @@ serial_test_port(uint16_t com_port)
 static bool
 serial_is_transmit_fifo_empty(uint16_t com_port)
 {
-    uint8_t value = port_read_8(com_port + 5) & 0x20U;
+    uint8_t value = x86_port_read_8(com_port + 5) & 0x20U;
     return (bool)(value != 0U);
 }
 
@@ -215,7 +217,7 @@ serial_init(uint16_t com_port)
 {
     // Disable all interrupts
     // NOTE: The example on OSDev Wiki writes to SERIAL_DATA_REG(com_port) + 1
-    port_write_8(SERIAL_DATA_REG(com_port), 0x00U);
+    x86_port_write_8(SERIAL_DATA_REG(com_port), 0x00U);
 
     // Set baud rate to 38'400
     serial_configure_baud_rate(com_port, 0x03U);
@@ -270,6 +272,6 @@ serial_write(uint16_t com_port, string_view_t string)
         {
             asm volatile("pause");
         }
-        port_write_8(SERIAL_DATA_REG(com_port), string.data[i]);
+        x86_port_write_8(SERIAL_DATA_REG(com_port), string.data[i]);
     }
 }
