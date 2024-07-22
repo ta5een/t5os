@@ -58,7 +58,7 @@ x86_32_idt_set_entry(
     size_t vector,
     x86_32_idt_handler_t handler,
     enum x86_gdt_selector segment_selector,
-    enum x86_32_idt_flag flags
+    uint8_t flags
 );
 
 // /**

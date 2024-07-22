@@ -41,7 +41,7 @@ x86_32_gdt_set_entry(
     uint32_t base,
     uint32_t limit,
     enum x86_gdt_access access,
-    enum x86_gdt_flag flags
+    uint8_t flags
 )
 {
     s_gdt[GDT_SELECTOR_INDEX(selector)] = (struct x86_gdt_entry){
