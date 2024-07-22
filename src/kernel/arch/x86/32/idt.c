@@ -32,12 +32,8 @@ x86_32_idt_init()
 }
 
 void
-x86_32_idt_set_entry(
-    size_t vector,
-    x86_32_idt_handler_t handler,
-    enum x86_gdt_selector segment_selector,
-    uint8_t flags
-)
+x86_32_idt_set_entry(size_t vector, x86_32_idt_handler_t handler,
+                     enum x86_gdt_selector segment_selector, uint8_t flags)
 {
     s_idt[vector] = (struct x86_32_idt_entry){
         .base_0_15 = ((uint32_t)handler) & 0xffffU,

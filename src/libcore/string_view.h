@@ -19,27 +19,21 @@
  */
 #define LIBCORE_ARRAY_LENGTH($array)                                           \
     ({                                                                         \
-        static_assert(                                                         \
-            !__builtin_types_compatible_p(                                     \
-                typeof($array), typeof(&($array)[0])                           \
-            ),                                                                 \
-            "The provided argument is not a fixed-size array"                  \
-        );                                                                     \
+        static_assert(!__builtin_types_compatible_p(typeof($array),            \
+                                                    typeof(&($array)[0])),     \
+                      "The provided argument is not a fixed-size array");      \
         (sizeof($array) / sizeof(($array)[0]));                                \
     })
 
 #define __LIBCORE_STRING_VIEW_WITH_CHAR_TYPE($str, $chtype)                    \
     ({                                                                         \
-        static_assert(                                                         \
-            __builtin_types_compatible_p(                                      \
-                typeof($str), typeof(const $chtype[])                          \
-            ),                                                                 \
-            "The provided argument is not a string literal"                    \
-        );                                                                     \
+        static_assert(__builtin_types_compatible_p(typeof($str),               \
+                                                   typeof(const $chtype[])),   \
+                      "The provided argument is not a string literal");        \
         string_view_t view = {                                                 \
             .stride = sizeof(($str)[0]),                                       \
             .length = LIBCORE_ARRAY_LENGTH($str) - 1,                          \
-            .data = (const uint8_t *)($str)                                    \
+            .data = (const uint8_t *)($str),                                   \
         };                                                                     \
         view;                                                                  \
     })

@@ -19,7 +19,7 @@ static struct x86_gdt_entry s_gdt[GDT_NUM_ENTRIES];
 
 static const struct x86_descriptor_table_register s_gdtr = {
     .limit = sizeof(s_gdt) - 1,
-    .base = (void *)s_gdt
+    .base = (void *)s_gdt,
 };
 
 /**
@@ -29,20 +29,12 @@ static const struct x86_descriptor_table_register s_gdtr = {
  */
 [[gnu::cdecl]]
 extern void
-x86_32_gdt_load(
-    const struct x86_descriptor_table_register *gdtr,
-    uint32_t code_segment_selector,
-    uint32_t data_segment_selector
-);
+x86_32_gdt_load(const struct x86_descriptor_table_register *gdtr,
+                uint32_t code_segment_selector, uint32_t data_segment_selector);
 
 static inline void
-x86_32_gdt_set_entry(
-    enum x86_gdt_selector selector,
-    uint32_t base,
-    uint32_t limit,
-    enum x86_gdt_access access,
-    uint8_t flags
-)
+x86_32_gdt_set_entry(enum x86_gdt_selector selector, uint32_t base,
+                     uint32_t limit, enum x86_gdt_access access, uint8_t flags)
 {
     s_gdt[GDT_SELECTOR_INDEX(selector)] = (struct x86_gdt_entry){
         .base_0_15 = base & 0xffffU,

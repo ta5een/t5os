@@ -98,12 +98,8 @@ vga_buffer_read(const volatile vga_char_t *buffer, size_t col, size_t row)
  * row indices.
  */
 static void
-vga_buffer_write(
-    volatile vga_char_t *buffer,
-    vga_char_t vch,
-    size_t col,
-    size_t row
-)
+vga_buffer_write(volatile vga_char_t *buffer, vga_char_t vch, size_t col,
+                 size_t row)
 {
     size_t buffer_idx = vga_buffer_index_at(col, row);
     // If both the new char and the current char at this position are the same,
@@ -218,7 +214,7 @@ vga_put_byte(struct vga *vga, uint8_t byte)
     }
     else
     {
-        // Check if the given byte is "printable"
+        // Replace the character if it isn't "printable"
         if (!(byte >= ASCII_PRINTABLE_RANGE_MIN &&
               byte <= ASCII_PRINTABLE_RANGE_MAX))
         {

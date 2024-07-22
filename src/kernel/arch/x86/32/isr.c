@@ -32,28 +32,19 @@ x86_32_isr_init()
 {
     // Initialize entries for exceptions with their respective handlers
     for (size_t exception = ISR_EXCEPTION_VECTOR_START;
-         exception < ISR_INTERRUPT_VECTOR_START;
-         exception++)
+         exception < ISR_INTERRUPT_VECTOR_START; exception++)
     {
         x86_32_idt_set_entry(
-            exception,
-            x86_32_isr_0x00 + (exception * ISR_HANDLER_ALIGNMENT),
-            GDT_KCODE,
-            IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-        );
+            exception, x86_32_isr_0x00 + (exception * ISR_HANDLER_ALIGNMENT),
+            GDT_KCODE, IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32);
     }
 
     // Initialize the rest of the entries with the unhandled stub handler
     for (size_t interrupt = ISR_INTERRUPT_VECTOR_START;
-         interrupt < IDT_NUM_ENTRIES;
-         interrupt++)
+         interrupt < IDT_NUM_ENTRIES; interrupt++)
     {
-        x86_32_idt_set_entry(
-            interrupt,
-            x86_32_isr_unhandled_stub,
-            GDT_KCODE,
-            IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32
-        );
+        x86_32_idt_set_entry(interrupt, x86_32_isr_unhandled_stub, GDT_KCODE,
+                             IDT_FLAG_RING0 | IDT_FLAG_GATE_INT_32);
     }
 }
 

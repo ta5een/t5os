@@ -1,17 +1,12 @@
 ---
 BasedOnStyle: Microsoft
-AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveMacros: Consecutive
-AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: All
-AlwaysBreakTemplateDeclarations: Yes
-BinPackArguments: false
-BinPackParameters: false
 ColumnLimit: 80
 ContinuationIndentWidth: 4
 IncludeBlocks: Regroup

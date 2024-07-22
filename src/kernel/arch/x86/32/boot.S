@@ -87,9 +87,9 @@ _start:
     /* If the system has nothing more to do, put the computer into an infinite
      * loop. To do that:
      *
-     * 1) Disable interrupts with cli (clear interrupts).
-     * 2) Wait for the next interrupt to arrive with hlt.
-     * 3) Jump to the hlt instruction if it ever wakes up due to a non-maskable
+     * 1. Disable interrupts with cli (clear interrupts).
+     * 2. Wait for the next interrupt to arrive with hlt.
+     * 3. Jump to the hlt instruction if it ever wakes up due to a non-maskable
      *    interrupt occurring or due to system management mode.
      */
     cli

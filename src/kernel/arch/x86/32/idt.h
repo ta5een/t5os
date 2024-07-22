@@ -9,8 +9,6 @@
 /**
  * An entry in the Interrupt Descriptor Table, representing an Interrupt Gate,
  * a Trap Gate or a Task Gate.
- *
- * NOTE: This is specific to IA-32.
  */
 struct [[gnu::packed]] x86_32_idt_entry
 {
@@ -54,12 +52,8 @@ x86_32_idt_init();
  * Modifies the contents of an IDT gate corresponding to the provided vector.
  */
 void
-x86_32_idt_set_entry(
-    size_t vector,
-    x86_32_idt_handler_t handler,
-    enum x86_gdt_selector segment_selector,
-    uint8_t flags
-);
+x86_32_idt_set_entry(size_t vector, x86_32_idt_handler_t handler,
+                     enum x86_gdt_selector segment_selector, uint8_t flags);
 
 // /**
 //  * Starts listening to interrupts.

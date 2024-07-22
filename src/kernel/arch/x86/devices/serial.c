@@ -34,9 +34,8 @@
 static void
 serial_configure_baud_rate(uint16_t com_port, uint16_t divisor)
 {
-    x86_port_write_8(
-        SERIAL_LINE_CONTROL_REG(com_port), SERIAL_LINE_ENABLE_DLAB
-    );
+    x86_port_write_8(SERIAL_LINE_CONTROL_REG(com_port),
+                     SERIAL_LINE_ENABLE_DLAB);
     x86_port_write_8(SERIAL_DATA_REG(com_port), (divisor >> 8U) & 0x00ffU);
     x86_port_write_8(SERIAL_DATA_REG(com_port), divisor & 0x00ffU);
     // TODO: OSDev Wiki instructs to "clear the most signficant bit of the Line

@@ -10,9 +10,9 @@
 
     /* Loads the GDT and sets the segment registers to start using it.
      *
-     * @param struct descriptor_table_register *gdtr
-     * @param size_t code_segment_selector
-     * @param size_t data_segment_selector
+     * @param const struct x86_descriptor_table_register *gdtr
+     * @param uint32_t code_segment_selector
+     * @param uint32_t data_segment_selector
      * @returns void
      */
     .global x86_32_gdt_load
