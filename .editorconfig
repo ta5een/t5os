@@ -13,7 +13,7 @@ indent_size = 4
 
 # Assembly
 [*.S]
-indent_style = tab
+indent_style = space
 indent_size = 4
 
 # GNU Linker Script
