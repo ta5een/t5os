@@ -1,2 +1,0 @@
-#define __LIBCORE_STRINGIFY(s) #s
-#define LIBCORE_STRINGIFY(s)   __LIBCORE_STRINGIFY(s)
