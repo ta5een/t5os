@@ -1,6 +1,5 @@
 #include <kernel/arch/x86/devices/serial.h>
 #include <kernel/arch/x86/port.h>
-#include <libcore/string_view.h>
 #include <stdint.h>
 
 #define SERIAL_DATA_REG(base)          ((uint16_t)base)
@@ -261,16 +260,16 @@ serial_init(uint16_t com_port)
 }
 
 void
-serial_write(uint16_t com_port, string_view_t string)
+serial_write(uint16_t com_port, const char *str)
 {
     // WARN: Assumes the provided string slice is encoded in UTF-8
-    for (size_t i = 0; i < string.length; i++)
+    for (const char *ch = str; *ch != '\0'; ch++)
     {
         // Wait for queue to be free
         while (!serial_is_transmit_fifo_empty(com_port))
         {
             asm volatile("pause");
         }
-        x86_port_write_8(SERIAL_DATA_REG(com_port), string.data[i]);
+        x86_port_write_8(SERIAL_DATA_REG(com_port), *ch);
     }
 }
