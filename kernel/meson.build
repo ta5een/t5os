@@ -1,0 +1,15 @@
+kernel_src += files(
+    'arch/x86/32/boot.S',
+    'arch/x86/32/gdt.S',
+    'arch/x86/32/gdt.c',
+    'arch/x86/32/idt.c',
+    'arch/x86/32/isr.S',
+    'arch/x86/32/isr.c',
+    'arch/x86/cpu.c',
+    'arch/x86/devices/serial.c',
+    'arch/x86/devices/vga.c',
+    'arch/x86/port.c',
+    'kassert.c',
+    'kernel.c',
+    'kpanic.c',
+)
