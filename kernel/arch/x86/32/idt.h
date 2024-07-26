@@ -1,6 +1,6 @@
 #pragma once
 
-#include <kernel/arch/x86/gdt.h>
+#include "kernel/arch/x86/gdt.h"
 #include <stddef.h>
 #include <stdint.h>
 
@@ -42,7 +42,7 @@ static_assert((bool)(sizeof(struct x86_32_idt_entry) == 8U));
 // FIXME: ISR handlers expect a pointer to a `struct x86_32_interrupt_frame`.
 typedef void(x86_32_idt_handler_t)(void);
 
-/*
+/**
  * Initializes the gates of the Interrupt Descriptor Table.
  */
 void

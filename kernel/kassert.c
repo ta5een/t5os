@@ -1,6 +1,6 @@
-#include <kernel/arch/x86/devices/vga.h>
-#include <kernel/kassert.h>
-#include <kernel/kpanic.h>
+#include "kernel/kassert.h"
+#include "kernel/arch/x86/devices/vga.h"
+#include "kernel/kpanic.h"
 
 void
 kernel_on_assert(const char *msg, const char *location, const char *function)

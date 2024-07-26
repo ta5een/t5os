@@ -9,12 +9,11 @@ AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: All
 ColumnLimit: 80
 ContinuationIndentWidth: 4
-IncludeBlocks: Regroup
+IncludeBlocks: Merge
 IndentPPDirectives: BeforeHash
 IndentWidth: 4
 PointerAlignment: Right
 ReflowComments: true
 SortIncludes: CaseInsensitive
-SortUsingDeclarations: Lexicographic
 
 ...
