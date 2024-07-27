@@ -1,6 +1,6 @@
 #pragma once
 
-#include "arch/gdt.h"
+#include "kernel/arch/x86/gdt.h"
 #include <stddef.h>
 #include <stdint.h>
 

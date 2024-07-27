@@ -1,10 +1,6 @@
 kernel_src = []
 kernel_link_depends = []
-kernel_include_dirs = include_directories(
-    'include',
-    '..' / 'arch' / host_machine.cpu_family() / 'include',
-    # ...
-)
+kernel_include_dirs = include_directories('include')
 
 kernel_src += files(
     'src/kassert.c',
@@ -13,12 +9,35 @@ kernel_src += files(
     # ...
 )
 
-libarch_link_args = [
+kernel_link_args = [
     '-ffreestanding',
     '-lgcc',
     '-nostdlib',
     # ...
 ]
+
+if host_machine.cpu_family() == 'x86'
+    kernel_src += files(
+        'src/arch/x86/cpu.c',
+        'src/arch/x86/devices/serial.c',
+        'src/arch/x86/devices/vga.c',
+        'src/arch/x86/port.c',
+    )
+
+    if host_machine.cpu() == 'x86'
+        kernel_src += files(
+            'src/arch/x86/32/boot.S',
+            'src/arch/x86/32/gdt.S',
+            'src/arch/x86/32/gdt.c',
+            'src/arch/x86/32/idt.c',
+            'src/arch/x86/32/isr.S',
+            'src/arch/x86/32/isr.c',
+        )
+
+        kernel_link_depends += files('src/arch/x86/32/linker.ld')
+        kernel_link_args += ['-T', kernel_link_depends.get(0).full_path()]
+    endif
+endif
 
 kernel_exe = executable(
     't5os.bin',
@@ -47,7 +66,6 @@ kernel_exe = executable(
         # - https://github.com/mesonbuild/meson/issues/10237
         '-U_FILE_OFFSET_BITS',
     ],
-    link_with: libarch,
-    link_args: libarch_link_args,
-    link_depends: libarch_link_depends,
+    link_args: kernel_link_args,
+    link_depends: kernel_link_depends,
 )

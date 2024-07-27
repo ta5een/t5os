@@ -83,7 +83,7 @@ struct [[gnu::packed]] x86_gdt_entry
 };
 
 // NOLINTNEXTLINE(readability-*)
-// static_assert(sizeof(struct x86_gdt_entry) == 8U);
+static_assert(sizeof(struct x86_gdt_entry) == 8U);
 
 /**
  * Initializes the entries of the Global Descriptor Table and loads it.
