@@ -1,6 +1,6 @@
 #include "kernel/kpanic.h"
-#include "arch/cpu.h"
-#include "arch/devices/vga.h"
+#include "kernel/arch/cpu.h"
+#include "kernel/arch/devices/vga.h"
 
 void
 kernel_on_panic(const char *msg, const char *location, const char *function)

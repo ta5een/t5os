@@ -1,5 +1,5 @@
 #include "kernel/kassert.h"
-#include "arch/devices/vga.h"
+#include "kernel/arch/devices/vga.h"
 #include "kernel/kpanic.h"
 
 void

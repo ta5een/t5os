@@ -1,6 +1,6 @@
-#include "arch/32/isr.h"
-#include "arch/32/idt.h"
-#include "arch/devices/vga.h"
+#include "kernel/arch/32/isr.h"
+#include "kernel/arch/32/idt.h"
+#include "kernel/arch/devices/vga.h"
 #include <stddef.h>
 
 #define ISR_HANDLER_ALIGNMENT      (16U)
