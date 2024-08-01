@@ -1,43 +1,22 @@
-kernel_src = []
-kernel_link_depends = []
-kernel_include_dirs = include_directories('include')
+arch_src = []
+arch_link_depends = []
+arch_link_args = []
+subdir('arch' / host_machine.cpu_family())
 
-kernel_src += files(
-    'src/kassert.c',
-    'src/kernel.c',
-    'src/kpanic.c',
-    # ...
+kernel_src = arch_src + []
+subdir('kernel')
+
+kernel_include_dirs = include_directories(
+    'kernel' / 'include',
+    'arch' / host_machine.cpu_family() / 'include',
 )
 
-kernel_link_args = [
+kernel_link_args = arch_link_args + [
     '-ffreestanding',
     '-lgcc',
     '-nostdlib',
     # ...
 ]
-
-if host_machine.cpu_family() == 'x86'
-    kernel_src += files(
-        'src/arch/x86/cpu.c',
-        'src/arch/x86/devices/serial.c',
-        'src/arch/x86/devices/vga.c',
-        'src/arch/x86/port.c',
-    )
-
-    if host_machine.cpu() == 'x86'
-        kernel_src += files(
-            'src/arch/x86/32/boot.S',
-            'src/arch/x86/32/gdt.S',
-            'src/arch/x86/32/gdt.c',
-            'src/arch/x86/32/idt.c',
-            'src/arch/x86/32/isr.S',
-            'src/arch/x86/32/isr.c',
-        )
-
-        kernel_link_depends += files('src/arch/x86/32/linker.ld')
-        kernel_link_args += ['-T', kernel_link_depends.get(0).full_path()]
-    endif
-endif
 
 kernel_exe = executable(
     't5os.bin',
@@ -67,5 +46,5 @@ kernel_exe = executable(
         '-U_FILE_OFFSET_BITS',
     ],
     link_args: kernel_link_args,
-    link_depends: kernel_link_depends,
+    link_depends: arch_link_depends,
 )

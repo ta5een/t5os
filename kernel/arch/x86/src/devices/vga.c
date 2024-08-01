@@ -1,4 +1,4 @@
-#include "kernel/arch/x86/devices/vga.h"
+#include "arch/devices/vga.h"
 #include <stddef.h>
 #include <stdint.h>
 

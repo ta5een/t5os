@@ -1,4 +1,4 @@
-#include "kernel/arch/generic/cpu.h"
+#include "arch/cpu.h"
 #include <stdint.h>
 
 typedef void(*multiboot_t);
