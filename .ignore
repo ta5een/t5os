@@ -6,3 +6,4 @@
 !.gitignore
 !.gitmodules
 !.ignore
+!build/compile_commands.json
