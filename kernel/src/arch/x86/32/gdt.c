@@ -1,5 +1,6 @@
 #include "kernel/arch/x86/gdt.h"
 #include "kernel/arch/x86/descriptor_table.h"
+#include <stdint.h>
 
 #define LIMIT_4KiB 0xfffffU
 
