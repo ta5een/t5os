@@ -7,11 +7,13 @@
 ### Prerequisites
 
 This project supports native and cross-platform compilation with Docker. To
-build the project locally, you will need the following tools for your platform:
+build the project on your system (the *build machine*), you will need the
+following tools for your platform:
 
 - Project compilation tools:
+  - [`meson`][meson-website]
+  - [`ninja`][ninja-website]
   - [GNU GCC and Binutils dependencies][gnu-gcc-binutils-deps]
-  - [`bear`][bear-gh] (optional)
 - GRUB tools (optional)[^1]:
   - `xorriso`
   - `grub-common`
@@ -42,31 +44,50 @@ This is the recommended method if you would like to contribute to the project.
     This build step will download the source code for the GNU GCC 14.1.0
     compiler and the GNU Binutils 2.42 binary tools. It will then compile these
     tools, with settings tweaked so that it can build programs for the `$ARCH`
-    target. By default, `$ARCH` is set to `i686` (i.e., x86 32-bit).
+    target from the *build machine*. By default, `$ARCH` is set to `i686`
+    (i.e., x86 32-bit).
+
+    The resulting binaries, headers, and archives will be placed inside the
+    `toolchain` directory.
 
     > **NOTE**: This process will take a while to complete, depending on your
-    > machine's specifications. Once complete, the resulting build artefacts
-    > will take up around 3GB of disk space, give or take half a GB. Make sure
-    > you have enough disk space (and patience) for this step :)
+    > machine's specifications. Once complete, the resulting build artifacts
+    > will take up around 3GB of disk space. Make sure you have enough disk
+    > space (and patience) for this step :)
 
-1. Build the kernel with `bear` and `make`:
-
-    > **NOTE:** I am in the process of migrating from `bear` to `cmake`, mostly
-    > due to the fact that `cmake` supports cross-compilers with
-    > project-relative paths. This step is subject to change once the migration
-    > is complete.
+1. Set up a `build` directory with `meson`:
 
     ```sh
-    bear -- make kernel
+    meson setup build --cross-file ./meson/cross/i686-elf.ini
     ```
 
-    Running with `bear` provides IDE/LSP support by generating a compilation
-    database every time you build the project. This is beneficial if you use
-    Clang as your LSP provider in your editor.
+    Meson works by building projects out-of-source. This means that all files
+    generated during the build are placed in a separate directory. It is thus
+    possible to have multiple build directories, each with their own
+    configurations.
 
-    By running the above command, `bear` should have generated a *non-empty*
-    `compile_commands.json` file in the project root. If this is not the case,
-    please refer to [this section](#bear-generates-empty-compile_commandsjson).
+    With the above command, we request Meson to set up a build directory (aptly
+    named `build`) that is configured to target an i686 *host machine*. The
+    provided cross build definition file informs Meson of the compiler and
+    tools to be used when building for the selected architecture. Currently,
+    only the i686 architecture is supported.
+
+1. Build the kernel with `meson`:
+
+    ```sh
+    meson compile -C build
+    ```
+
+    Running the command above will start the build process with the new `build`
+    directory we created in the previous step. If you named the build directory
+    differently, make sure to change the name after the `-C` flag.
+
+    To provide editor support with `clangd`, you must have built the kernel at
+    least once. This is because Meson will generate a `compile_commands.json`
+    file in the provided build folder, which is essential for `clangd` to work
+    properly. Note that `clangd` searches for this file in [specific
+    locations][clangd-compile-commands], so you may need to configure `clangd`
+    if it can't find the file.
 
 1. Build the `.iso` image:
 
@@ -88,18 +109,18 @@ This is the recommended method if you would like to contribute to the project.
 #### Docker
 
 > [!NOTE]
-> Since integrating a custom GCC cross-compiler into the project, I've found
-> that building with Docker fails if I previously compiled the toolchain on my
-> host system. This is an issue if, for example, I compiled the toolchain on
-> macOS, as the resulting binaries would be in the Mach-O format. This would
-> cause Docker to fail as Debian doesn't (at least natively) support Mach-O
-> executables.
+> If you previously compiled the toolchain on a non-Linux system that doesn't
+> natively produce ELF binaries, the toolchain will *NOT* be compatible with
+> the Debian environment in Docker. This would certainly be the case if you ran
+> `make toolchain` on macOS or Windows. If you would like to primarily build
+> the kernel in a Docker container, please rebuild the toolchain as instructed
+> in the steps below.
 
 This is the recommended method if you would like to play around with the
 project and don't want to install all the required dependencies. It is also
-possible to partially [build the project natively](#linux-and-macos) and run
-the rest of the build process with Docker, thanks to the power of [bind
-mounts][docker-bind-mounts].
+possible to first [build the kernel natively](#linux-and-macos) and then create
+the ISO with Docker (which has access to the legacy GRUB tools), thanks to the
+power of [bind mounts][docker-bind-mounts].
 
 1. Clone the repository:
 
@@ -113,15 +134,42 @@ mounts][docker-bind-mounts].
     bash ./scripts/docker-build-image.sh
     ```
 
+1. Build the toolchain in a Debian environment:
+
+    ```sh
+    bash ./scripts/docker-make-toolchain.sh
+    ```
+
+    This command will spawn an ephemeral Docker container, bind the current
+    working directory as a volume, and run the toolchain build process. By
+    binding the current working directory, the container will have direct
+    access to only this directory in your system and can make changes to it in
+    a way that will be visible to you.
+
+    This is important to note as if your system is *NOT* a Linux environment
+    similar to Debian 12.5, the toolchain binaries that will be built will
+    *NOT* be compatible with your system. This may not be a concern if you
+    don't plan on using the toolchain outside the container, but if you do,
+    consider [building the toolchain natively](#linux-and-macos) by following
+    steps 1, 2, and 3.
+
+    In any case, the resulting binaries, headers, and archives will be placed
+    inside the `toolchain` directory.
+
+    > **NOTE**: This process will take a while to complete, depending on your
+    > machine's specifications. Once complete, the resulting build artifacts
+    > will take up around 3GB of disk space. Make sure you have enough disk
+    > space (and patience) for this step :)
+
 1. Build the `.iso` image:
 
     ```sh
     bash ./scripts/docker-make-iso.sh
     ```
 
-    This will bind the current working directory as a volume in the Docker
-    image and build the `.iso` image in a Linux environment. Once completed,
-    `./build/t5os.iso` will be available in your local filesystem.
+    Like the step before, this will build the `.iso` image inside (a different
+    instance of) an ephemeral Docker container. Once completed,
+    `./build/kernel/t5os.iso` will be available in your local filesystem.
 
 1. Run the OS in `qemu`:
 
@@ -150,7 +198,7 @@ This project is licensed under the GNU General Public License v3.0. See
 [License](./LICENSE) for more details.
 
 Additionally, many parts of this project, from its implementation to its
-behaviour, have been derived from multiple open-source projects. Wherever
+behavior, have been derived from multiple open-source projects. Wherever
 possible, I've added an attribution comment on top of the relevant
 file/function/line in the source code. For reference, here is a list of
 projects I've taken inspiration from (in alphabetical order):
@@ -166,26 +214,8 @@ projects I've taken inspiration from (in alphabetical order):
 If for any reason you believe I have used your work and haven't credited you
 and/or abided by your license(s), please feel free to reach out to me :)
 
-## Troubleshooting
-
-### `bear` generates empty `compile_commands.json`
-
-The main reason why this may happen is because you are using a cross-compiler.
-While `bear` works great with the platform's native toolchain, it does not
-recognise cross-compilers by default (e.g., `i686-elf-g++` on macOS).
-
-To fix this, you'll need to create a link to the wrapper with the same name as
-the cross-compiler. On macOS, this can be done by running the following
-(substituting `<version>` with your installed `bear` version number):
-
-```sh
-ln -s /usr/local/Cellar/bear/<version>/lib/bear/wrapper /usr/local/Cellar/bear/<version>/lib/bear/wrapper.d/i686-elf-g++
-```
-
-This fix was sourced from [this issue comment on `bear`'s GitHub
-repository][bear-gh-issue-comment].
-
-[bear-gh-issue-comment]: https://github.com/rizsotto/Bear/issues/561#issuecomment-1921214908
-[bear-gh]: https://github.com/rizsotto/Bear
+[clangd-compile-commands]: https://clangd.llvm.org/installation.html#compile_commandsjson
 [docker-bind-mounts]: https://docs.docker.com/storage/bind-mounts/
 [gnu-gcc-binutils-deps]: https://wiki.osdev.org/GCC_Cross-Compiler#Installing_Dependencies
+[meson-website]: https://mesonbuild.com/
+[ninja-website]: https://ninja-build.org/
