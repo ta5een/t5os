@@ -31,80 +31,80 @@ This is the recommended method if you would like to contribute to the project.
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/ta5een/t5os.git
-    ```
+   ```sh
+   git clone https://github.com/ta5een/t5os.git
+   ```
 
 1. Build the GCC Cross-Compiler toolchain:
 
-    ```sh
-    make toolchain
-    ```
+   ```sh
+   make toolchain
+   ```
 
-    This build step will download the source code for the GNU GCC 14.1.0
-    compiler and the GNU Binutils 2.42 binary tools. It will then compile these
-    tools, with settings tweaked so that it can build programs for the `$ARCH`
-    target from the *build machine*. By default, `$ARCH` is set to `i686`
-    (i.e., x86 32-bit).
+   This build step will download the source code for the GNU GCC 14.1.0
+   compiler and the GNU Binutils 2.42 binary tools. It will then compile these
+   tools, with settings tweaked so that it can build programs for the `$ARCH`
+   target from the *build machine*. By default, `$ARCH` is set to `i686` (i.e.,
+   x86 32-bit).
 
-    The resulting binaries, headers, and archives will be placed inside the
-    `toolchain` directory.
+   The resulting binaries, headers, and archives will be placed inside the
+   `toolchain` directory.
 
-    > **NOTE**: This process will take a while to complete, depending on your
-    > machine's specifications. Once complete, the resulting build artifacts
-    > will take up around 3GB of disk space. Make sure you have enough disk
-    > space (and patience) for this step :)
+   > **NOTE**: This process will take a while to complete, depending on your
+   > machine's specifications. Once complete, the resulting build artifacts
+   > will take up around 3GB of disk space. Make sure you have enough disk
+   > space (and patience) for this step :)
 
 1. Set up a `build` directory with `meson`:
 
-    ```sh
-    meson setup build --cross-file ./meson/cross/i686-elf.ini
-    ```
+   ```sh
+   meson setup build --cross-file ./meson/cross/i686-elf.ini
+   ```
 
-    Meson works by building projects out-of-source. This means that all files
-    generated during the build are placed in a separate directory. It is thus
-    possible to have multiple build directories, each with their own
-    configurations.
+   Meson works by building projects out-of-source. This means that all files
+   generated during the build are placed in a separate directory. It is thus
+   possible to have multiple build directories, each with their own
+   configurations.
 
-    With the above command, we request Meson to set up a build directory (aptly
-    named `build`) that is configured to target an i686 *host machine*. The
-    provided cross build definition file informs Meson of the compiler and
-    tools to be used when building for the selected architecture. Currently,
-    only the i686 architecture is supported.
+   With the above command, we request Meson to set up a build directory (aptly
+   named `build`) that is configured to target an i686 *host machine*. The
+   provided cross build definition file informs Meson of the compiler and tools
+   to be used when building for the selected architecture. Currently, only the
+   i686 architecture is supported.
 
 1. Build the kernel with `meson`:
 
-    ```sh
-    meson compile -C build
-    ```
+   ```sh
+   meson compile -C build
+   ```
 
-    Running the command above will start the build process with the new `build`
-    directory we created in the previous step. If you named the build directory
-    differently, make sure to change the name after the `-C` flag.
+   Running the command above will start the build process with the new `build`
+   directory we created in the previous step. If you named the build directory
+   differently, make sure to change the name after the `-C` flag.
 
-    To provide editor support with `clangd`, you must have built the kernel at
-    least once. This is because Meson will generate a `compile_commands.json`
-    file in the provided build folder, which is essential for `clangd` to work
-    properly. Note that `clangd` searches for this file in [specific
-    locations][clangd-compile-commands], so you may need to configure `clangd`
-    if it can't find the file.
+   To provide editor support with `clangd`, you must have built the kernel at
+   least once. This is because Meson will generate a `compile_commands.json`
+   file in the provided build folder, which is essential for `clangd` to work
+   properly. Note that `clangd` searches for this file in [specific
+   locations][clangd-compile-commands], so you may need to configure `clangd`
+   if it can't find the file.
 
 1. Build the `.iso` image:
 
-    ```sh
-    make iso
-    ```
+   ```sh
+   make iso
+   ```
 
-    This build step requires `xorriso`, `grub-common`, and `grub-pc-bin` to be
-    available on your system. Alternatively, follow the [Docker instructions
-    below](#docker) to build the `.iso` image without needing to install these
-    tools locally.
+   This build step requires `xorriso`, `grub-common`, and `grub-pc-bin` to be
+   available on your system. Alternatively, follow the [Docker instructions
+   below](#docker) to build the `.iso` image without needing to install these
+   tools locally.
 
 1. Run the OS in `qemu`:
 
-    ```sh
-    make qemu
-    ```
+   ```sh
+   make qemu
+   ```
 
 #### Docker
 
@@ -124,58 +124,58 @@ power of [bind mounts][docker-bind-mounts].
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/ta5een/t5os.git
-    ```
+   ```sh
+   git clone https://github.com/ta5een/t5os.git
+   ```
 
 1. Build the Docker image:
 
-    ```sh
-    bash ./scripts/docker-build-image.sh
-    ```
+   ```sh
+   bash ./scripts/docker-build-image.sh
+   ```
 
 1. Build the toolchain in a Debian environment:
 
-    ```sh
-    bash ./scripts/docker-make-toolchain.sh
-    ```
+   ```sh
+   bash ./scripts/docker-make-toolchain.sh
+   ```
 
-    This command will spawn an ephemeral Docker container, bind the current
-    working directory as a volume, and run the toolchain build process. By
-    binding the current working directory, the container will have direct
-    access to only this directory in your system and can make changes to it in
-    a way that will be visible to you.
+   This command will spawn an ephemeral Docker container, bind the current
+   working directory as a volume, and run the toolchain build process. By
+   binding the current working directory, the container will have direct access
+   to only this directory in your system and can make changes to it in a way
+   that will be visible to you.
 
-    This is important to note as if your system is *NOT* a Linux environment
-    similar to Debian 12.5, the toolchain binaries that will be built will
-    *NOT* be compatible with your system. This may not be a concern if you
-    don't plan on using the toolchain outside the container, but if you do,
-    consider [building the toolchain natively](#linux-and-macos) by following
-    steps 1, 2, and 3.
+   This is important to note as if your system is *NOT* a Linux environment
+   similar to Debian 12.5, the toolchain binaries that will be built will *NOT*
+   be compatible with your system. This may not be a concern if you don't plan
+   on using the toolchain outside the container, but if you do, consider
+   [building the toolchain natively](#linux-and-macos) by following steps 1, 2,
+   and 3.
 
-    In any case, the resulting binaries, headers, and archives will be placed
-    inside the `toolchain` directory.
+   In any case, the resulting binaries, headers, and archives will be placed
+   inside the `toolchain` directory.
 
-    > **NOTE**: This process will take a while to complete, depending on your
-    > machine's specifications. Once complete, the resulting build artifacts
-    > will take up around 3GB of disk space. Make sure you have enough disk
-    > space (and patience) for this step :)
+   > **NOTE**: This process will take a while to complete, depending on your
+   > machine's specifications. Once complete, the resulting build artifacts
+   > will take up around 3GB of disk space. Make sure you have enough disk
+   > space (and patience) for this step :)
 
 1. Build the `.iso` image:
 
-    ```sh
-    bash ./scripts/docker-make-iso.sh
-    ```
+   ```sh
+   bash ./scripts/docker-make-iso.sh
+   ```
 
-    Like the step before, this will build the `.iso` image inside (a different
-    instance of) an ephemeral Docker container. Once completed,
-    `./build/kernel/t5os.iso` will be available in your local filesystem.
+   Like the step before, this will build the `.iso` image inside (a different
+   instance of) an ephemeral Docker container. Once completed,
+   `./build/kernel/t5os.iso` will be available in your local filesystem.
 
 1. Run the OS in `qemu`:
 
-    ```sh
-    make qemu
-    ```
+   ```sh
+   make qemu
+   ```
 
 ## Usage
 
