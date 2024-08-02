@@ -1,7 +1,7 @@
-#include "isr.h"
-
-#include <kernel/arch/x86/32/idt.h>
-#include <kernel/arch/x86/devices/vga.h>
+#include "kernel/arch/x86/32/isr.h"
+#include "kernel/arch/x86/32/idt.h"
+#include "kernel/arch/x86/devices/vga.h"
+#include <stddef.h>
 
 #define ISR_HANDLER_ALIGNMENT      (16U)
 #define ISR_EXCEPTION_VECTOR_START (0x00U)

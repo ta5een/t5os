@@ -10,10 +10,7 @@ Thumbs.db
 *.elf
 
 # Build artifacts
-out
-build
+.cache
 toolchain/build
 toolchain/local
 toolchain/tarballs
-.cache
-compile_commands.json

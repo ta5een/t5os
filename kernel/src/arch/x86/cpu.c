@@ -1,9 +1,9 @@
-#include <kernel/arch/cpu.h>
-#include <kernel/arch/x86/32/idt.h>
-#include <kernel/arch/x86/32/isr.h>
-#include <kernel/arch/x86/devices/serial.h>
-#include <kernel/arch/x86/devices/vga.h>
-#include <kernel/arch/x86/gdt.h>
+#include "kernel/arch/x86/cpu.h"
+#include "kernel/arch/x86/32/idt.h"
+#include "kernel/arch/x86/32/isr.h"
+#include "kernel/arch/x86/devices/serial.h"
+#include "kernel/arch/x86/devices/vga.h"
+#include "kernel/arch/x86/gdt.h"
 
 #define VGA_BUFFER_ADDRESS ((volatile vga_char_t *)0xb8000U)
 
@@ -59,25 +59,4 @@ arch_cpu_init()
     vga_print(vga, "Triggering INT 0x1f...");
     asm volatile("int $0x1f");
     vga_println(vga, " [DONE]");
-}
-
-void
-arch_cpu_halt()
-{
-    while (true)
-    {
-        asm volatile("cli; hlt");
-    }
-}
-
-void
-arch_cpu_idle_loop()
-{
-    while (true)
-    {
-        // Use the hlt instruction to put the CPU in a low-power state when
-        // idle. This reduces CPU usage and power consumption compared to a
-        // busy-wait loop.
-        asm volatile("hlt");
-    }
 }

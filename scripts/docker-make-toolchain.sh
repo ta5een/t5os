@@ -8,5 +8,5 @@ hash docker 2>/dev/null || {
   exit 1
 }
 
-# With the Docker image "t5os", in an ephemeral container, build the ISO
-docker run -it --rm -v .:/t5os t5os make iso
+# With the Docker image "t5os", in an ephemeral container, build the toolchain
+docker run -it --rm -v .:/t5os t5os make toolchain
