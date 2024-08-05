@@ -16,5 +16,5 @@ kernel_on_panic(const char *msg, const char *location, const char *function)
     vga_print(vga, "-> in ");
     vga_println(vga, function);
 
-    arch_cpu_halt();
+    cpu_halt();
 }
