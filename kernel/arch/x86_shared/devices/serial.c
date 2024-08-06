@@ -1,5 +1,5 @@
-#include "kernel/arch/x86_shared/devices/serial.h"
-#include "kernel/arch/x86_shared/port.h"
+#include "arch/x86_shared/devices/serial.h"
+#include "arch/x86_shared/port.h"
 #include <stdint.h>
 
 #define SERIAL_DATA_REG(base)          ((uint16_t)base)

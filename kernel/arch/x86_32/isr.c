@@ -1,7 +1,7 @@
-#include "kernel/arch/x86_32/isr.h"
-#include "kernel/arch/x86_32/idt.h"
-#include "kernel/arch/x86_32/iframe.h"
-#include "kernel/arch/x86_shared/devices/vga.h"
+#include "arch/x86_32/isr.h"
+#include "arch/x86_32/idt.h"
+#include "arch/x86_32/iframe.h"
+#include "arch/x86_shared/devices/vga.h"
 #include <stddef.h>
 
 #define ISR_HANDLER_ALIGNMENT      (16U)

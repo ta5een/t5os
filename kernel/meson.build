@@ -1,5 +1,4 @@
 arch_src = []
-arch_include_dirs = []
 arch_link_depends = []
 arch_link_args = []
 
@@ -13,10 +12,7 @@ endif
 kernel_src = arch_src + []
 subdir('kernel')
 
-kernel_include_dirs = arch_include_dirs + include_directories(
-    'kernel/include',
-    'arch/generic/include',
-)
+kernel_include_dirs = include_directories('.')
 
 kernel_link_args = arch_link_args + [
     '-ffreestanding',

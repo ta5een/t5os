@@ -1,6 +1,6 @@
 kernel_src += files(
-    'src/kassert.c',
-    'src/kernel.c',
-    'src/kpanic.c',
+    'kassert.c',
+    'kernel.c',
+    'kpanic.c',
     # ...
 )

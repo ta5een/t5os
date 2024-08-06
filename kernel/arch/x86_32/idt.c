@@ -1,5 +1,5 @@
-#include "kernel/arch/x86_32/idt.h"
-#include "kernel/arch/x86_shared/descriptor_table.h"
+#include "arch/x86_32/idt.h"
+#include "arch/x86_shared/descriptor_table.h"
 #include <stddef.h>
 #include <stdint.h>
 

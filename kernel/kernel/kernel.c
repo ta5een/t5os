@@ -1,5 +1,5 @@
-#include "kernel/arch/generic/cpu.h"
-#include "kernel/arch/generic/cpu_ops.h"
+#include "arch/generic/cpu.h"
+#include "arch/generic/cpu_ops.h"
 #include <stdint.h>
 
 typedef void(*multiboot_t);

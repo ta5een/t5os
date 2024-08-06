@@ -1,7 +1,7 @@
 #pragma once
 
-#include "kernel/arch/x86_32/iframe.h"
-#include "kernel/arch/x86_shared/gdt.h"
+#include "arch/x86_32/iframe.h"
+#include "arch/x86_shared/gdt.h"
 #include <stddef.h>
 #include <stdint.h>
 

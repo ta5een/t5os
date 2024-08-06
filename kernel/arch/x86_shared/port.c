@@ -1,4 +1,4 @@
-#include "kernel/arch/x86_shared/port.h"
+#include "arch/x86_shared/port.h"
 #include <stdint.h>
 
 uint8_t
