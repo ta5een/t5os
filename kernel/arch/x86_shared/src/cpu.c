@@ -1,9 +1,9 @@
 #include "kernel/arch/generic/cpu.h"
-#include "kernel/arch/x86/32/idt.h"
-#include "kernel/arch/x86/32/isr.h"
-#include "kernel/arch/x86/devices/serial.h"
-#include "kernel/arch/x86/devices/vga.h"
-#include "kernel/arch/x86/gdt.h"
+#include "kernel/arch/x86_32/idt.h"
+#include "kernel/arch/x86_32/isr.h"
+#include "kernel/arch/x86_shared/devices/serial.h"
+#include "kernel/arch/x86_shared/devices/vga.h"
+#include "kernel/arch/x86_shared/gdt.h"
 
 #define VGA_BUFFER_ADDRESS ((volatile vga_char_t *)0xb8000U)
 
