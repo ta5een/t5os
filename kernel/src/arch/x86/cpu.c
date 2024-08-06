@@ -1,4 +1,4 @@
-#include "kernel/arch/x86/cpu.h"
+#include "kernel/arch/generic/cpu.h"
 #include "kernel/arch/x86/32/idt.h"
 #include "kernel/arch/x86/32/isr.h"
 #include "kernel/arch/x86/devices/serial.h"
@@ -10,7 +10,7 @@
 static volatile vga_char_t *s_vga_buffer = VGA_BUFFER_ADDRESS;
 
 void
-cpu_init()
+cpu_init(void)
 {
     // TODO: Move this to arch-generic console_init function
     struct vga *vga = vga_get();
