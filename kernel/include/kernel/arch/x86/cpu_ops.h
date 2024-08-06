@@ -10,7 +10,7 @@
  */
 [[noreturn]]
 static inline void
-cpu_halt()
+cpu_halt(void)
 {
     while (true)
     {
@@ -26,7 +26,7 @@ cpu_halt()
  */
 [[noreturn]]
 static inline void
-cpu_idle_loop()
+cpu_idle_loop(void)
 {
     while (true)
     {

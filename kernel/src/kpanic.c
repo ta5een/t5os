@@ -1,5 +1,5 @@
 #include "kernel/kpanic.h"
-#include "kernel/arch/x86/cpu.h"
+#include "kernel/arch/generic/cpu_ops.h"
 #include "kernel/arch/x86/devices/vga.h"
 
 void
