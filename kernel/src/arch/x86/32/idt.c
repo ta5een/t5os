@@ -19,13 +19,13 @@ static const struct x86_descriptor_table_register s_idtr = {
  * Loads the Interrupt Descriptor Table with the LIDT instruction.
  */
 void
-x86_32_idt_load()
+x86_32_idt_load(void)
 {
     asm volatile("lidt %0" : : "m"(s_idtr) : "memory");
 }
 
 void
-x86_32_idt_init()
+x86_32_idt_init(void)
 {
     x86_32_idt_load();
 }
@@ -44,14 +44,14 @@ x86_32_idt_set_entry(size_t vector, x86_32_idt_handler_t handler,
 }
 
 // void
-// x86_32_idt_activate()
+// x86_32_idt_activate(void)
 // {
 //     // TODO: Assumes there is one processor to listen to interrupts
 //     asm volatile("sti");
 // }
 
 // void
-// x86_32_idt_deactivate()
+// x86_32_idt_deactivate(void)
 // {
 //     // TODO: Assumes there is one processor to stop listening to interrupts
 //     asm volatile("cli");

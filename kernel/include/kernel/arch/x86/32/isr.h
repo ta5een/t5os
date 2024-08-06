@@ -32,4 +32,4 @@ struct [[gnu::packed]] x86_32_interrupt_frame
 };
 
 void
-x86_32_isr_init();
+x86_32_isr_init(void);

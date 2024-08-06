@@ -46,7 +46,7 @@ typedef void(x86_32_idt_handler_t)(void);
  * Initializes the gates of the Interrupt Descriptor Table.
  */
 void
-x86_32_idt_init();
+x86_32_idt_init(void);
 
 /**
  * Modifies the contents of an IDT gate corresponding to the provided vector.
@@ -59,10 +59,10 @@ x86_32_idt_set_entry(size_t vector, x86_32_idt_handler_t handler,
 //  * Starts listening to interrupts.
 //  */
 // void
-// x86_32_idt_activate();
+// x86_32_idt_activate(void);
 
 // /**
 //  * Stops listening to interrupts.
 //  */
 // void
-// x86_32_idt_deactivate();
+// x86_32_idt_deactivate(void);

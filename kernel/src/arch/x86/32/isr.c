@@ -28,7 +28,7 @@ extern x86_32_idt_handler_t x86_32_isr_0x00;
 extern x86_32_idt_handler_t x86_32_isr_unhandled_stub;
 
 void
-x86_32_isr_init()
+x86_32_isr_init(void)
 {
     // Initialize entries for exceptions with their respective handlers
     for (size_t exception = ISR_EXCEPTION_VECTOR_START;

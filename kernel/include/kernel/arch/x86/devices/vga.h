@@ -20,7 +20,7 @@ struct vga;
  * Retrieves the global instance of the VGA writer.
  */
 struct vga *
-vga_get();
+vga_get(void);
 
 /**
  * Intializes the VGA writer with the address of the provided buffer.

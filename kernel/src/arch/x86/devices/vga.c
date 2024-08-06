@@ -54,7 +54,7 @@ struct vga
 };
 
 struct vga *
-vga_get()
+vga_get(void)
 {
     // TODO: Wrap accesses to this struct in a mutex
     static struct vga s_vga = {.buffer = NULL, .col_pos = 0, .row_pos = 0};

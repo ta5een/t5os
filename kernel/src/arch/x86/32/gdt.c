@@ -48,7 +48,7 @@ x86_32_gdt_set_entry(enum x86_gdt_selector selector, uint32_t base,
 }
 
 static inline void
-x86_32_gdt_init()
+x86_32_gdt_init(void)
 {
     // Set up a minimal GDT using the flat memory model.
     //
@@ -68,7 +68,7 @@ x86_32_gdt_init()
 }
 
 void
-x86_gdt_init()
+x86_gdt_init(void)
 {
     x86_32_gdt_init();
 }

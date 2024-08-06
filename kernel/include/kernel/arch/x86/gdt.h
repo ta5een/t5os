@@ -91,4 +91,4 @@ static_assert(sizeof(struct x86_gdt_entry) == 8U);
  * This will call the IA-32 or IA-64 variant depending on the selected target.
  */
 void
-x86_gdt_init();
+x86_gdt_init(void);
