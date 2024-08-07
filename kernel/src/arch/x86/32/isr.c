@@ -1,5 +1,6 @@
 #include "kernel/arch/x86/32/isr.h"
 #include "kernel/arch/x86/32/idt.h"
+#include "kernel/arch/x86/32/iframe.h"
 #include "kernel/arch/x86/devices/vga.h"
 #include <stddef.h>
 
@@ -54,7 +55,7 @@ vga_print_uint(struct vga *vga, size_t integer, size_t radix);
 
 [[gnu::cdecl]]
 void
-x86_32_isr_handler(struct x86_32_interrupt_frame *frame)
+x86_32_isr_handler(struct x86_32_iframe *frame)
 {
     // Print the interrupt number for now
     struct vga *vga = vga_get();
