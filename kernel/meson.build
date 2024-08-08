@@ -70,3 +70,24 @@ kernel_exe = executable(
     link_args: kernel_link_args,
     link_depends: kernel_link_depends,
 )
+
+kernel_test_include_dirs = include_directories('include')
+kernel_test_src = files(
+    'src/log/test_log_debug.c',
+    # ...
+)
+
+kernel_test_exe = executable(
+    'test_log_debug',
+    native: true,
+    sources: kernel_test_src,
+    include_directories: kernel_test_include_dirs,
+    c_args: [
+        '-std=gnu2x',
+        '-Wall',
+        '-Wextra',
+        '-ffreestanding',
+    ],
+)
+
+test('test log debug', kernel_test_exe)
