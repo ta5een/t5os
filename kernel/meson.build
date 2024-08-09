@@ -7,14 +7,12 @@ kernel_src += files(
     'src/kernel.c',
     'src/kpanic.c',
     'src/log/log.c',
-    # ...
 )
 
 kernel_link_args = [
     '-ffreestanding',
     '-lgcc',
     '-nostdlib',
-    # ...
 ]
 
 if host_machine.cpu_family() == 'x86'
@@ -40,7 +38,7 @@ if host_machine.cpu_family() == 'x86'
     endif
 endif
 
-kernel_exe = executable(
+executable(
     't5os.bin',
     sources: kernel_src,
     include_directories: kernel_include_dirs,
@@ -71,23 +69,29 @@ kernel_exe = executable(
     link_depends: kernel_link_depends,
 )
 
-kernel_test_include_dirs = include_directories('include')
-kernel_test_src = files(
-    'src/log/test_log_debug.c',
-    # ...
-)
-
-kernel_test_exe = executable(
-    'test_log_debug',
-    native: true,
-    sources: kernel_test_src,
-    include_directories: kernel_test_include_dirs,
-    c_args: [
-        '-std=gnu2x',
-        '-Wall',
-        '-Wextra',
-        '-ffreestanding',
-    ],
-)
-
-test('test log debug', kernel_test_exe)
+if not meson.is_cross_build()
+    test(
+        'test log debug',
+        executable(
+            'test_log_debug',
+            native: true,
+            sources: files(
+                'src/log/test_log_debug.c',
+            ),
+            include_directories: include_directories('include'),
+            c_args: [
+                '-std=gnu2x',
+                '-Wall',
+                '-Wextra',
+            ],
+            dependencies: [
+                dependency(
+                    'criterion',
+                    native: true,
+                    fallback: ['criterion', 'criterion'],
+                    version: '>=2.4.2',
+                ),
+            ],
+        ),
+    )
+endif
