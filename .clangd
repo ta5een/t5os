@@ -1,0 +1,13 @@
+If:
+  PathMatch: kernel/(include|src)/.*
+
+CompileFlags:
+  CompilationDatabase: kernel/build
+
+---
+
+If:
+  PathMatch: kernel/test
+
+CompileFlags:
+  CompilationDatabase: kernel/test/build
