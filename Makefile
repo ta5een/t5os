@@ -2,7 +2,7 @@ NAME = t5os
 ARCH = i686
 BUILD_TYPE ?= DEBUG
 
-OUTDIR = build/kernel
+OUTDIR = build-cross/kernel
 TOOLCHAIN_DIR = toolchain
 TOOLCHAIN_BIN_DIR = $(TOOLCHAIN_DIR)/local/$(ARCH)/bin
 

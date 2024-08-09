@@ -14,3 +14,12 @@ Thumbs.db
 toolchain/build
 toolchain/local
 toolchain/tarballs
+
+# Meson subprojects
+subprojects/boxfort
+subprojects/criterion
+subprojects/debugbreak
+subprojects/klib
+subprojects/libgit2
+subprojects/nanomsg
+subprojects/nanopb
