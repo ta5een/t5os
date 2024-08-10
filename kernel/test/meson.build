@@ -21,4 +21,5 @@ test(
             ),
         ],
     ),
+    suite: 'kernel',
 )
