@@ -1,5 +1,7 @@
+!.bochsrc
 !.clang-format
 !.clang-tidy
+!.clangd
 !.dockerignore
 !.editorconfig
 !.gdbinit
@@ -7,4 +9,3 @@
 !.gitmodules
 !.ignore
 !build/compile_commands.json
-!.bochsrc
