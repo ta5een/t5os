@@ -1,5 +1,5 @@
 If:
-  PathMatch: kernel/(include|src)/.*
+  PathMatch: kernel/.*
 
 CompileFlags:
   CompilationDatabase: kernel/build
@@ -7,7 +7,7 @@ CompileFlags:
 ---
 
 If:
-  PathMatch: kernel/test
+  PathMatch: libt5/.*
 
 CompileFlags:
-  CompilationDatabase: kernel/test/build
+  CompilationDatabase: libt5/build
