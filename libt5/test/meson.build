@@ -1,11 +1,9 @@
 test(
-    'test log debug',
+    'test_libt5',
     executable(
-        'test_log_debug',
+        'test_libt5',
+        files('log.test.c'),
         native: true,
-        sources: files(
-            'log/test_log_debug.c',
-        ),
         include_directories: include_directories('../include'),
         c_args: [
             '-std=gnu2x',
@@ -13,6 +11,7 @@ test(
             '-Wextra',
         ],
         dependencies: [
+            libt5_dep,
             dependency(
                 'criterion',
                 native: true,
@@ -21,5 +20,5 @@ test(
             ),
         ],
     ),
-    suite: 'kernel',
+    suite: 'libt5',
 )
