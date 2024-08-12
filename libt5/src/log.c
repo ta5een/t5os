@@ -4,6 +4,9 @@
 void
 log_trace(struct log_spec *spec, const char *location, const char *fmt, ...)
 {
+    (void)location;
+    (void)fmt;
+
     va_list list;
     va_start(list, fmt);
 

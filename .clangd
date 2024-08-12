@@ -1,13 +1,5 @@
 If:
-  PathMatch: kernel/.*
+  PathMatch: (libt5/test|subprojects)/.*
 
 CompileFlags:
-  CompilationDatabase: kernel/build
-
----
-
-If:
-  PathMatch: libt5/.*
-
-CompileFlags:
-  CompilationDatabase: libt5/build
+  CompilationDatabase: build-native

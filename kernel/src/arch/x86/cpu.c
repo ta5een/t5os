@@ -4,10 +4,21 @@
 #include "kernel/arch/x86/devices/serial.h"
 #include "kernel/arch/x86/devices/vga.h"
 #include "kernel/arch/x86/gdt.h"
+#include <libt5/log.h>
 
 #define VGA_BUFFER_ADDRESS ((volatile vga_char_t *)0xb8000U)
 
 static volatile vga_char_t *s_vga_buffer = VGA_BUFFER_ADDRESS;
+
+static size_t
+write(const char *str, size_t n_chars)
+{
+    struct vga *vga = vga_get();
+    vga_println(vga, str);
+    serial_write(SERIAL_COM1_BASE, str);
+    serial_write(SERIAL_COM1_BASE, "\n");
+    return n_chars;
+}
 
 void
 cpu_init(void)
@@ -59,4 +70,7 @@ cpu_init(void)
     vga_print(vga, "Triggering INT 0x1f...");
     asm volatile("int $0x1f");
     vga_println(vga, " [DONE]");
+
+    struct log_spec spec = {.write = write};
+    log_trace(&spec, "", "");
 }
