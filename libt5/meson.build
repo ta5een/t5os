@@ -1,6 +1,4 @@
-subdir('src')
+libt5_src = []
+libt5_include_dirs = include_directories('include')
 
-# Standard library not yet available in target platform
-if not meson.is_cross_build()
-    subdir('test')
-endif
+subdir('src')
