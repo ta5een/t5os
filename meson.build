@@ -1,6 +1,9 @@
 project('t5os', 'c', version: '0.1.0', meson_version: '>= 1.5.0')
 
-subdir('libt5')
+# Defines:
+# - libt5_src
+# - libt5_include_dirs
+subdir('libt5/src')
 
 libt5_dep = declare_dependency(
     link_with: static_library(
@@ -19,7 +22,12 @@ libt5_dep = declare_dependency(
 # Kernel
 # The kernel will be cross compiled, with libt5 statically linked
 if meson.is_cross_build()
-    subdir('kernel')
+    # Defines:
+    # - kernel_src
+    # - kernel_include_dirs
+    # - kernel_link_args
+    # - kernel_link_depends
+    subdir('kernel/src')
 
     executable(
         't5os.bin',
@@ -58,31 +66,34 @@ endif
 # The C standard library is currently not available in the target environment,
 # so the test executables will only be built for the build machine.
 if not meson.is_cross_build()
-    test_libt5_src = []
+    # Defines:
+    # - test_libt5_src_dict
+    # - test_libt5_include_dirs
     subdir('libt5/test')
 
-    test(
-        'test_libt5',
-        executable(
-            'test_libt5',
-            test_libt5_src,
-            native: true,
-            include_directories: libt5_include_dirs,
-            c_args: [
-                '-std=gnu2x',
-                '-Wall',
-                '-Wextra',
-            ],
-            dependencies: [
-                libt5_dep,
-                dependency(
-                    'criterion',
-                    native: true,
-                    fallback: ['criterion', 'criterion'],
-                    version: '>=2.4.2',
-                ),
-            ],
-        ),
-        suite: 'libt5',
-    )
+    foreach name, sources : test_libt5_src_dict
+        test_name = 'test_libt5_' + name
+        test(
+            test_name,
+            executable(
+                test_name,
+                sources,
+                include_directories: test_libt5_include_dirs,
+                c_args: [
+                    '-std=gnu2x',
+                    '-Wall',
+                    '-Wextra',
+                ],
+                dependencies: [
+                    libt5_dep,
+                    dependency(
+                        'criterion',
+                        fallback: ['criterion', 'criterion'],
+                        version: '>=2.4.2',
+                    ),
+                ],
+            ),
+            suite: 'libt5',
+        )
+    endforeach
 endif
