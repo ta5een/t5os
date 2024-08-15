@@ -1,5 +1,7 @@
 project('t5os', 'c', version: '0.1.0', meson_version: '>= 1.5.0')
 
+# libt5 {{{
+
 # Defines:
 # - libt5_src
 # - libt5_include_dirs
@@ -14,12 +16,16 @@ libt5_dep = declare_dependency(
             '-std=gnu2x',
             '-Wall',
             '-Wextra',
+            '-ffreestanding',
         ],
     ),
     include_directories: libt5_include_dirs,
 )
 
-# Kernel
+# }}}
+
+# kernel {{{
+
 # The kernel will be cross compiled, with libt5 statically linked
 if meson.is_cross_build()
     # Defines:
@@ -29,12 +35,12 @@ if meson.is_cross_build()
     # - kernel_link_depends
     subdir('kernel/src')
 
-    executable(
+    kernel_exe = executable(
         't5os.bin',
         sources: kernel_src,
         include_directories: [kernel_include_dirs],
         c_args: [
-            '-std=gnu23',
+            '-std=gnu2x',
             '-Wall',
             '-Wextra',
             '-ffreestanding',
@@ -60,9 +66,30 @@ if meson.is_cross_build()
         link_args: kernel_link_args,
         link_depends: kernel_link_depends,
     )
+
+    # Run this target with:
+    #
+    #   meson compile -C build qemu-run
+    #
+    # Where `build` is the directory you configured to cross-compile the kernel
+    # with the `meson setup` command
+    run_target(
+        'qemu-run',
+        command: [
+            # This property is defined under the "properties" section of the
+            # selected cross-file config (such as ./meson/cross/i686-elf.ini)
+            meson.get_external_property('qemu'),
+            '-kernel', kernel_exe.full_path(),
+            '-m', '64',
+        ],
+        depends: [kernel_exe],
+    )
 endif
 
-# Testing
+# }}}
+
+# tests {{{
+
 # The C standard library is currently not available in the target environment,
 # so the test executables will only be built for the build machine.
 if not meson.is_cross_build()
@@ -97,3 +124,7 @@ if not meson.is_cross_build()
         )
     endforeach
 endif
+
+# }}}
+
+# vim:foldmethod=marker
