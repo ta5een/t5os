@@ -14,7 +14,7 @@ static volatile vga_char_t *s_vga_buffer = VGA_BUFFER_ADDRESS;
 static size_t
 write(size_t len, const char str[len])
 {
-    auto vga = vga_get();
+    struct vga *vga = vga_get();
     vga_println(vga, str);
     serial_write(SERIAL_COM1_BASE, str);
     serial_write(SERIAL_COM1_BASE, "\n");
@@ -25,7 +25,7 @@ void
 cpu_init(void)
 {
     // TODO: Move this to arch-generic console_init function
-    auto vga = vga_get();
+    struct vga *vga = vga_get();
     vga_init(vga, s_vga_buffer);
     vga_clear_screen(vga);
     vga_println(vga, "t5os v0.0.1");
@@ -72,7 +72,7 @@ cpu_init(void)
     asm volatile("int $0x1f");
     vga_println(vga, " [DONE]");
 
-    auto spec = (struct log_spec){.write = write};
+    struct log_spec spec = {.write = write};
     log_trace(&spec, LOG_LOCATION, "This won't print");
     log_trace(&spec, LOG_LOCATION, "This won't also print");
 }
