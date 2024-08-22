@@ -9,11 +9,11 @@
 char log_buffer[LOG_BUFFER_SIZE] = {0};
 
 static size_t
-write(const char *str, size_t n_chars)
+write(size_t len, const char str[len])
 {
     memset(log_buffer, 0, LOG_BUFFER_SIZE);
-    strncpy(log_buffer, str, n_chars);
-    return n_chars;
+    strncpy(log_buffer, str, len);
+    return len;
 }
 
 Test(libt5, log_trace)

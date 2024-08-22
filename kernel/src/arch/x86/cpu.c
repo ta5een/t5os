@@ -6,25 +6,26 @@
 #include "kernel/arch/x86/gdt.h"
 #include <libt5/log.h>
 
+#define LOG_LOCATION       ""
 #define VGA_BUFFER_ADDRESS ((volatile vga_char_t *)0xb8000U)
 
 static volatile vga_char_t *s_vga_buffer = VGA_BUFFER_ADDRESS;
 
 static size_t
-write(const char *str, size_t n_chars)
+write(size_t len, const char str[len])
 {
-    struct vga *vga = vga_get();
+    auto vga = vga_get();
     vga_println(vga, str);
     serial_write(SERIAL_COM1_BASE, str);
     serial_write(SERIAL_COM1_BASE, "\n");
-    return n_chars;
+    return len;
 }
 
 void
 cpu_init(void)
 {
     // TODO: Move this to arch-generic console_init function
-    struct vga *vga = vga_get();
+    auto vga = vga_get();
     vga_init(vga, s_vga_buffer);
     vga_clear_screen(vga);
     vga_println(vga, "t5os v0.0.1");
@@ -71,6 +72,7 @@ cpu_init(void)
     asm volatile("int $0x1f");
     vga_println(vga, " [DONE]");
 
-    struct log_spec spec = {.write = write};
-    log_trace(&spec, "", "");
+    auto spec = (struct log_spec){.write = write};
+    log_trace(&spec, LOG_LOCATION, "This won't print");
+    log_trace(&spec, LOG_LOCATION, "This won't also print");
 }
