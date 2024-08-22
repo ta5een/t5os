@@ -69,17 +69,18 @@ if meson.is_cross_build()
 
     # Run this target with:
     #
-    #   meson compile -C build qemu-run
+    #   meson compile -C build qemu-run-image
     #
     # Where `build` is the directory you configured to cross-compile the kernel
     # with the `meson setup` command
     run_target(
-        'qemu-run',
+        'qemu-run-image',
         command: [
-            # This property is defined under the "properties" section of the
+            # This program is defined under the "binaries" section of the
             # selected cross-file config (such as ./meson/cross/i686-elf.ini)
-            meson.get_external_property('qemu'),
+            find_program('qemu'),
             '-kernel', kernel_exe.full_path(),
+            '-serial', 'stdio',
             '-m', '64',
         ],
         depends: [kernel_exe],
