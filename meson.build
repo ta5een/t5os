@@ -99,13 +99,14 @@ if not meson.is_cross_build()
     # - test_libt5_include_dirs
     subdir('libt5/test')
 
-    foreach name, sources : test_libt5_src_dict
-        test_name = 'test_libt5_' + name
+    foreach test_name, test_sources : test_libt5_src_dict
+        test_exe_name = 'test_libt5_' + test_sources[0]
+        test_sources = test_sources[1]
         test(
             test_name,
             executable(
-                test_name,
-                sources,
+                test_exe_name,
+                test_sources,
                 include_directories: test_libt5_include_dirs,
                 c_args: [
                     '-std=gnu2x',
@@ -114,11 +115,11 @@ if not meson.is_cross_build()
                 ],
                 dependencies: [
                     libt5_dep,
-                    dependency(
-                        'criterion',
-                        fallback: ['criterion', 'criterion'],
-                        version: '>=2.4.2',
-                    ),
+                    # dependency(
+                    #     'criterion',
+                    #     fallback: ['criterion', 'criterion'],
+                    #     version: '>=2.4.2',
+                    # ),
                 ],
             ),
             suite: 'libt5',
