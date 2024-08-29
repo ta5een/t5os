@@ -2,9 +2,12 @@
 
 #include <stddef.h>
 
+typedef size_t (*log_spec_write_t)(size_t len, const char str[len], void *ctx);
+
 struct log_spec
 {
-    size_t (*write)(size_t len, const char str[len]);
+    log_spec_write_t write;
+    void *ctx;
 };
 
 [[gnu::format(printf, 3, 4)]]

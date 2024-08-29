@@ -7,6 +7,9 @@
 #define LOG_LOCATION_EMPTY ""
 #define LOG_LOCATION_FUNC  __FUNCTION__
 
+/**
+ * Exit codes for unit tests, following the Meson 'exitcode' testing protocol.
+ */
 enum
 {
     E_PASS = 0,
@@ -22,7 +25,7 @@ struct test_context
 };
 
 void
-clear_log_buffer(struct test_context *context)
+clear_log_buffer(struct test_context *ctx)
 {
-    memset(context->log_buffer, '\0', context->log_buffer_size);
+    memset(ctx->log_buffer, '\0', ctx->log_buffer_size);
 }
