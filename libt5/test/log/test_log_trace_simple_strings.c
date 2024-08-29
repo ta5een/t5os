@@ -6,23 +6,26 @@
 
 #define LOG_BUFFER_SIZE 256
 
-char log_buffer[LOG_BUFFER_SIZE] = {'\0'};
-
 static size_t
-write(size_t len, const char str[len])
+mock_write(size_t len, const char str[len], struct test_context *ctx)
 {
-    strncpy(log_buffer, str, len);
+    strncpy(ctx->log_buffer, str, len);
     return len;
 }
 
 int
 main(void)
 {
-    struct test_context context = {
+    char log_buffer[LOG_BUFFER_SIZE] = {'\0'};
+
+    struct test_context ctx = {
         .log_buffer = log_buffer,
         .log_buffer_size = LOG_BUFFER_SIZE,
-        .spec = {.write = write},
+        .spec = {NULL, NULL},
     };
+
+    ctx.spec.write = (log_spec_write_t)mock_write;
+    ctx.spec.ctx = &ctx;
 
     const char *strings[] = {"Hello, world!",
                              // "Goodbye, world!",
@@ -33,8 +36,16 @@ main(void)
 
     for (size_t i = 0; strings[i] != NULL; i++)
     {
-        clear_log_buffer(&context);
-        log_trace(&context.spec, LOG_LOCATION_EMPTY, "%s", strings[i]);
+        clear_log_buffer(&ctx);
+
+        // Imagine the above strings are passed as literals to log_trace. Since
+        // the strings are hard-coded and contain no format specifiers, this is
+        // not a security concern.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
+        log_trace(&ctx.spec, LOG_LOCATION_EMPTY, strings[i]);
+#pragma GCC diagnostic pop
+
         if (strcmp(log_buffer, strings[i]) != 0)
         {
             fprintf(stderr, "'%s' SHOULD EQ '%s'\n", log_buffer, strings[i]);

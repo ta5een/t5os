@@ -11,8 +11,10 @@ log_trace(struct log_spec *spec, const char *restrict loc,
     va_list list;
     va_start(list, fmt);
 
+    // TODO: Use of hard-coded string
     const char str_hello[] = "Hello, world!";
-    spec->write(sizeof(str_hello), str_hello);
+    // TODO: sizeof is used here since strlen has not been implemented yet
+    spec->write(sizeof(str_hello), str_hello, spec->ctx);
 
     va_end(list);
 }
