@@ -96,18 +96,18 @@ endif
 if not meson.is_cross_build()
     # Defines:
     # - test_libt5_src_dict
-    # - test_libt5_include_dirs
     subdir('libt5/test')
 
-    foreach test_name, test_sources : test_libt5_src_dict
-        test_exe_name = 'test_libt5_' + test_sources[0]
-        test_sources = test_sources[1]
+    foreach test_name, test_config : test_libt5_src_dict
+        test_exe_name = 'test_libt5_' + test_config['exe_name']
+        test_include_dirs = test_config['include_dirs']
+        test_sources = test_config['sources']
         test(
             test_name,
             executable(
                 test_exe_name,
                 test_sources,
-                include_directories: test_libt5_include_dirs,
+                include_directories: test_include_dirs,
                 c_args: [
                     '-std=gnu2x',
                     '-Wall',

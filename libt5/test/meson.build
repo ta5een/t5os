@@ -1,5 +1,7 @@
-test_libt5_include_dirs = include_directories('../include')
-
 test_libt5_src_dict = {
-    'it outputs TRACE logs to buffer': ['log_trace', files('log/log_trace.c')],
+    'log_trace SHOULD correctly output simple strings': {
+        'exe_name': 'test_log_trace_simple_strings',
+        'include_dirs': include_directories('../include', 'log'),
+        'sources': files('log/test_log_trace_simple_strings.c'),
+    },
 }
