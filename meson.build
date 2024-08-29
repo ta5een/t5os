@@ -115,11 +115,6 @@ if not meson.is_cross_build()
                 ],
                 dependencies: [
                     libt5_dep,
-                    # dependency(
-                    #     'criterion',
-                    #     fallback: ['criterion', 'criterion'],
-                    #     version: '>=2.4.2',
-                    # ),
                 ],
             ),
             suite: 'libt5',
