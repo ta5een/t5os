@@ -7,8 +7,11 @@
 static size_t
 mock_write(size_t len, const char str[len], struct test_context *ctx)
 {
-    strncpy(ctx->log_buffer, str, len);
-    return len;
+    // strlcpy is not defined in the C standard, so this will have to do
+    strncpy(ctx->log_buffer, str, LOG_BUFFER_SIZE - 1);
+    ctx->log_buffer[LOG_BUFFER_SIZE] = '\0';
+    // NOTE: Handling the case where str exceeds LOG_BUFFER_SIZE is out of scope
+    return 0;
 }
 
 int
