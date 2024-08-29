@@ -23,7 +23,7 @@ main(void)
     };
 
     ctx.spec.write = (log_spec_write_t)mock_write;
-    ctx.spec.ctx = &ctx;
+    ctx.spec.context = &ctx;
 
     return E_SKIP;
 }
