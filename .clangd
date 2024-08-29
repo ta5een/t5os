@@ -1,5 +1,13 @@
 If:
-  PathMatch: (libt5/test|subprojects)/.*
+  PathMatch: libt5/test/.*
+
+CompileFlags:
+  CompilationDatabase: build-test
+
+---
+
+If:
+  PathMatch: subprojects/.*
 
 CompileFlags:
   CompilationDatabase: build-native
