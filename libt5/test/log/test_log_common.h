@@ -21,7 +21,6 @@ struct test_context
 {
     char *log_buffer;
     size_t log_buffer_size;
-    struct log_spec spec;
 };
 
 void
