@@ -9,12 +9,11 @@
 static size_t
 mock_write(size_t len, const char str[len], struct test_context *ctx)
 {
-    // Total number of bytes to write, including the terminating NUL character
-    size_t len_to_write = len < LOG_BUFFER_SIZE ? len : LOG_BUFFER_SIZE;
-
-    // strlcpy is not defined in the C standard, so this will have to do
-    strncpy(ctx->log_buffer, str, len_to_write - 1);
-    ctx->log_buffer[len_to_write] = '\0';
+    // strlcpy would have been ideal here, but unfortunately it is not defined
+    // in the C standard. The following lines mimic its behaviour, sourced from
+    // macOS's strcpy(3) manual.
+    strncpy(ctx->log_buffer, str, LOG_BUFFER_SIZE - 1);
+    ctx->log_buffer[LOG_BUFFER_SIZE - 1] = '\0';
 
     // NOTE: Ignoring characters in str beyond LOG_BUFFER_SIZE
     return 0;

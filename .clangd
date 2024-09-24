@@ -3,11 +3,3 @@ If:
 
 CompileFlags:
   CompilationDatabase: build-test
-
----
-
-If:
-  PathMatch: subprojects/.*
-
-CompileFlags:
-  CompilationDatabase: build-native
