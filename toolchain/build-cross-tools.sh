@@ -96,6 +96,17 @@ and $disk_space_available of disk space available.
 Are you sure you want to continue? Enter '1' or '2':" | fold -s -w 80
 ask_yes_no
 
+if command -v md5 > /dev/null; then
+  MD5="md5"
+  MD5_AWK_STR='{ print $NF }'
+elif command -v md5sum > /dev/null; then
+  MD5="md5sum"
+  MD5_AWK_STR='{ print $1 }'
+else
+  echo "ERR: Neither md5 nor md5sum is available on this system."
+  exit 1
+fi
+
 # Download binutils and gcc tarballs
 mkdir -p "$TARBALLS_DIR"
 pushd "$TARBALLS_DIR" > /dev/null
@@ -103,11 +114,11 @@ pushd "$TARBALLS_DIR" > /dev/null
   if [ -f "$BINUTILS_TARBALL" ]; then
     log $STEP_DEPENDENCIES echo "Binutils already downloaded, validating MD5 checksum..."
     # Does the MD5 checksum match? If not, it may have been corrupted.
-    if ! md5sum -c <<< "$BINUTILS_MD5SUM $BINUTILS_TARBALL"; then
+    if [ "$($MD5 "$BINUTILS_TARBALL" | awk "$MD5_AWK_STR")" != "$BINUTILS_MD5SUM" ]; then
       log $STEP_DEPENDENCIES echo "'$BINUTILS_TARBALL' MD5 does not match. Removing..."
       rm -f "$BINUTILS_TARBALL"
       # In case the extracted directory is present, remove it too
-      rm -f "$BINUTILS_NAME"
+      rm -rf "$BINUTILS_NAME"
     else
       log $STEP_DEPENDENCIES echo "Checksum passed, continuing..."
     fi
@@ -131,11 +142,11 @@ pushd "$TARBALLS_DIR" > /dev/null
   if [ -f "$GCC_TARBALL" ]; then
     log $STEP_DEPENDENCIES echo "GCC already downloaded, validating MD5 checksum..."
     # Does the MD5 checksum match? If not, it may have been corrupted.
-    if ! md5sum -c <<< "$GCC_MD5SUM $GCC_TARBALL"; then
+    if [ "$($MD5 "$GCC_TARBALL" | awk "$MD5_AWK_STR")" != "$GCC_MD5SUM" ]; then
       log $STEP_DEPENDENCIES echo "'$GCC_TARBALL' MD5 does not match. Removing..."
       rm -f "$GCC_TARBALL"
       # In case the extracted directory is present, remove it too
-      rm -f "$GCC_NAME"
+      rm -rf "$GCC_NAME"
     else
       log $STEP_DEPENDENCIES echo "Checksum passed, continuing..."
     fi
