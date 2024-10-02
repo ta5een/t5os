@@ -80,7 +80,7 @@ if [[ -d "$PREFIX" && -n $(ls -A "$PREFIX") ]]; then
   rm -rf "$LOCAL_DIR_PREFIX/$ARCH"
 fi
 
-disk_space_available=$(df -h "$DIR" | tail -n1 | awk '{ print $3 }')
+disk_space_available=$(df -h "$DIR" | tail -n1 | awk '{ print $4 }')
 echo "\
 This build step will download the source code for the GNU GCC $GCC_VERSION \
 compiler and the GNU Binutils $BINUTILS_VERSION binary tools. It will then \
