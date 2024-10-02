@@ -1,13 +1,26 @@
 #!/usr/bin/env bash
 
-# The majority of this script was taken from the Serenity OS project:
+# This script was heavily derived from the Serenity OS project:
 # https://github.com/SerenityOS/serenity/blob/311af9ad0590970e3e3c7384feed67c63aed08f4/Toolchain/BuildGNU.sh
 
 set -e
 set -o pipefail
 
-ARCH=${ARCH:-i686}
 OS_NAME="$(uname -s)"
+
+# Before doing anything, first check if we're on macOS with GNU coreutils
+# installed. If so, we'll modify PATH to prioritize GNU coreutils over native
+# utilities for platform consistency.
+if [ "$OS_NAME" = "Darwin" ]; then
+  if command -v brew > /dev/null; then
+    BREW_COREUTILS_PREFIX=$(brew --prefix coreutils 2>/dev/null)
+    if [ -n "$BREW_COREUTILS_PREFIX" ]; then
+      export PATH="$BREW_COREUTILS_PREFIX/libexec/gnubin:$PATH"
+    fi
+  fi
+fi
+
+ARCH=${ARCH:-i686}
 MAKE_JOBS=${MAKE_JOBS:-$(nproc)}
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
