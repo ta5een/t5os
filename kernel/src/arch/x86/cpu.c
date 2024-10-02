@@ -12,7 +12,7 @@
 static volatile vga_char_t *s_vga_buffer = VGA_BUFFER_ADDRESS;
 
 static size_t
-write(size_t len, const char str[len])
+write(size_t len, const char str[len], void * /*ctx*/)
 {
     struct vga *vga = vga_get();
     vga_println(vga, str);
