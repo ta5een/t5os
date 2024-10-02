@@ -87,8 +87,8 @@ compiler and the GNU Binutils $BINUTILS_VERSION binary tools. It will then \
 compile these tools, specified to target $ARCH-elf.
 
 This process will take a while to complete, depending on your machine's \
-specifications. Once complete, the resulting build artefacts will take up \
-around 3GB of disk space, give or take half a GB.
+specifications. Once complete, the resulting toolchain (downloaded tarballs, \
+source code, and build artifacts) will take up around 3GB of disk space. \
 
 You are on a(n) $OS_NAME system with $MAKE_JOBS processing unit(s) available \
 and $disk_space_available of disk space available.
@@ -217,3 +217,5 @@ pushd "$BUILD_DIR_PREFIX/$ARCH" > /dev/null
     log "$STEP_LIBGCC/install" make install-target-libgcc || exit 1
   popd > /dev/null # gcc
 popd > /dev/null # "$BUILD_DIR_PREFIX/$ARCH"
+
+echo "Toolchain built and installed successfully"
