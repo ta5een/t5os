@@ -165,6 +165,12 @@ pushd "$TARBALLS_DIR" > /dev/null
     log $STEP_DEPENDENCIES echo "Extracting GCC $GCC_VERSION..."
     tar -xJf "$GCC_TARBALL"
   fi
+
+  # Download gcc prerequisites
+  pushd $GCC_NAME > /dev/null
+    log $STEP_DEPENDENCIES echo "Downloading GCC $GCC_VERSION prerequisites..."
+    sh ./contrib/download_prerequisites
+  popd > /dev/null # "$GCC_TARBALL"
 popd > /dev/null # "$TARBALLS_DIR"
 
 # Build and install binutils and gcc
