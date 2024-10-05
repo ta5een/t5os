@@ -1,13 +1,26 @@
 #!/usr/bin/env bash
 
-# The majority of this script was taken from the Serenity OS project:
+# This script was heavily derived from the Serenity OS project:
 # https://github.com/SerenityOS/serenity/blob/311af9ad0590970e3e3c7384feed67c63aed08f4/Toolchain/BuildGNU.sh
 
 set -e
 set -o pipefail
 
-ARCH=${ARCH:-i686}
 OS_NAME="$(uname -s)"
+
+# Before doing anything, first check if we're on macOS with GNU coreutils
+# installed. If so, we'll modify PATH to prioritize GNU coreutils over native
+# utilities for platform consistency.
+if [ "$OS_NAME" = "Darwin" ]; then
+  if command -v brew > /dev/null; then
+    BREW_COREUTILS_PREFIX=$(brew --prefix coreutils 2>/dev/null)
+    if [ -n "$BREW_COREUTILS_PREFIX" ]; then
+      export PATH="$BREW_COREUTILS_PREFIX/libexec/gnubin:$PATH"
+    fi
+  fi
+fi
+
+ARCH=${ARCH:-i686}
 MAKE_JOBS=${MAKE_JOBS:-$(nproc)}
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
@@ -67,21 +80,32 @@ if [[ -d "$PREFIX" && -n $(ls -A "$PREFIX") ]]; then
   rm -rf "$LOCAL_DIR_PREFIX/$ARCH"
 fi
 
-disk_space_available=$(df -h "$DIR" | tail -n1 | awk '{ print $3 }')
+disk_space_available=$(df -h "$DIR" | tail -n1 | awk '{ print $4 }')
 echo "\
 This build step will download the source code for the GNU GCC $GCC_VERSION \
 compiler and the GNU Binutils $BINUTILS_VERSION binary tools. It will then \
 compile these tools, specified to target $ARCH-elf.
 
 This process will take a while to complete, depending on your machine's \
-specifications. Once complete, the resulting build artefacts will take up \
-around 3GB of disk space, give or take half a GB.
+specifications. Once complete, the resulting toolchain (downloaded tarballs, \
+source code, and build artifacts) will take up around 3GB of disk space. \
 
 You are on a(n) $OS_NAME system with $MAKE_JOBS processing unit(s) available \
 and $disk_space_available of disk space available.
 
 Are you sure you want to continue? Enter '1' or '2':" | fold -s -w 80
 ask_yes_no
+
+if command -v md5 > /dev/null; then
+  MD5="md5"
+  MD5_AWK_STR='{ print $NF }'
+elif command -v md5sum > /dev/null; then
+  MD5="md5sum"
+  MD5_AWK_STR='{ print $1 }'
+else
+  echo "ERR: Neither md5 nor md5sum is available on this system."
+  exit 1
+fi
 
 # Download binutils and gcc tarballs
 mkdir -p "$TARBALLS_DIR"
@@ -90,11 +114,11 @@ pushd "$TARBALLS_DIR" > /dev/null
   if [ -f "$BINUTILS_TARBALL" ]; then
     log $STEP_DEPENDENCIES echo "Binutils already downloaded, validating MD5 checksum..."
     # Does the MD5 checksum match? If not, it may have been corrupted.
-    if ! md5sum -c <<< "$BINUTILS_MD5SUM $BINUTILS_TARBALL"; then
+    if [ "$($MD5 "$BINUTILS_TARBALL" | awk "$MD5_AWK_STR")" != "$BINUTILS_MD5SUM" ]; then
       log $STEP_DEPENDENCIES echo "'$BINUTILS_TARBALL' MD5 does not match. Removing..."
       rm -f "$BINUTILS_TARBALL"
       # In case the extracted directory is present, remove it too
-      rm -f "$BINUTILS_NAME"
+      rm -rf "$BINUTILS_NAME"
     else
       log $STEP_DEPENDENCIES echo "Checksum passed, continuing..."
     fi
@@ -118,11 +142,11 @@ pushd "$TARBALLS_DIR" > /dev/null
   if [ -f "$GCC_TARBALL" ]; then
     log $STEP_DEPENDENCIES echo "GCC already downloaded, validating MD5 checksum..."
     # Does the MD5 checksum match? If not, it may have been corrupted.
-    if ! md5sum -c <<< "$GCC_MD5SUM $GCC_TARBALL"; then
+    if [ "$($MD5 "$GCC_TARBALL" | awk "$MD5_AWK_STR")" != "$GCC_MD5SUM" ]; then
       log $STEP_DEPENDENCIES echo "'$GCC_TARBALL' MD5 does not match. Removing..."
       rm -f "$GCC_TARBALL"
       # In case the extracted directory is present, remove it too
-      rm -f "$GCC_NAME"
+      rm -rf "$GCC_NAME"
     else
       log $STEP_DEPENDENCIES echo "Checksum passed, continuing..."
     fi
@@ -141,6 +165,12 @@ pushd "$TARBALLS_DIR" > /dev/null
     log $STEP_DEPENDENCIES echo "Extracting GCC $GCC_VERSION..."
     tar -xJf "$GCC_TARBALL"
   fi
+
+  # Download gcc prerequisites
+  pushd $GCC_NAME > /dev/null
+    log $STEP_DEPENDENCIES echo "Downloading GCC $GCC_VERSION prerequisites..."
+    sh ./contrib/download_prerequisites
+  popd > /dev/null # "$GCC_TARBALL"
 popd > /dev/null # "$TARBALLS_DIR"
 
 # Build and install binutils and gcc
@@ -187,3 +217,5 @@ pushd "$BUILD_DIR_PREFIX/$ARCH" > /dev/null
     log "$STEP_LIBGCC/install" make install-target-libgcc || exit 1
   popd > /dev/null # gcc
 popd > /dev/null # "$BUILD_DIR_PREFIX/$ARCH"
+
+echo "Toolchain built and installed successfully"
