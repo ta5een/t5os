@@ -1,6 +1,7 @@
 !.bochsrc
 !.clang-format
 !.clang-tidy
+!.clangd
 !.dockerignore
 !.editorconfig
 !.gdbinit

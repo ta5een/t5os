@@ -1,0 +1,5 @@
+If:
+  PathMatch: libt5/test/.*
+
+CompileFlags:
+  CompilationDatabase: build-test

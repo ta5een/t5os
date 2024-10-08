@@ -89,4 +89,39 @@ endif
 
 # }}}
 
+# tests {{{
+
+# The C standard library is currently not available in the target environment,
+# so the test executables will only be built for the build machine.
+if not meson.is_cross_build()
+    # Defines:
+    # - test_libt5_src_dict
+    subdir('libt5/test')
+
+    foreach test_name, test_config : test_libt5_src_dict
+        test_exe_name = 'test_libt5_' + test_config['exe_name']
+        test_include_dirs = test_config['include_dirs']
+        test_sources = test_config['sources']
+        test(
+            test_name,
+            executable(
+                test_exe_name,
+                test_sources,
+                include_directories: test_include_dirs,
+                c_args: [
+                    '-std=gnu2x',
+                    '-Wall',
+                    '-Wextra',
+                ],
+                dependencies: [
+                    libt5_dep,
+                ],
+            ),
+            suite: 'libt5',
+        )
+    endforeach
+endif
+
+# }}}
+
 # vim:foldmethod=marker
