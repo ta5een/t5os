@@ -2,7 +2,7 @@ NAME = t5os
 ARCH = i686
 BUILD_TYPE ?= DEBUG
 
-OUTDIR = build/kernel
+OUTDIR = build
 TOOLCHAIN_DIR = toolchain
 TOOLCHAIN_BIN_DIR = $(TOOLCHAIN_DIR)/local/$(ARCH)/bin
 
@@ -34,14 +34,14 @@ help:
 $(TOOLCHAIN_BIN_DIR)/$(ARCH)-elf-*:
 	@bash $(TOOLCHAIN_DIR)/build-cross-tools.sh
 
-$(OUTDIR)/$(NAME).iso: $(OUTDIR)/$(NAME).bin
+$(OUTDIR)/$(NAME).iso: $(OUTDIR)/$(NAME).elf
 	mkdir -p $(OUTDIR)/iso/boot/grub
 	cp $< $(OUTDIR)/iso/boot
 	echo 'set timeout=0' > $(OUTDIR)/iso/boot/grub/grub.cfg
 	echo 'set default=0' >> $(OUTDIR)/iso/boot/grub/grub.cfg
 	echo '' >> $(OUTDIR)/iso/boot/grub/grub.cfg
 	echo "menuentry \"$(NAME)\" {" >> $(OUTDIR)/iso/boot/grub/grub.cfg
-	echo "	multiboot /boot/$(NAME).bin" >> $(OUTDIR)/iso/boot/grub/grub.cfg
+	echo "	multiboot /boot/$(NAME).elf" >> $(OUTDIR)/iso/boot/grub/grub.cfg
 	echo '	boot' >> $(OUTDIR)/iso/boot/grub/grub.cfg
 	echo '}' >> $(OUTDIR)/iso/boot/grub/grub.cfg
 	grub-mkrescue --output=$@ $(OUTDIR)/iso
@@ -54,7 +54,7 @@ qemu: $(OUTDIR)/$(NAME).iso
 # TODO: Consider moving this into a shell script to better orchestrate this
 # FIXME: gdb is not available on Apple Silicon systems by default. Consider
 # migrating to lldb?
-gdb: $(OUTDIR)/$(NAME).bin
+gdb: $(OUTDIR)/$(NAME).elf
 	gdb $<
 
 # FIXME: Clean build artifacts with Meson
