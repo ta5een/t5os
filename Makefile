@@ -52,6 +52,8 @@ qemu: $(OUTDIR)/$(NAME).iso
 
 # NOTE: Ensure QEMU is already running in debug mode in a separate process
 # TODO: Consider moving this into a shell script to better orchestrate this
+# FIXME: gdb is not available on Apple Silicon systems by default. Consider
+# migrating to lldb?
 gdb: $(OUTDIR)/$(NAME).bin
 	gdb $<
 
