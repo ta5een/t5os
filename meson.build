@@ -1,5 +1,29 @@
 project('t5os', 'c', version: '0.1.0', meson_version: '>= 1.5.0')
 
+# libt5 {{{
+
+# Defines:
+# - libt5_src
+# - libt5_include_dirs
+subdir('libt5/src')
+
+libt5_dep = declare_dependency(
+    link_with: static_library(
+        't5',
+        sources: libt5_src,
+        include_directories: libt5_include_dirs,
+        c_args: [
+            '-std=gnu2x',
+            '-Wall',
+            '-Wextra',
+            '-ffreestanding',
+        ],
+    ),
+    include_directories: libt5_include_dirs,
+)
+
+# }}}
+
 # kernel {{{
 
 # The kernel will be cross compiled, with libt5 statically linked
@@ -38,6 +62,7 @@ if meson.is_cross_build()
             # - https://github.com/mesonbuild/meson/issues/10237
             '-U_FILE_OFFSET_BITS',
         ],
+        dependencies: [libt5_dep],
         link_args: kernel_link_args,
         link_depends: kernel_link_depends,
     )
