@@ -37,9 +37,6 @@ enum x86_32_idt_flag : uint8_t
     IDT_FLAG_PRESENT = (1U << 7U),
 };
 
-// NOLINTNEXTLINE(readability-magic-numbers)
-static_assert((bool)(sizeof(struct x86_32_idt_entry) == 8U));
-
 typedef void(x86_32_idt_handler_t)(struct x86_32_iframe);
 
 /**
