@@ -24,7 +24,7 @@ if host_machine.cpu_family() == 'x86'
         'src/arch/x86/port.c',
     )
 
-    if host_machine.cpu() == 'x86'
+    if host_machine.cpu() == 'x86' # x86_32
         kernel_src += files(
             'src/arch/x86/32/boot.S',
             'src/arch/x86/32/gdt.S',
