@@ -40,7 +40,7 @@ if host_machine.cpu_family() == 'x86'
 endif
 
 kernel_exe = executable(
-    't5os.bin',
+    't5os.elf',
     sources: kernel_src,
     include_directories: kernel_include_dirs,
     c_args: [
