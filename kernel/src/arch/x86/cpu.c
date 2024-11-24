@@ -15,6 +15,7 @@ static size_t
 write(size_t len, const char str[len], void * /*ctx*/)
 {
     struct vga *vga = vga_get();
+    vga_print(vga, "W1 ");
     vga_println(vga, str);
     serial_write(SERIAL_COM1_BASE, str);
     serial_write(SERIAL_COM1_BASE, "\n");
@@ -72,7 +73,8 @@ cpu_init(void)
     asm volatile("int $0x1f");
     vga_println(vga, " [DONE]");
 
-    struct log_spec spec = {.write = write};
-    log_trace(&spec, LOG_LOCATION, "This won't print");
-    log_trace(&spec, LOG_LOCATION, "This won't also print");
+    log_spec_set_writer(write);
+    // struct log_spec spec = {.write = write};
+    // log_trace(&spec, LOG_LOCATION, "This won't print");
+    // log_trace(&spec, LOG_LOCATION, "This won't also print");
 }

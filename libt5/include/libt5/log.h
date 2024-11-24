@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdatomic.h>
 #include <stddef.h>
 
 typedef size_t (*log_spec_write_t)(size_t len, const char str[len], void *ctx);
@@ -21,6 +22,12 @@ struct log_spec
      */
     void *context;
 };
+
+log_spec_write_t
+log_spec_get_writer();
+
+void
+log_spec_set_writer(log_spec_write_t writer);
 
 [[gnu::format(printf, 3, 4)]]
 void
