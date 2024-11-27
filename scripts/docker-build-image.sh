@@ -2,6 +2,12 @@
 
 set -e
 
+# Check if Docker is available
+hash docker 2>/dev/null || {
+  echo "ERROR: 'docker' is not available" >&2
+  exit 1
+}
+
 print_usage() {
   printf "Usage: %s [-rh]\n" "$(basename "$0")"
   echo "Build Docker image 't5os', using the Dockerfile in project root"
@@ -18,12 +24,6 @@ while getopts "rh" flag; do
     *) print_usage; exit 1 ;;
   esac
 done
-
-# Check if Docker is available
-hash docker 2>/dev/null || {
-  echo "ERROR: 'docker' is not available" >&2
-  exit 1
-}
 
 # Build the Dockerfile (in project root) with the tag "t5os"
 if [ "$rebuild" = true ]; then
