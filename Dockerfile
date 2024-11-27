@@ -4,15 +4,12 @@ RUN apt-get update && apt-get install -y \
     bison \
     build-essential \
     flex \
-    grub-common \
-    grub-pc-bin \
     libgmp3-dev \
     libisl-dev \
     libmpc-dev \
     libmpfr-dev \
     python3-pip \
     texinfo \
-    xorriso \
     && rm -rf /var/lib/apt/lists/*
 
 # We don't mind installing these Python packages as root
