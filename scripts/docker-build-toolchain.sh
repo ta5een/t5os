@@ -9,4 +9,4 @@ hash docker 2>/dev/null || {
 }
 
 # With the Docker image "t5os", in an ephemeral container, build the toolchain
-docker run -it --rm -v .:/t5os t5os make toolchain
+docker run -it --rm -v .:/t5os t5os bash toolchain/build-cross-tools.sh
