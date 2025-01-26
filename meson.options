@@ -1,0 +1,6 @@
+option(
+  'qemu_debug',
+  type: 'boolean',
+  value: false,
+  description: 'Enable QEMU debug flags in run target qemu-run-image',
+)
