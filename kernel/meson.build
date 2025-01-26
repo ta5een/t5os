@@ -6,14 +6,12 @@ kernel_src += files(
     'src/kassert.c',
     'src/kernel.c',
     'src/kpanic.c',
-    # ...
 )
 
 kernel_link_args = [
     '-ffreestanding',
     '-lgcc',
     '-nostdlib',
-    # ...
 ]
 
 if host_machine.cpu_family() == 'x86'
@@ -24,7 +22,8 @@ if host_machine.cpu_family() == 'x86'
         'src/arch/x86/port.c',
     )
 
-    if host_machine.cpu() == 'x86' # x86_32
+    # x86_32
+    if host_machine.cpu() == 'x86'
         kernel_src += files(
             'src/arch/x86/32/boot.S',
             'src/arch/x86/32/gdt.S',
