@@ -10,9 +10,9 @@ This project supports native and cross-platform compilation with Docker. To
 build the project on your system (the *build machine*), you will need the
 following tools for your platform:
 
-  - [`meson v1.5.x`][meson-website]
+  - [`meson v1.7.x`][meson-website]
   - [`ninja v1.12.x`][ninja-website]
-  - [`qemu v9.1.x`][qemu-website]
+  - [`qemu v9.2.x`][qemu-website]
   - [GNU GCC and Binutils dependencies][gnu-gcc-binutils-deps]
 
 ### Building
