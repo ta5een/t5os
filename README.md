@@ -30,7 +30,7 @@ This is the recommended method if you would like to contribute to the project.
 1. `cd` into the cloned directory and build the GCC Cross-Compiler toolchain:
 
    ```sh
-   bash ./toolchain/build-cross-tools.sh
+   bash ./toolchain/build.sh
    ```
 
    This build step will download the source code for GNU GCC 14.1.0 and GNU
