@@ -139,6 +139,23 @@ you may want to [build the kernel natively](#linux-and-macos).
    > will take up around 3GB of disk space. Make sure you have enough disk
    > space (and patience) for this step :)
 
+1. Set up a `build` directory with `meson`:
+
+   ```sh
+   meson setup build --cross-file ./meson/cross/i686-elf.ini
+   ```
+
+   Meson works by building projects out-of-source. This means that all files
+   generated during the build are placed in a separate directory. It is thus
+   possible to have multiple build directories, each with their own
+   configurations.
+
+   With the above command, we request Meson to set up a build directory (aptly
+   named `build`) that is configured to target an i686 *host machine*. The
+   provided cross build definition file informs Meson of the compiler and tools
+   to be used when building for the selected architecture. Currently, only the
+   i686 architecture is supported.
+
 1. Run the OS in `qemu`:
 
    ```sh
