@@ -10,18 +10,10 @@ This project supports native and cross-platform compilation with Docker. To
 build the project on your system (the *build machine*), you will need the
 following tools for your platform:
 
-- Project compilation tools:
-  - [`meson`][meson-website]
-  - [`ninja`][ninja-website]
+  - [`meson v1.7.x`][meson-website]
+  - [`ninja v1.12.x`][ninja-website]
+  - [`qemu v9.2.x`][qemu-website]
   - [GNU GCC and Binutils dependencies][gnu-gcc-binutils-deps]
-- GRUB tools (optional)[^1]:
-  - `xorriso`
-  - `grub-common`
-  - `grub-pc-bin`
-- Emulation software:
-  - `qemu-system-i386`
-
-[^1]: It is possible to run these tools with the provided Docker configuration.
 
 ### Building
 
@@ -35,24 +27,23 @@ This is the recommended method if you would like to contribute to the project.
    git clone https://github.com/ta5een/t5os.git
    ```
 
-1. Build the GCC Cross-Compiler toolchain:
+1. `cd` into the cloned directory and build the GCC Cross-Compiler toolchain:
 
    ```sh
-   make toolchain
+   bash ./toolchain/build.sh
    ```
 
-   This build step will download the source code for the GNU GCC 14.1.0
-   compiler and the GNU Binutils 2.42 binary tools. It will then compile these
-   tools, with settings tweaked so that it can build programs for the `$ARCH`
-   target from the *build machine*. By default, `$ARCH` is set to `i686` (i.e.,
-   x86 32-bit).
+   This build step will download the source code for GNU GCC 14.1.0 and GNU
+   Binutils 2.42. It will then compile these tools, with customized settings so
+   that it can build programs for the `$ARCH` target from the *build machine*.
+   By default, `$ARCH` is set to `i686` (i.e., x86 32-bit).
 
    The resulting binaries, headers, and archives will be placed inside the
    `toolchain` directory.
 
    > **NOTE**: This process will take a while to complete, depending on your
    > machine's specifications. Once complete, the resulting build artifacts
-   > will take up around 3GB of disk space. Make sure you have enough disk
+   > will take up around 3 GB of disk space. Make sure you have enough disk
    > space (and patience) for this step :)
 
 1. Set up a `build` directory with `meson`:
@@ -89,21 +80,10 @@ This is the recommended method if you would like to contribute to the project.
    locations][clangd-compile-commands], so you may need to configure `clangd`
    if it can't find the file.
 
-1. Build the `.iso` image:
-
-   ```sh
-   make iso
-   ```
-
-   This build step requires `xorriso`, `grub-common`, and `grub-pc-bin` to be
-   available on your system. Alternatively, follow the [Docker instructions
-   below](#docker) to build the `.iso` image without needing to install these
-   tools locally.
-
 1. Run the OS in `qemu`:
 
    ```sh
-   make qemu
+   meson compile -C build qemu-run-image
    ```
 
 #### Docker
@@ -112,15 +92,13 @@ This is the recommended method if you would like to contribute to the project.
 > If you previously compiled the toolchain on a non-Linux system that doesn't
 > natively produce ELF binaries, the toolchain will *NOT* be compatible with
 > the Debian environment in Docker. This would certainly be the case if you ran
-> `make toolchain` on macOS or Windows. If you would like to primarily build
-> the kernel in a Docker container, please rebuild the toolchain as instructed
-> in the steps below.
+> the build step on macOS or Windows. If you would like to primarily build the
+> kernel in a Docker container, please rebuild the toolchain as instructed in
+> the steps below.
 
 This is the recommended method if you would like to play around with the
-project and don't want to install all the required dependencies. It is also
-possible to first [build the kernel natively](#linux-and-macos) and then create
-the ISO with Docker (which has access to the legacy GRUB tools), thanks to the
-power of [bind mounts][docker-bind-mounts].
+project and don't want to install all the required dependencies. Alternatively,
+you may want to [build the kernel natively](#linux-and-macos).
 
 1. Clone the repository:
 
@@ -137,7 +115,7 @@ power of [bind mounts][docker-bind-mounts].
 1. Build the toolchain in a Debian environment:
 
    ```sh
-   bash ./scripts/docker-make-toolchain.sh
+   bash ./scripts/docker-build-toolchain.sh
    ```
 
    This command will spawn an ephemeral Docker container, bind the current
@@ -146,42 +124,43 @@ power of [bind mounts][docker-bind-mounts].
    to only this directory in your system and can make changes to it in a way
    that will be visible to you.
 
-   This is important to note as if your system is *NOT* a Linux environment
-   similar to Debian 12.5, the toolchain binaries that will be built will *NOT*
-   be compatible with your system. This may not be a concern if you don't plan
-   on using the toolchain outside the container, but if you do, consider
-   [building the toolchain natively](#linux-and-macos) by following steps 1, 2,
-   and 3.
+   This is important to note because if your build system is *NOT* a Linux
+   environment compatible with Debian 12.5, the resulting toolchain binaries
+   will *NOT* be compatible with your system. This may not be a concern if you
+   don't plan on using the toolchain outside the container, but if you do,
+   consider [building the toolchain natively](#linux-and-macos) instead of
+   through Docker.
 
-   In any case, the resulting binaries, headers, and archives will be placed
+   In any case, the toolchain binaries, headers, and archives will be placed
    inside the `toolchain` directory.
 
    > **NOTE**: This process will take a while to complete, depending on your
    > machine's specifications. Once complete, the resulting build artifacts
-   > will take up around 3GB of disk space. Make sure you have enough disk
+   > will take up around 3 GB of disk space. Make sure you have enough disk
    > space (and patience) for this step :)
 
-1. Build the `.iso` image:
+1. Set up a `build` directory with `meson`:
 
    ```sh
-   bash ./scripts/docker-make-iso.sh
+   meson setup build --cross-file ./meson/cross/i686-elf.ini
    ```
 
-   Like the step before, this will build the `.iso` image inside (a different
-   instance of) an ephemeral Docker container. Once completed,
-   `./build/kernel/t5os.iso` will be available in your local filesystem.
+   Meson works by building projects out-of-source. This means that all files
+   generated during the build are placed in a separate directory. It is thus
+   possible to have multiple build directories, each with their own
+   configurations.
+
+   With the above command, we request Meson to set up a build directory (aptly
+   named `build`) that is configured to target an i686 *host machine*. The
+   provided cross build definition file informs Meson of the compiler and tools
+   to be used when building for the selected architecture. Currently, only the
+   i686 architecture is supported.
 
 1. Run the OS in `qemu`:
 
    ```sh
-   make qemu
+   meson compile -C build qemu-run-image
    ```
-
-## Usage
-
-- QEMU: Run `make qemu`
-- VMware/VirtualBox/etc.: Build the `.iso` with `make iso` and boot the virtual
-  machine with this disk image (via USB or CD/DVD).
 
 ## Online Resources
 
@@ -219,3 +198,4 @@ and/or abided by your license(s), please feel free to reach out to me :)
 [gnu-gcc-binutils-deps]: https://wiki.osdev.org/GCC_Cross-Compiler#Installing_Dependencies
 [meson-website]: https://mesonbuild.com/
 [ninja-website]: https://ninja-build.org/
+[qemu-website]: https://www.qemu.org/
