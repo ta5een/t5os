@@ -136,7 +136,7 @@ you may want to [build the kernel natively](#linux-and-macos).
 
    > **NOTE**: This process will take a while to complete, depending on your
    > machine's specifications. Once complete, the resulting build artifacts
-   > will take up around 3GB of disk space. Make sure you have enough disk
+   > will take up around 3 GB of disk space. Make sure you have enough disk
    > space (and patience) for this step :)
 
 1. Set up a `build` directory with `meson`:

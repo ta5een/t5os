@@ -88,7 +88,7 @@ compile these tools, specified to target $ARCH-elf.
 
 This process will take a while to complete, depending on your machine's \
 specifications. Once complete, the resulting toolchain (downloaded tarballs, \
-source code, and build artifacts) will take up around 3GB of disk space. \
+source code, and build artifacts) will take up around 3 GB of disk space. \
 
 You are on a(n) $OS_NAME system with $MAKE_JOBS processing unit(s) available \
 and $disk_space_available of disk space available.
